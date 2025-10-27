@@ -27,6 +27,7 @@ import ViewTryout from "./pages/admin/ViewTryout";
 import EditTryout from "./pages/admin/EditTryout";
 import Profile from "./pages/Profile";
 import AdminPengaturan from "./pages/admin/AdminPengaturan";
+import TryoutList from "./pages/TryoutList";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -145,6 +146,15 @@ const App = () => (
               element={
                 <ProtectedRoute requiredRole="siswa">
                   <Profile />
+                </ProtectedRoute>
+              } 
+            />
+
+            <Route 
+              path="/tryouts" 
+              element={
+                <ProtectedRoute requiredRole="siswa">
+                  <TryoutList />
                 </ProtectedRoute>
               } 
             />
