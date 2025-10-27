@@ -1,0 +1,3254 @@
+Implement the following design in React. Use the following files generated from a Figma design as a specification and guide:
+
+```src/styles/App.module.css
+@import "https://fonts.googleapis.com/css?family=Montserrat:0,700;0,400;0,600;0,500&display=swap";
+.App_459_1877 {
+  background: linear-gradient(120deg, #e6f3ff 7.8%, #f8fbff 92.2%),
+    linear-gradient(90deg, #fff 0% 100%);
+  border-radius: 16px;
+  flex-flow: column;
+  flex-shrink: 0;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 2.2px;
+  width: 1363px;
+  height: 845px;
+  padding-bottom: 82px;
+  display: flex;
+  overflow: hidden;
+  box-shadow:
+    0 20px 25px -5px #0000001a,
+    0 8px 10px -6px #0000001a;
+}
+.Header_495_55 {
+  background: #fffffff2;
+  flex-flow: row;
+  flex-grow: 1;
+  flex-shrink: 0;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 0;
+  width: 1363px;
+  height: 80.8px;
+  display: flex;
+}
+.Container3_495_56 {
+  flex-shrink: 0;
+  align-items: center;
+  width: 1267px;
+  height: 80px;
+  padding: 16px 1083.88px 16px 0;
+  display: flex;
+}
+.Container2_495_57 {
+  flex-flow: row;
+  flex-grow: 1;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  height: 48px;
+  display: flex;
+}
+.Container_495_58 {
+  background: linear-gradient(#89b0c7 0%, #89b1c7 100%);
+  border-radius: 16px;
+  justify-content: center;
+  align-items: center;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  box-shadow:
+    0 10px 15px -3px #0000001a,
+    0 4px 6px -4px #0000001a;
+}
+.Container_495_59 {
+  border-radius: 32px;
+  flex-flow: row;
+  flex-shrink: 0;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 0;
+  width: 56px;
+  height: 56px;
+  display: flex;
+}
+.Container_495_60 {
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+}
+.Image_495_61 {
+  background: #d3d3d3 url(<path-to-image>) 50% / cover no-repeat;
+  border-radius: 32px;
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  overflow: hidden;
+}
+.Container1_495_62 {
+  flex-flow: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: -0.4px;
+  width: 123.138px;
+  height: 39.975px;
+  display: flex;
+}
+.Heading1_495_63 {
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  height: 24px;
+  display: flex;
+}
+.KelasKampus_495_64 {
+  color: #1d293d;
+  font-family: Montserrat;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 24px;
+  display: inline-block;
+}
+.Paragraph_495_65 {
+  flex-shrink: 0;
+  align-items: flex-start;
+  height: 16px;
+  display: flex;
+}
+.TryoutIndonesia_495_66 {
+  color: #62748e;
+  flex: 1 0 0;
+  font-family: Montserrat;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 16px;
+  display: inline-block;
+}
+.Container_495_67 {
+  box-sizing: border-box;
+  border-bottom: 0.8px solid #e2e8f0;
+  flex-shrink: 0;
+  width: 1363px;
+  height: 80.8px;
+}
+.Button_495_68 {
+  background: linear-gradient(#89b0c7 0%, #89b1c7 100%);
+  border-radius: 16px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  width: 167px;
+  height: 36px;
+  padding-left: 0;
+  display: flex;
+  box-shadow:
+    0 10px 15px -3px #0000001a,
+    0 4px 6px -4px #0000001a;
+}
+.ProfileInitials_495_69 {
+  background: #fff;
+  border-radius: 26843500px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 24px;
+  height: 24px;
+  padding-right: 0.012px;
+  display: flex;
+}
+.Paragraph_495_70 {
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+.Ja_495_71 {
+  color: #89b0c7;
+  font-family: Montserrat;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 18px;
+  display: inline-block;
+}
+.ProfileText_495_72 {
+  flex-shrink: 0;
+  align-items: center;
+  gap: 4px;
+  width: 99.325px;
+  height: 21px;
+  display: flex;
+}
+.Paragraph_495_73 {
+  align-items: center;
+  padding-right: 12.325px;
+  display: flex;
+}
+.JakkHere_495_74 {
+  color: #fff;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 21px;
+  display: inline-block;
+}
+.Icon_495_75 {
+  flex-shrink: 0;
+  width: 12px;
+  height: 12px;
+  overflow: hidden;
+}
+.Container72_488_774 {
+  flex-flow: row;
+  flex-grow: 1;
+  flex-shrink: 0;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 0;
+  width: 1363px;
+  height: 680px;
+  display: flex;
+  overflow: hidden;
+}
+.FilterBar_488_780 {
+  background: #fff;
+  border-radius: 12px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 948.8px;
+  height: 102px;
+  padding: 20px;
+  display: flex;
+  box-shadow:
+    0 1px 3px #0000001a,
+    0 1px 2px -1px #0000001a;
+}
+.Container13_488_781 {
+  flex-flow: row;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 16px;
+  width: 908.8px;
+  height: 62px;
+  display: flex;
+}
+.Container8_488_782 {
+  flex-flow: row;
+  flex-shrink: 0;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 0;
+  width: 215.2px;
+  height: 62px;
+  display: flex;
+}
+.Label_488_783 {
+  justify-content: center;
+  align-items: center;
+  display: inline-flex;
+}
+.Kategori_488_784 {
+  color: #1d293d;
+  font-family: Montserrat;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 19.5px;
+  display: inline-block;
+}
+.PrimitiveButton_488_785 {
+  background: #f1f5f9;
+  border-radius: 8px;
+  flex-flow: row;
+  flex-grow: 1;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 89.275px;
+  padding: 8.25px 12px;
+  display: flex;
+}
+.PrimitiveSpan_488_786 {
+  justify-content: center;
+  align-items: center;
+  height: 19.5px;
+  display: flex;
+  overflow: hidden;
+}
+.PilihKategori_488_787 {
+  color: #717182;
+  font-family: Montserrat;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 19.5px;
+  display: inline-block;
+}
+.Icon_488_788 {
+  flex-direction: column;
+  align-items: flex-start;
+  width: 16px;
+  display: flex;
+}
+.Icon_488_789 {
+  width: 100%;
+  height: 16px;
+  overflow: hidden;
+}
+.Icon_488_790 {
+  opacity: 0.5;
+  flex-shrink: 0;
+  width: 8px;
+  height: 4px;
+}
+.Container9_488_792 {
+  flex-flow: row;
+  flex-shrink: 0;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 0;
+  width: 215.2px;
+  height: 62px;
+  display: flex;
+}
+.Label1_488_793 {
+  justify-content: center;
+  align-items: center;
+  display: inline-flex;
+}
+.Jadwal_488_794 {
+  color: #1d293d;
+  font-family: Montserrat;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 19.5px;
+  display: inline-block;
+}
+.PrimitiveButton1_488_795 {
+  background: #f1f5f9;
+  border-radius: 8px;
+  flex-flow: row;
+  flex-grow: 1;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 100.75px;
+  padding: 8.25px 12px;
+  display: flex;
+}
+.PrimitiveSpan1_488_796 {
+  justify-content: center;
+  align-items: center;
+  height: 19.5px;
+  display: flex;
+  overflow: hidden;
+}
+.PilihJadwal_488_797 {
+  color: #717182;
+  font-family: Montserrat;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 19.5px;
+  display: inline-block;
+}
+.Icon1_488_798 {
+  flex-direction: column;
+  align-items: flex-start;
+  width: 16px;
+  display: flex;
+}
+.Icon_488_799 {
+  width: 100%;
+  height: 16px;
+  overflow: hidden;
+}
+.Icon_488_800 {
+  opacity: 0.5;
+  flex-shrink: 0;
+  width: 8px;
+  height: 4px;
+}
+.Container10_488_802 {
+  flex-flow: row;
+  flex-shrink: 0;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 0;
+  width: 215.2px;
+  height: 62px;
+  display: flex;
+}
+.Label2_488_803 {
+  justify-content: center;
+  align-items: center;
+  display: inline-flex;
+}
+.Status_488_804 {
+  color: #1d293d;
+  font-family: Montserrat;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 19.5px;
+  display: inline-block;
+}
+.PrimitiveButton2_488_805 {
+  background: #f1f5f9;
+  border-radius: 8px;
+  flex-flow: row;
+  flex-grow: 1;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 103.525px;
+  padding: 8.25px 12px;
+  display: flex;
+}
+.PrimitiveSpan2_488_806 {
+  justify-content: center;
+  align-items: center;
+  height: 19.5px;
+  display: flex;
+  overflow: hidden;
+}
+.PilihStatus_488_807 {
+  color: #717182;
+  font-family: Montserrat;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 19.5px;
+  display: inline-block;
+}
+.Icon2_488_808 {
+  flex-direction: column;
+  align-items: flex-start;
+  width: 16px;
+  display: flex;
+}
+.Icon_488_809 {
+  width: 100%;
+  height: 16px;
+  overflow: hidden;
+}
+.Icon_488_810 {
+  opacity: 0.5;
+  flex-shrink: 0;
+  width: 8px;
+  height: 4px;
+}
+.Container12_488_812 {
+  flex-flow: row;
+  flex-shrink: 0;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 0;
+  width: 215.2px;
+  height: 62px;
+  display: flex;
+}
+.Label3_488_813 {
+  justify-content: center;
+  align-items: center;
+  display: inline-flex;
+}
+.CariTryout_488_814 {
+  color: #1d293d;
+  font-family: Montserrat;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 19.5px;
+  display: inline-block;
+}
+.Container11_488_815 {
+  flex-shrink: 0;
+  width: 215.2px;
+  height: 38px;
+}
+.TextInput_488_816 {
+  background: #f1f5f9;
+  border-radius: 8px;
+  flex-shrink: 0;
+  align-items: center;
+  height: 38px;
+  padding: 11px 96.162px 11px 40px;
+  display: inline-flex;
+  overflow: hidden;
+}
+.Paragraph_488_817 {
+  align-items: flex-start;
+  height: 16px;
+  display: flex;
+}
+.CariTryout_488_818 {
+  color: #62748e;
+  font-family: Montserrat;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  display: inline-block;
+}
+.Icon3_488_819 {
+  flex-direction: column;
+  flex-shrink: 0;
+  align-items: flex-start;
+  width: 16px;
+  height: 16px;
+  display: flex;
+}
+.Icon_488_820 {
+  flex-shrink: 0;
+  width: 100%;
+  height: 16px;
+  overflow: hidden;
+}
+.Icon_488_821 {
+  flex-shrink: 0;
+  width: 12px;
+  height: 12px;
+}
+.Container70_488_824 {
+  flex-shrink: 0;
+  width: 1251.8px;
+  height: 688px;
+}
+.TryoutCard_488_825 {
+  background: #fff;
+  border-radius: 16px;
+  flex-flow: column;
+  flex-grow: 1;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 12px;
+  width: 403.925px;
+  padding: 20px 20px 60.5px;
+  display: flex;
+  box-shadow:
+    0 1px 3px #0000001a,
+    0 1px 2px -1px #0000001a;
+}
+.Container16_488_826 {
+  flex-flow: row;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 0;
+  width: 363.925px;
+  height: 59.5px;
+  padding-right: 0;
+  display: flex;
+}
+.Container14_488_827 {
+  flex-flow: column;
+  flex-grow: 1;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 5.39999px;
+  width: 305.4px;
+  padding-right: 62.4px;
+  display: flex;
+}
+.Heading3_488_828 {
+  justify-content: center;
+  align-items: center;
+  width: 243px;
+  height: 36px;
+  display: flex;
+}
+.TryoutUtbk_2024TesPotensiSkolastik_488_829 {
+  color: #1d293d;
+  flex-shrink: 0;
+  width: 243px;
+  font-family: Montserrat;
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 18px;
+  display: inline-block;
+}
+.Paragraph4_488_830 {
+  justify-content: center;
+  align-items: center;
+  height: 19.5px;
+  display: flex;
+}
+.SoalDurasi_60Menit_488_831 {
+  color: #62748e;
+  font-family: Montserrat;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 19.5px;
+  display: inline-block;
+}
+.Container15_488_832 {
+  background: #dcfce7;
+  border-radius: 8px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 58.525px;
+  height: 32px;
+  padding: 8px 9.4px 7.5px 10.6px;
+  display: flex;
+}
+.Text_488_833 {
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 38.525px;
+  height: 16.5px;
+  display: flex;
+}
+.Selesai_488_834 {
+  color: #00a63e;
+  font-family: Montserrat;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 16.5px;
+  display: inline-block;
+}
+.Container17_488_835 {
+  flex-flow: row;
+  flex-grow: 1;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 6px;
+  height: 16.5px;
+  padding-right: 240.713px;
+  display: flex;
+}
+.Icon4_488_836 {
+  flex-direction: column;
+  align-items: flex-start;
+  width: 14px;
+  display: flex;
+}
+.Icon_488_837 {
+  width: 100%;
+  height: 14px;
+  overflow: hidden;
+}
+.ClipPathGroup_488_838 {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+}
+.Text1_488_844 {
+  justify-content: center;
+  align-items: center;
+  height: 16.5px;
+  display: flex;
+}
+.Dibuka_2Mei_2025_488_845 {
+  color: #62748e;
+  font-family: Montserrat;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 16.5px;
+  display: inline-block;
+}
+.Container18_488_846 {
+  flex-flow: row;
+  flex-grow: 1;
+  justify-content: center;
+  align-items: center;
+  gap: 161.05px;
+  height: 35.5px;
+  padding-right: 0;
+  display: flex;
+}
+.Button1_488_847 {
+  background: linear-gradient(#295782 0% 100%);
+  border-radius: 12px;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 116.863px;
+  padding: 8.6px 16px 0;
+  display: flex;
+  box-shadow:
+    0 10px 15px -3px #0000001a,
+    0 4px 6px -4px #0000001a;
+}
+.Paragraph_488_848 {
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  display: flex;
+}
+.ReviewHasil_488_849 {
+  color: #fff;
+  font-family: Montserrat;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 19.5px;
+  display: inline-block;
+}
+.Button2_488_850 {
+  flex-flow: row;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 1.9875px;
+  width: 86.013px;
+  height: 16.5px;
+  padding-right: 0.013px;
+  display: flex;
+}
+.Paragraph_488_851 {
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 72.013px;
+  height: 16.5px;
+  display: flex;
+}
+.DetailTryout_488_852 {
+  color: #89b0c7;
+  font-family: Montserrat;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 16.5px;
+  display: inline-block;
+}
+.Icon5_488_853 {
+  flex-direction: column;
+  flex-shrink: 0;
+  align-items: flex-start;
+  width: 12px;
+  display: flex;
+}
+.Icon_488_854 {
+  width: 100%;
+  height: 12px;
+  overflow: hidden;
+}
+.Icon_488_855 {
+  flex-shrink: 0;
+  width: 3px;
+  height: 6px;
+}
+.TryoutCard1_488_857 {
+  background: #fff;
+  border-radius: 16px;
+  flex-flow: column;
+  flex-grow: 1;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 12px;
+  width: 403.938px;
+  padding: 20px;
+  display: flex;
+  box-shadow:
+    0 1px 3px #0000001a,
+    0 1px 2px -1px #0000001a;
+}
+.Container21_488_858 {
+  flex-flow: row;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 0;
+  width: 363.938px;
+  height: 59.5px;
+  display: flex;
+}
+.Container19_488_859 {
+  flex-flow: column;
+  flex-grow: 1;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 5.39999px;
+  width: 271.663px;
+  padding-right: 60.663px;
+  display: flex;
+}
+.Heading4_488_860 {
+  justify-content: center;
+  align-items: center;
+  width: 211px;
+  height: 36px;
+  display: flex;
+}
+.TryoutUtbk_2024LiterasiBahasaIndonesia_488_861 {
+  color: #1d293d;
+  flex-shrink: 0;
+  width: 211px;
+  font-family: Montserrat;
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 18px;
+  display: inline-block;
+}
+.Paragraph5_488_862 {
+  justify-content: center;
+  align-items: center;
+  height: 19.5px;
+  display: flex;
+}
+.SoalDurasi_45Menit_488_863 {
+  color: #62748e;
+  font-family: Montserrat;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 19.5px;
+  display: inline-block;
+}
+.Container20_488_864 {
+  background: #dbeafe;
+  border-radius: 8px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 92.275px;
+  height: 32px;
+  padding: 8px 9.587px 7.5px 10.413px;
+  display: flex;
+}
+.Text2_488_865 {
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 72.275px;
+  height: 16.5px;
+  display: flex;
+}
+.Berlangsung_488_866 {
+  color: #155dfc;
+  font-family: Montserrat;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 16.5px;
+  display: inline-block;
+}
+.Container25_488_867 {
+  flex-flow: column;
+  flex-grow: 1;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 6px;
+  width: 363.938px;
+  display: flex;
+}
+.Container22_488_868 {
+  flex-flow: row;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 229.538px;
+  width: 363.938px;
+  height: 16.5px;
+  display: flex;
+}
+.Text3_488_869 {
+  justify-content: center;
+  align-items: center;
+  height: 16.5px;
+  display: flex;
+}
+.Progress_24_40Soal_488_870 {
+  color: #62748e;
+  font-family: Montserrat;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 16.5px;
+  display: inline-block;
+}
+.Text4_488_871 {
+  justify-content: center;
+  align-items: center;
+  height: 16.5px;
+  display: flex;
+}
+.generated_60_488_872 {
+  color: #1d293d;
+  font-family: Montserrat;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 16.5px;
+  display: inline-block;
+}
+.Container24_488_873 {
+  background: #e5e7eb;
+  border-radius: 26843500px;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 363.938px;
+  padding-right: 145.575px;
+  display: flex;
+}
+.Container23_488_874 {
+  background: #89b0c7;
+  border-radius: 26843500px;
+  width: 100%;
+  height: 6px;
+}
+.Container26_488_875 {
+  flex-flow: row;
+  flex-grow: 1;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 6px;
+  height: 16.5px;
+  padding-right: 240.75px;
+  display: flex;
+}
+.Icon6_488_876 {
+  flex-direction: column;
+  align-items: flex-start;
+  width: 14px;
+  display: flex;
+}
+.Icon_488_877 {
+  width: 100%;
+  height: 14px;
+  overflow: hidden;
+}
+.ClipPathGroup_488_878 {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+}
+.Text5_488_884 {
+  justify-content: center;
+  align-items: center;
+  height: 16.5px;
+  display: flex;
+}
+.Dibuka_5Mei_2025_488_885 {
+  color: #62748e;
+  font-family: Montserrat;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 16.5px;
+  display: inline-block;
+}
+.Container27_488_886 {
+  flex-flow: row;
+  flex-grow: 1;
+  justify-content: center;
+  align-items: center;
+  gap: 178.2px;
+  height: 35.5px;
+  display: flex;
+}
+.Button3_488_887 {
+  background: linear-gradient(#295782 0% 100%);
+  border-radius: 12px;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 99.725px;
+  padding: 8.6px 15.987px 0 16px;
+  display: flex;
+  box-shadow:
+    0 10px 15px -3px #0000001a,
+    0 4px 6px -4px #0000001a;
+}
+.Paragraph_488_888 {
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  display: flex;
+}
+.Lanjutkan_488_889 {
+  color: #fff;
+  font-family: Montserrat;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 19.5px;
+  display: inline-block;
+}
+.Button4_488_890 {
+  flex-flow: row;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 1.9875px;
+  width: 86.013px;
+  height: 16.5px;
+  padding-right: 0.013px;
+  display: flex;
+}
+.Paragraph_488_891 {
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 72.013px;
+  height: 16.5px;
+  display: flex;
+}
+.DetailTryout_488_892 {
+  color: #89b0c7;
+  font-family: Montserrat;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 16.5px;
+  display: inline-block;
+}
+.Icon7_488_893 {
+  flex-direction: column;
+  flex-shrink: 0;
+  align-items: flex-start;
+  width: 12px;
+  display: flex;
+}
+.Icon_488_894 {
+  width: 100%;
+  height: 12px;
+  overflow: hidden;
+}
+.Icon_488_895 {
+  flex-shrink: 0;
+  width: 3px;
+  height: 6px;
+}
+.TryoutCard2_488_897 {
+  background: #fff;
+  border-radius: 16px;
+  flex-flow: column;
+  flex-grow: 1;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 12px;
+  width: 403.925px;
+  padding: 20px 20px 60.5px;
+  display: flex;
+  box-shadow:
+    0 1px 3px #0000001a,
+    0 1px 2px -1px #0000001a;
+}
+.Container30_488_898 {
+  flex-flow: row;
+  justify-content: center;
+  align-items: flex-start;
+  gap: -0.0000610352px;
+  width: 363.925px;
+  height: 59.5px;
+  padding-right: 0;
+  display: flex;
+}
+.Container28_488_899 {
+  flex-flow: column;
+  flex-grow: 1;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 5.39999px;
+  width: 259.813px;
+  padding-right: 11.813px;
+  display: flex;
+}
+.Heading5_488_900 {
+  justify-content: center;
+  align-items: center;
+  width: 248px;
+  height: 36px;
+  display: flex;
+}
+.TryoutUtbk_2024MatematikaDasar_488_901 {
+  color: #1d293d;
+  flex-shrink: 0;
+  width: 248px;
+  font-family: Montserrat;
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 18px;
+  display: inline-block;
+}
+.Paragraph6_488_902 {
+  justify-content: center;
+  align-items: center;
+  height: 19.5px;
+  display: flex;
+}
+.SoalDurasi_50Menit_488_903 {
+  color: #62748e;
+  font-family: Montserrat;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 19.5px;
+  display: inline-block;
+}
+.Container29_488_904 {
+  background: #f3f4f6;
+  border-radius: 8px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 104.113px;
+  height: 32px;
+  padding: 8px 9.662px 7.5px 10.338px;
+  display: flex;
+}
+.Text6_488_905 {
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 84.113px;
+  height: 16.5px;
+  display: flex;
+}
+.BelumDimulai_488_906 {
+  color: #99a1af;
+  font-family: Montserrat;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 16.5px;
+  display: inline-block;
+}
+.Container31_488_907 {
+  flex-flow: row;
+  flex-grow: 1;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 6px;
+  height: 16.5px;
+  padding-right: 239.95px;
+  display: flex;
+}
+.Icon8_488_908 {
+  flex-direction: column;
+  align-items: flex-start;
+  width: 14px;
+  display: flex;
+}
+.Icon_488_909 {
+  width: 100%;
+  height: 14px;
+  overflow: hidden;
+}
+.ClipPathGroup_488_910 {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+}
+.Text7_488_916 {
+  justify-content: center;
+  align-items: center;
+  height: 16.5px;
+  display: flex;
+}
+.Dibuka_8Mei_2025_488_917 {
+  color: #62748e;
+  font-family: Montserrat;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 16.5px;
+  display: inline-block;
+}
+.Container32_488_918 {
+  flex-flow: row;
+  flex-grow: 1;
+  justify-content: center;
+  align-items: center;
+  gap: 209.238px;
+  height: 35.5px;
+  display: flex;
+}
+.Button5_488_919 {
+  background: linear-gradient(#295782 0% 100%);
+  border-radius: 12px;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 68.675px;
+  padding: 8.6px 16px 0;
+  display: flex;
+  box-shadow:
+    0 10px 15px -3px #0000001a,
+    0 4px 6px -4px #0000001a;
+}
+.Paragraph_488_920 {
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  display: flex;
+}
+.Mulai_488_921 {
+  color: #fff;
+  font-family: Montserrat;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 19.5px;
+  display: inline-block;
+}
+.Button6_488_922 {
+  flex-flow: row;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 1.9875px;
+  width: 86.013px;
+  height: 16.5px;
+  padding-right: 0.013px;
+  display: flex;
+}
+.Paragraph_488_923 {
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 72.013px;
+  height: 16.5px;
+  display: flex;
+}
+.DetailTryout_488_924 {
+  color: #89b0c7;
+  font-family: Montserrat;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 16.5px;
+  display: inline-block;
+}
+.Icon9_488_925 {
+  flex-direction: column;
+  flex-shrink: 0;
+  align-items: flex-start;
+  width: 12px;
+  display: flex;
+}
+.Icon_488_926 {
+  width: 100%;
+  height: 12px;
+  overflow: hidden;
+}
+.Icon_488_927 {
+  flex-shrink: 0;
+  width: 3px;
+  height: 6px;
+}
+.TryoutCard3_488_929 {
+  background: #fff;
+  border-radius: 16px;
+  flex-flow: column;
+  flex-grow: 1;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 12px;
+  width: 403.925px;
+  padding: 20px 20px 60.5px;
+  display: flex;
+  box-shadow:
+    0 1px 3px #0000001a,
+    0 1px 2px -1px #0000001a;
+}
+.Container35_488_930 {
+  flex-flow: row;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 0;
+  width: 363.925px;
+  height: 59.5px;
+  padding-right: 0;
+  display: flex;
+}
+.Container33_488_931 {
+  flex-flow: column;
+  flex-grow: 1;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 5.40002px;
+  width: 259.813px;
+  padding-right: 46.813px;
+  display: flex;
+}
+.Heading6_488_932 {
+  justify-content: center;
+  align-items: center;
+  width: 213px;
+  height: 36px;
+  display: flex;
+}
+.TryoutUtbk_2024SaintekFisika_488_933 {
+  color: #1d293d;
+  flex-shrink: 0;
+  width: 213px;
+  font-family: Montserrat;
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 18px;
+  display: inline-block;
+}
+.Paragraph7_488_934 {
+  justify-content: center;
+  align-items: center;
+  height: 19.5px;
+  display: flex;
+}
+.SoalDurasi_55Menit_488_935 {
+  color: #62748e;
+  font-family: Montserrat;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 19.5px;
+  display: inline-block;
+}
+.Container34_488_936 {
+  background: #f3f4f6;
+  border-radius: 8px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 104.113px;
+  height: 32px;
+  padding: 8px 9.813px 7.5px 10.188px;
+  display: flex;
+}
+.Text8_488_937 {
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 84.113px;
+  height: 16.5px;
+  display: flex;
+}
+.BelumDimulai_488_938 {
+  color: #99a1af;
+  font-family: Montserrat;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 16.5px;
+  display: inline-block;
+}
+.Container36_488_939 {
+  flex-flow: row;
+  flex-grow: 1;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 6px;
+  height: 16.5px;
+  padding-right: 235.713px;
+  display: flex;
+}
+.Icon10_488_940 {
+  flex-direction: column;
+  align-items: flex-start;
+  width: 14px;
+  display: flex;
+}
+.Icon_488_941 {
+  width: 100%;
+  height: 14px;
+  overflow: hidden;
+}
+.ClipPathGroup_488_942 {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+}
+.Text9_488_948 {
+  justify-content: center;
+  align-items: center;
+  height: 16.5px;
+  display: flex;
+}
+.Dibuka_10Mei_2025_488_949 {
+  color: #62748e;
+  font-family: Montserrat;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 16.5px;
+  display: inline-block;
+}
+.Container37_488_950 {
+  flex-flow: row;
+  flex-grow: 1;
+  justify-content: center;
+  align-items: center;
+  gap: 209.238px;
+  height: 35.5px;
+  padding-right: 0;
+  display: flex;
+}
+.Button7_488_951 {
+  background: radial-gradient(100% 50%, #295782e3 0%, #295782 100%);
+  border-radius: 12px;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 68.675px;
+  padding: 8.6px 16px 0;
+  display: flex;
+  box-shadow:
+    0 10px 15px -3px #0000001a,
+    0 4px 6px -4px #0000001a;
+}
+.Paragraph_488_952 {
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  display: flex;
+}
+.Mulai_488_953 {
+  color: #fff;
+  font-family: Montserrat;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 19.5px;
+  display: inline-block;
+}
+.Button8_488_954 {
+  flex-flow: row;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 1.9875px;
+  width: 86.013px;
+  height: 16.5px;
+  padding-right: 0.013px;
+  display: flex;
+}
+.Paragraph_488_955 {
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 72.013px;
+  height: 16.5px;
+  display: flex;
+}
+.DetailTryout_488_956 {
+  color: #89b0c7;
+  font-family: Montserrat;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 16.5px;
+  display: inline-block;
+}
+.Icon11_488_957 {
+  flex-direction: column;
+  flex-shrink: 0;
+  align-items: flex-start;
+  width: 12px;
+  display: flex;
+}
+.Icon_488_958 {
+  width: 100%;
+  height: 12px;
+  overflow: hidden;
+}
+.Icon_488_959 {
+  flex-shrink: 0;
+  width: 3px;
+  height: 6px;
+}
+.TryoutCard4_488_961 {
+  background: #fff;
+  border-radius: 16px;
+  flex-flow: column;
+  flex-grow: 1;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 12px;
+  width: 403.938px;
+  padding: 20px 20px 78.5px;
+  display: flex;
+  box-shadow:
+    0 1px 3px #0000001a,
+    0 1px 2px -1px #0000001a;
+}
+.Container40_488_962 {
+  flex-flow: row;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 0;
+  width: 363.938px;
+  height: 41.5px;
+  display: flex;
+}
+.Container38_488_963 {
+  flex-flow: column;
+  flex-grow: 1;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 5.40002px;
+  width: 305.413px;
+  padding-right: 26.175px;
+  display: flex;
+}
+.Heading7_488_964 {
+  justify-content: center;
+  align-items: center;
+  width: 279.238px;
+  height: 18px;
+  display: flex;
+}
+.TryoutUtbk_2024SoshumSejarah_488_965 {
+  color: #1d293d;
+  font-family: Montserrat;
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 18px;
+  display: inline-block;
+}
+.Paragraph8_488_966 {
+  justify-content: center;
+  align-items: center;
+  width: 164.725px;
+  height: 19.5px;
+  display: flex;
+}
+.SoalDurasi_45Menit_488_967 {
+  color: #62748e;
+  font-family: Montserrat;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 19.5px;
+  display: inline-block;
+}
+.Container39_488_968 {
+  background: #dcfce7;
+  border-radius: 8px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 58.525px;
+  height: 32px;
+  padding: 8px 9.337px 7.5px 10.663px;
+  display: flex;
+}
+.Text10_488_969 {
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 38.525px;
+  height: 16.5px;
+  display: flex;
+}
+.Selesai_488_970 {
+  color: #00a63e;
+  font-family: Montserrat;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 16.5px;
+  display: inline-block;
+}
+.Container41_488_971 {
+  flex-flow: row;
+  flex-grow: 1;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 6px;
+  height: 16.5px;
+  padding-right: 243.012px;
+  display: flex;
+}
+.Icon12_488_972 {
+  flex-direction: column;
+  align-items: flex-start;
+  width: 14px;
+  display: flex;
+}
+.Icon_488_973 {
+  width: 100%;
+  height: 14px;
+  overflow: hidden;
+}
+.ClipPathGroup_488_974 {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+}
+.Text11_488_980 {
+  justify-content: center;
+  align-items: center;
+  height: 16.5px;
+  display: flex;
+}
+.Dibuka_1Mei_2025_488_981 {
+  color: #62748e;
+  font-family: Montserrat;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 16.5px;
+  display: inline-block;
+}
+.Container42_488_982 {
+  flex-flow: row;
+  flex-grow: 1;
+  justify-content: center;
+  align-items: center;
+  gap: 161.063px;
+  height: 35.5px;
+  display: flex;
+}
+.Button9_488_983 {
+  background: linear-gradient(#295782 0% 100%);
+  border-radius: 12px;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 116.863px;
+  padding: 8.6px 16px 0;
+  display: flex;
+  box-shadow:
+    0 10px 15px -3px #0000001a,
+    0 4px 6px -4px #0000001a;
+}
+.Paragraph_488_984 {
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  display: flex;
+}
+.ReviewHasil_488_985 {
+  color: #fff;
+  font-family: Montserrat;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 19.5px;
+  display: inline-block;
+}
+.Button10_488_986 {
+  flex-flow: row;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 1.9875px;
+  width: 86.013px;
+  height: 16.5px;
+  padding-right: 0.013px;
+  display: flex;
+}
+.Paragraph_488_987 {
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 72.013px;
+  height: 16.5px;
+  display: flex;
+}
+.DetailTryout_488_988 {
+  color: #89b0c7;
+  font-family: Montserrat;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 16.5px;
+  display: inline-block;
+}
+.Icon13_488_989 {
+  flex-direction: column;
+  flex-shrink: 0;
+  align-items: flex-start;
+  width: 12px;
+  display: flex;
+}
+.Icon_488_990 {
+  width: 100%;
+  height: 12px;
+  overflow: hidden;
+}
+.Icon_488_991 {
+  flex-shrink: 0;
+  width: 3px;
+  height: 6px;
+}
+.TryoutCard5_488_993 {
+  background: #fff;
+  border-radius: 16px;
+  flex-flow: column;
+  flex-grow: 1;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 12px;
+  width: 403.925px;
+  padding: 20px;
+  display: flex;
+  box-shadow:
+    0 1px 3px #0000001a,
+    0 1px 2px -1px #0000001a;
+}
+.Container45_488_994 {
+  flex-flow: row;
+  justify-content: center;
+  align-items: flex-start;
+  gap: -0.0000305176px;
+  width: 363.925px;
+  height: 59.5px;
+  padding-right: 0;
+  display: flex;
+}
+.Container43_488_995 {
+  flex-flow: column;
+  flex-grow: 1;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 5.40002px;
+  width: 271.65px;
+  padding-right: 60.65px;
+  display: flex;
+}
+.Heading8_488_996 {
+  justify-content: center;
+  align-items: center;
+  width: 211px;
+  height: 36px;
+  display: flex;
+}
+.TryoutUtbk_2024LiterasiBahasaInggris_488_997 {
+  color: #1d293d;
+  flex-shrink: 0;
+  width: 211px;
+  font-family: Montserrat;
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 18px;
+  display: inline-block;
+}
+.Paragraph9_488_998 {
+  justify-content: center;
+  align-items: center;
+  height: 19.5px;
+  display: flex;
+}
+.SoalDurasi_40Menit_488_999 {
+  color: #62748e;
+  font-family: Montserrat;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 19.5px;
+  display: inline-block;
+}
+.Container44_488_1000 {
+  background: #dbeafe;
+  border-radius: 8px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 92.275px;
+  height: 32px;
+  padding: 8px 9.5px 7.5px 10.5px;
+  display: flex;
+}
+.Text16_488_1001 {
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 72.275px;
+  height: 16.5px;
+  display: flex;
+}
+.Berlangsung_488_1002 {
+  color: #155dfc;
+  font-family: Montserrat;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 16.5px;
+  display: inline-block;
+}
+.Container49_488_1003 {
+  flex-flow: column;
+  flex-grow: 1;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 6px;
+  width: 363.925px;
+  display: flex;
+}
+.Container46_488_1004 {
+  flex-flow: row;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 235.237px;
+  width: 363.925px;
+  height: 16.5px;
+  display: flex;
+}
+.Text17_488_1005 {
+  justify-content: center;
+  align-items: center;
+  height: 16.5px;
+  display: flex;
+}
+.Progress_15_35Soal_488_1006 {
+  color: #62748e;
+  font-family: Montserrat;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 16.5px;
+  display: inline-block;
+}
+.Text18_488_1007 {
+  justify-content: center;
+  align-items: center;
+  height: 16.5px;
+  display: flex;
+}
+.generated_43_488_1008 {
+  color: #1d293d;
+  font-family: Montserrat;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 16.5px;
+  display: inline-block;
+}
+.Container48_488_1009 {
+  background: #e5e7eb;
+  border-radius: 26843500px;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 363.925px;
+  padding-right: 207.963px;
+  display: flex;
+}
+.Container47_488_1010 {
+  background: #89b0c7;
+  border-radius: 26843500px;
+  width: 100%;
+  height: 6px;
+}
+.Container50_488_1011 {
+  flex-flow: row;
+  flex-grow: 1;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 6px;
+  height: 16.5px;
+  padding-right: 240.763px;
+  display: flex;
+}
+.Icon14_488_1012 {
+  flex-direction: column;
+  align-items: flex-start;
+  width: 14px;
+  display: flex;
+}
+.Icon_488_1013 {
+  width: 100%;
+  height: 14px;
+  overflow: hidden;
+}
+.ClipPathGroup_488_1014 {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+}
+.Text19_488_1020 {
+  justify-content: center;
+  align-items: center;
+  height: 16.5px;
+  display: flex;
+}
+.Dibuka_3Mei_2025_488_1021 {
+  color: #62748e;
+  font-family: Montserrat;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 16.5px;
+  display: inline-block;
+}
+.Container51_488_1022 {
+  flex-flow: row;
+  flex-grow: 1;
+  justify-content: center;
+  align-items: center;
+  gap: 178.188px;
+  height: 35.5px;
+  display: flex;
+}
+.Button11_488_1023 {
+  background: linear-gradient(#295782 0% 100%);
+  border-radius: 12px;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 99.725px;
+  padding: 8.6px 15.987px 0 16px;
+  display: flex;
+  box-shadow:
+    0 10px 15px -3px #0000001a,
+    0 4px 6px -4px #0000001a;
+}
+.Paragraph_488_1024 {
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  display: flex;
+}
+.Lanjutkan_488_1025 {
+  color: #fff;
+  font-family: Montserrat;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 19.5px;
+  display: inline-block;
+}
+.Button12_488_1026 {
+  flex-flow: row;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 1.9875px;
+  width: 86.013px;
+  height: 16.5px;
+  padding-right: 0.013px;
+  display: flex;
+}
+.Paragraph_488_1027 {
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 72.013px;
+  height: 16.5px;
+  display: flex;
+}
+.DetailTryout_488_1028 {
+  color: #89b0c7;
+  font-family: Montserrat;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 16.5px;
+  display: inline-block;
+}
+.Icon15_488_1029 {
+  flex-direction: column;
+  flex-shrink: 0;
+  align-items: flex-start;
+  width: 12px;
+  display: flex;
+}
+.Icon_488_1030 {
+  width: 100%;
+  height: 12px;
+  overflow: hidden;
+}
+.Icon_488_1031 {
+  flex-shrink: 0;
+  width: 3px;
+  height: 6px;
+}
+.TryoutCard6_488_1033 {
+  background: #fff;
+  border-radius: 16px;
+  flex-flow: column;
+  flex-grow: 1;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 12px;
+  width: 403.925px;
+  padding: 20px 20px 60.5px;
+  display: flex;
+  box-shadow:
+    0 1px 3px #0000001a,
+    0 1px 2px -1px #0000001a;
+}
+.Container54_488_1034 {
+  flex-flow: row;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 0;
+  width: 363.925px;
+  height: 59.5px;
+  padding-right: 0;
+  display: flex;
+}
+.Container52_488_1035 {
+  flex-flow: column;
+  flex-grow: 1;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 5.40002px;
+  width: 259.813px;
+  padding-right: 59.813px;
+  display: flex;
+}
+.Heading9_488_1036 {
+  justify-content: center;
+  align-items: center;
+  width: 200px;
+  height: 36px;
+  display: flex;
+}
+.TryoutUtbk_2024KimiaOrganik_488_1037 {
+  color: #1d293d;
+  flex-shrink: 0;
+  width: 200px;
+  font-family: Montserrat;
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 18px;
+  display: inline-block;
+}
+.Paragraph10_488_1038 {
+  justify-content: center;
+  align-items: center;
+  height: 19.5px;
+  display: flex;
+}
+.SoalDurasi_65Menit_488_1039 {
+  color: #62748e;
+  font-family: Montserrat;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 19.5px;
+  display: inline-block;
+}
+.Container53_488_1040 {
+  background: #f3f4f6;
+  border-radius: 8px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 104.113px;
+  height: 32px;
+  padding: 12px 10px 3.5px;
+  display: flex;
+}
+.Text20_488_1041 {
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 84.113px;
+  height: 16.5px;
+  display: flex;
+}
+.BelumDimulai_488_1042 {
+  color: #99a1af;
+  font-family: Montserrat;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 16.5px;
+  display: inline-block;
+}
+.Container59_488_1043 {
+  flex-flow: row;
+  flex-grow: 1;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 6px;
+  height: 16.5px;
+  padding-right: 236.75px;
+  display: flex;
+}
+.Icon16_488_1044 {
+  flex-direction: column;
+  align-items: flex-start;
+  width: 14px;
+  display: flex;
+}
+.Icon_488_1045 {
+  width: 100%;
+  height: 14px;
+  overflow: hidden;
+}
+.ClipPathGroup_488_1046 {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+}
+.Text21_488_1052 {
+  justify-content: center;
+  align-items: center;
+  height: 16.5px;
+  display: flex;
+}
+.Dibuka_12Mei_2025_488_1053 {
+  color: #62748e;
+  font-family: Montserrat;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 16.5px;
+  display: inline-block;
+}
+.Container60_488_1054 {
+  flex-flow: row;
+  flex-grow: 1;
+  justify-content: center;
+  align-items: center;
+  gap: 209.238px;
+  height: 35.5px;
+  padding-right: 0;
+  display: flex;
+}
+.Button13_488_1055 {
+  background: linear-gradient(#89b0c7 0%, #89b1c7 100%);
+  border-radius: 12px;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 68.675px;
+  padding: 8.6px 16px 0;
+  display: flex;
+  box-shadow:
+    0 10px 15px -3px #0000001a,
+    0 4px 6px -4px #0000001a;
+}
+.Paragraph_488_1056 {
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  display: flex;
+}
+.Mulai_488_1057 {
+  color: #fff;
+  font-family: Montserrat;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 19.5px;
+  display: inline-block;
+}
+.Button14_488_1058 {
+  flex-flow: row;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 1.9875px;
+  width: 86.013px;
+  height: 16.5px;
+  padding-right: 0.013px;
+  display: flex;
+}
+.Paragraph_488_1059 {
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 72.013px;
+  height: 16.5px;
+  display: flex;
+}
+.DetailTryout_488_1060 {
+  color: #89b0c7;
+  font-family: Montserrat;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 16.5px;
+  display: inline-block;
+}
+.Icon17_488_1061 {
+  flex-direction: column;
+  flex-shrink: 0;
+  align-items: flex-start;
+  width: 12px;
+  display: flex;
+}
+.Icon_488_1062 {
+  width: 100%;
+  height: 12px;
+  overflow: hidden;
+}
+.Icon_488_1063 {
+  flex-shrink: 0;
+  width: 3px;
+  height: 6px;
+}
+.TryoutCard7_488_1065 {
+  background: #fff;
+  border-radius: 16px;
+  flex-flow: column;
+  flex-grow: 1;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 12px;
+  width: 403.938px;
+  padding: 20px;
+  display: flex;
+  box-shadow:
+    0 1px 3px #0000001a,
+    0 1px 2px -1px #0000001a;
+}
+.Container63_488_1066 {
+  flex-flow: row;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 0;
+  width: 363.938px;
+  height: 59.5px;
+  display: flex;
+}
+.Container61_488_1067 {
+  flex-flow: column;
+  flex-grow: 1;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 5.40002px;
+  width: 271.663px;
+  padding-right: 47.663px;
+  display: flex;
+}
+.Heading10_488_1068 {
+  justify-content: center;
+  align-items: center;
+  width: 224px;
+  height: 36px;
+  display: flex;
+}
+.TryoutUtbk_2024EkonomiMikro_488_1069 {
+  color: #1d293d;
+  flex-shrink: 0;
+  width: 224px;
+  font-family: Montserrat;
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 18px;
+  display: inline-block;
+}
+.Paragraph11_488_1070 {
+  justify-content: center;
+  align-items: center;
+  height: 19.5px;
+  display: flex;
+}
+.SoalDurasi_50Menit_488_1071 {
+  color: #62748e;
+  font-family: Montserrat;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 19.5px;
+  display: inline-block;
+}
+.Container62_488_1072 {
+  background: #dbeafe;
+  border-radius: 8px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 92.275px;
+  height: 32px;
+  padding: 12px 10px 3.5px;
+  display: flex;
+}
+.Text22_488_1073 {
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 72.275px;
+  height: 16.5px;
+  display: flex;
+}
+.Berlangsung_488_1074 {
+  color: #155dfc;
+  font-family: Montserrat;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 16.5px;
+  display: inline-block;
+}
+.Container67_488_1075 {
+  flex-flow: column;
+  flex-grow: 1;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 6px;
+  width: 363.938px;
+  display: flex;
+}
+.Container64_488_1076 {
+  flex-flow: row;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 232.45px;
+  width: 363.938px;
+  height: 16.5px;
+  display: flex;
+}
+.Text23_488_1077 {
+  justify-content: center;
+  align-items: center;
+  height: 16.5px;
+  display: flex;
+}
+.Progress_28_45Soal_488_1078 {
+  color: #62748e;
+  font-family: Montserrat;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 16.5px;
+  display: inline-block;
+}
+.Text24_488_1079 {
+  justify-content: center;
+  align-items: center;
+  height: 16.5px;
+  display: flex;
+}
+.generated_62_488_1080 {
+  color: #1d293d;
+  font-family: Montserrat;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 16.5px;
+  display: inline-block;
+}
+.Container66_488_1081 {
+  background: #e5e7eb;
+  border-radius: 26843500px;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 363.938px;
+  padding-right: 137.488px;
+  display: flex;
+}
+.Container65_488_1082 {
+  background: #89b0c7;
+  border-radius: 26843500px;
+  width: 100%;
+  height: 6px;
+}
+.Container68_488_1083 {
+  flex-flow: row;
+  flex-grow: 1;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 6px;
+  height: 16.5px;
+  padding-right: 240.5px;
+  display: flex;
+}
+.Icon18_488_1084 {
+  flex-direction: column;
+  align-items: flex-start;
+  width: 14px;
+  display: flex;
+}
+.Icon_488_1085 {
+  width: 100%;
+  height: 14px;
+  overflow: hidden;
+}
+.ClipPathGroup_488_1086 {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+}
+.Text25_488_1092 {
+  justify-content: center;
+  align-items: center;
+  height: 16.5px;
+  display: flex;
+}
+.Dibuka_7Mei_2025_488_1093 {
+  color: #62748e;
+  font-family: Montserrat;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 16.5px;
+  display: inline-block;
+}
+.Container69_488_1094 {
+  flex-flow: row;
+  flex-grow: 1;
+  justify-content: center;
+  align-items: center;
+  gap: 178.2px;
+  height: 35.5px;
+  display: flex;
+}
+.Button15_488_1095 {
+  background: linear-gradient(#89b0c7 0%, #89b1c7 100%);
+  border-radius: 12px;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 99.725px;
+  padding: 8.6px 15.987px 0 16px;
+  display: flex;
+  box-shadow:
+    0 10px 15px -3px #0000001a,
+    0 4px 6px -4px #0000001a;
+}
+.Paragraph_488_1096 {
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  display: flex;
+}
+.Lanjutkan_488_1097 {
+  color: #fff;
+  font-family: Montserrat;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 19.5px;
+  display: inline-block;
+}
+.Button16_488_1098 {
+  flex-flow: row;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 1.9875px;
+  width: 86.013px;
+  height: 16.5px;
+  padding-right: 0.013px;
+  display: flex;
+}
+.Paragraph_488_1099 {
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 72.013px;
+  height: 16.5px;
+  display: flex;
+}
+.DetailTryout_488_1100 {
+  color: #89b0c7;
+  font-family: Montserrat;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 16.5px;
+  display: inline-block;
+}
+.Icon19_488_1101 {
+  flex-direction: column;
+  flex-shrink: 0;
+  align-items: flex-start;
+  width: 12px;
+  display: flex;
+}
+.Icon_488_1102 {
+  width: 100%;
+  height: 12px;
+  overflow: hidden;
+}
+.Icon_488_1103 {
+  flex-shrink: 0;
+  width: 3px;
+  height: 6px;
+}
+.Pagination_488_1105 {
+  flex-flow: row;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 7.99998px;
+  width: 268.238px;
+  height: 38.6px;
+  padding-right: 0.013px;
+  display: flex;
+}
+.Button17_488_1106 {
+  opacity: 0.5;
+  background: #fff;
+  border-radius: 8px;
+  flex-flow: row;
+  flex-shrink: 0;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 0;
+  width: 106.55px;
+  height: 38.6px;
+  display: flex;
+}
+.Container_488_1107 {
+  box-sizing: border-box;
+  border: 0.8px solid #e5e7eb;
+  border-radius: 8px;
+  flex-shrink: 0;
+  width: 106.55px;
+  height: 38.6px;
+}
+.Container_488_1108 {
+  flex-flow: row;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  width: 106.55px;
+  padding: 8.4px 12.788px 9.2px 12.8px;
+  display: flex;
+}
+.Icon20_488_1109 {
+  flex-direction: column;
+  flex-shrink: 0;
+  align-items: flex-start;
+  width: 16px;
+  display: flex;
+}
+.Icon_488_1110 {
+  width: 100%;
+  height: 16px;
+  overflow: hidden;
+}
+.Icon_488_1111 {
+  flex-shrink: 0;
+  width: 4px;
+  height: 8px;
+}
+.Paragraph_488_1113 {
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 60.963px;
+  height: 21px;
+  display: flex;
+}
+.Previous_488_1114 {
+  color: #62748e;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 21px;
+  display: inline-block;
+}
+.Container71_488_1115 {
+  flex-flow: row;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 4px;
+  width: 66.825px;
+  height: 38.6px;
+  padding-right: 0;
+  display: flex;
+}
+.Button18_488_1116 {
+  background: #89b0c7;
+  border-radius: 8px;
+  flex-direction: column;
+  flex-shrink: 0;
+  align-items: flex-start;
+  width: 29.188px;
+  height: 37px;
+  padding: 7.6px 12px 0;
+  display: flex;
+}
+.Paragraph_488_1117 {
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  display: flex;
+}
+.generated_1_488_1118 {
+  color: #fff;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 21px;
+  display: inline-block;
+}
+.Button19_488_1119 {
+  background: #fff;
+  border-radius: 8px;
+  flex-flow: row;
+  flex-shrink: 0;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 0;
+  width: 33.638px;
+  height: 38.6px;
+  display: flex;
+}
+.Container_488_1120 {
+  box-sizing: border-box;
+  border: 0.8px solid #e5e7eb;
+  border-radius: 8px;
+  flex-shrink: 0;
+  width: 33.638px;
+  height: 38.6px;
+}
+.Container_488_1121 {
+  flex-direction: column;
+  flex-shrink: 0;
+  align-items: flex-start;
+  width: 33.638px;
+  height: 38.6px;
+  padding: 8.4px 12.8px 0;
+  display: flex;
+}
+.Paragraph_488_1122 {
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  display: flex;
+}
+.generated_2_488_1123 {
+  color: #62748e;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 21px;
+  display: inline-block;
+}
+.Button20_488_1124 {
+  background: #fff;
+  border-radius: 8px;
+  flex-flow: row;
+  flex-grow: 1;
+  flex-shrink: 0;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 0;
+  width: 78.85px;
+  height: 38.6px;
+  display: flex;
+}
+.Container_488_1125 {
+  box-sizing: border-box;
+  border: 0.8px solid #e5e7eb;
+  border-radius: 8px;
+  flex-shrink: 0;
+  width: 78.85px;
+  height: 38.6px;
+}
+.Container_488_1126 {
+  flex-flow: row;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  width: 78.85px;
+  padding: 8.4px 12.8px 9.2px;
+  display: flex;
+}
+.Paragraph_488_1127 {
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 33.25px;
+  height: 21px;
+  display: flex;
+}
+.Next_488_1128 {
+  color: #62748e;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 21px;
+  display: inline-block;
+}
+.Icon21_488_1129 {
+  flex-direction: column;
+  flex-shrink: 0;
+  align-items: flex-start;
+  width: 16px;
+  display: flex;
+}
+.Icon_488_1130 {
+  width: 100%;
+  height: 16px;
+  overflow: hidden;
+}
+.Icon_488_1131 {
+  flex-shrink: 0;
+  width: 4px;
+  height: 8px;
+}
+.Container_516_417 {
+  flex-shrink: 0;
+  width: 351px;
+  height: 56px;
+}
+.Heading2_516_418 {
+  justify-content: center;
+  align-items: center;
+  display: inline-flex;
+}
+.SemuaTryout_516_419 {
+  color: #1d293d;
+  text-align: center;
+  font-family: Montserrat;
+  font-size: 28px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 32px;
+  display: inline-block;
+}
+.Paragraph3_516_420 {
+  justify-content: center;
+  align-items: center;
+  padding-right: 0.075px;
+  display: inline-flex;
+}
+.PilihTryoutUntukMulaiLatihanAtauLanjutkan_516_421 {
+  color: #62748e;
+  font-family: Montserrat;
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 20px;
+  display: inline-block;
+}
+
+```
+
+---
+
+```src/components/App.tsx
+import React from 'react';
+import styles from '../styles/App.module.css';
+
+
+export default function App() {
+  return (
+    <div className={styles.App_459_1877}>
+      <div className={styles.Header_495_55}>
+        <div className={styles.Container3_495_56}>
+          <div className={styles.Container2_495_57}>
+            <div className={styles.Container_495_58}>
+              <div className={styles.Container_495_59}>
+                <div className={styles.Container_495_60}></div>
+                <div className={styles.Image_495_61}></div>
+              </div>
+            </div>
+            <div className={styles.Container1_495_62}>
+              <div className={styles.Heading1_495_63}><span className={styles.KelasKampus_495_64}>Kelas Kampus</span></div>
+              <div className={styles.Paragraph_495_65}><span className={styles.TryoutIndonesia_495_66}>Tryout Indonesia</span></div>
+            </div>
+          </div>
+        </div>
+        <div className={styles.Container_495_67}></div>
+        <div className={styles.Button_495_68}>
+          <div className={styles.ProfileInitials_495_69}>
+            <div className={styles.Paragraph_495_70}><span className={styles.Ja_495_71}>JA</span></div>
+          </div>
+          <div className={styles.ProfileText_495_72}>
+            <div className={styles.Paragraph_495_73}><span className={styles.JakkHere_495_74}>Jakk Here</span></div>
+            <div className={styles.Icon_495_75}><svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 4.5L6 7.5L9 4.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className={styles.Container72_488_774}>
+        <div className={styles.FilterBar_488_780}>
+          <div className={styles.Container13_488_781}>
+            <div className={styles.Container8_488_782}>
+              <div className={styles.Label_488_783}><span className={styles.Kategori_488_784}>Kategori</span></div>
+              <div className={styles.PrimitiveButton_488_785}>
+                <div className={styles.PrimitiveSpan_488_786}><span className={styles.PilihKategori_488_787}>Pilih kategori</span></div>
+                <div className={styles.Icon_488_788}>
+                  <div className={styles.Icon_488_789}>
+                    <div className={styles.Icon_488_790}><svg width="8" height="4" viewBox="0 0 8 4" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <g opacity="0.5">
+                          <path d="M0 0L4 4L7.99999 0" stroke="#717182" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round" />
+                        </g>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className={styles.Container9_488_792}>
+              <div className={styles.Label1_488_793}><span className={styles.Jadwal_488_794}>Jadwal</span></div>
+              <div className={styles.PrimitiveButton1_488_795}>
+                <div className={styles.PrimitiveSpan1_488_796}><span className={styles.PilihJadwal_488_797}>Pilih jadwal</span></div>
+                <div className={styles.Icon1_488_798}>
+                  <div className={styles.Icon_488_799}>
+                    <div className={styles.Icon_488_800}><svg width="8" height="4" viewBox="0 0 8 4" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <g opacity="0.5">
+                          <path d="M0 0L4 4L8 0" stroke="#717182" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round" />
+                        </g>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className={styles.Container10_488_802}>
+              <div className={styles.Label2_488_803}><span className={styles.Status_488_804}>Status</span></div>
+              <div className={styles.PrimitiveButton2_488_805}>
+                <div className={styles.PrimitiveSpan2_488_806}><span className={styles.PilihStatus_488_807}>Pilih status</span></div>
+                <div className={styles.Icon2_488_808}>
+                  <div className={styles.Icon_488_809}>
+                    <div className={styles.Icon_488_810}><svg width="8" height="4" viewBox="0 0 8 4" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <g opacity="0.5">
+                          <path d="M0 0L4 4L8 0" stroke="#717182" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round" />
+                        </g>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className={styles.Container12_488_812}>
+              <div className={styles.Label3_488_813}><span className={styles.CariTryout_488_814}>Cari Tryout</span></div>
+              <div className={styles.Container11_488_815}>
+                <div className={styles.TextInput_488_816}>
+                  <div className={styles.Paragraph_488_817}><span className={styles.CariTryout_488_818}>Cari Tryout...</span></div>
+                </div>
+                <div className={styles.Icon3_488_819}>
+                  <div className={styles.Icon_488_820}>
+                    <div className={styles.Icon_488_821}><svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M11.9998 12L9.10645 9.10669" stroke="#62748E" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M5.33333 10.6667C8.2789 10.6667 10.6667 8.2789 10.6667 5.33333C10.6667 2.38781 8.2789 0 5.33333 0C2.38781 0 0 2.38781 0 5.33333C0 8.2789 2.38781 10.6667 5.33333 10.6667Z" stroke="#62748E" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className={styles.Container70_488_824}>
+          <div className={styles.TryoutCard_488_825}>
+            <div className={styles.Container16_488_826}>
+              <div className={styles.Container14_488_827}>
+                <div className={styles.Heading3_488_828}><span className={styles.TryoutUtbk_2024TesPotensiSkolastik_488_829}>Tryout UTBK 2024 &#x2013; Tes Potensi Skolastik</span></div>
+                <div className={styles.Paragraph4_488_830}><span className={styles.SoalDurasi_60Menit_488_831}>50 Soal &#x2013; Durasi 60 menit</span></div>
+              </div>
+              <div className={styles.Container15_488_832}>
+                <div className={styles.Text_488_833}><span className={styles.Selesai_488_834}>Selesai</span></div>
+              </div>
+            </div>
+            <div className={styles.Container17_488_835}>
+              <div className={styles.Icon4_488_836}>
+                <div className={styles.Icon_488_837}>
+                  <div className={styles.ClipPathGroup_488_838}><svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <mask id="mask0_488_838" style={{"maskType":"luminance"}} maskUnits="userSpaceOnUse" x="0" y="0" width="14" height="14">
+                        <path d="M14 0H0V14H14V0Z" fill="white" />
+                      </mask>
+                      <g mask="url(#mask0_488_838)">
+                        <path d="M7 3.5V7L9.33333 8.16667" stroke="#62748E" strokeWidth="1.16667" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M7.00008 12.8334C10.2218 12.8334 12.8334 10.2218 12.8334 7.00008C12.8334 3.77842 10.2218 1.16675 7.00008 1.16675C3.77842 1.16675 1.16675 3.77842 1.16675 7.00008C1.16675 10.2218 3.77842 12.8334 7.00008 12.8334Z" stroke="#62748E" strokeWidth="1.16667" strokeLinecap="round" strokeLinejoin="round" />
+                      </g>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              <div className={styles.Text1_488_844}><span className={styles.Dibuka_2Mei_2025_488_845}>Dibuka: 2 Mei 2025</span></div>
+            </div>
+            <div className={styles.Container18_488_846}>
+              <div className={styles.Button1_488_847}>
+                <div className={styles.Paragraph_488_848}><span className={styles.ReviewHasil_488_849}>Review Hasil</span></div>
+              </div>
+              <div className={styles.Button2_488_850}>
+                <div className={styles.Paragraph_488_851}><span className={styles.DetailTryout_488_852}>Detail Tryout</span></div>
+                <div className={styles.Icon5_488_853}>
+                  <div className={styles.Icon_488_854}>
+                    <div className={styles.Icon_488_855}><svg width="3" height="6" viewBox="0 0 3 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M0 6L3 3L0 0" stroke="#89B0C7" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className={styles.TryoutCard1_488_857}>
+            <div className={styles.Container21_488_858}>
+              <div className={styles.Container19_488_859}>
+                <div className={styles.Heading4_488_860}><span className={styles.TryoutUtbk_2024LiterasiBahasaIndonesia_488_861}>Tryout UTBK 2024 &#x2013; Literasi Bahasa Indonesia</span></div>
+                <div className={styles.Paragraph5_488_862}><span className={styles.SoalDurasi_45Menit_488_863}>40 Soal &#x2013; Durasi 45 menit</span></div>
+              </div>
+              <div className={styles.Container20_488_864}>
+                <div className={styles.Text2_488_865}><span className={styles.Berlangsung_488_866}>Berlangsung</span></div>
+              </div>
+            </div>
+            <div className={styles.Container25_488_867}>
+              <div className={styles.Container22_488_868}>
+                <div className={styles.Text3_488_869}><span className={styles.Progress_24_40Soal_488_870}>Progress: 24/40 Soal</span></div>
+                <div className={styles.Text4_488_871}><span className={styles.generated_60_488_872}>60%</span></div>
+              </div>
+              <div className={styles.Container24_488_873}>
+                <div className={styles.Container23_488_874}></div>
+              </div>
+            </div>
+            <div className={styles.Container26_488_875}>
+              <div className={styles.Icon6_488_876}>
+                <div className={styles.Icon_488_877}>
+                  <div className={styles.ClipPathGroup_488_878}><svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <mask id="mask0_488_878" style={{"maskType":"luminance"}} maskUnits="userSpaceOnUse" x="0" y="0" width="14" height="14">
+                        <path d="M14 0H0V14H14V0Z" fill="white" />
+                      </mask>
+                      <g mask="url(#mask0_488_878)">
+                        <path d="M7 3.5V7L9.33333 8.16667" stroke="#62748E" strokeWidth="1.16667" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M6.99983 12.8334C10.2215 12.8334 12.8331 10.2218 12.8331 7.00008C12.8331 3.77842 10.2215 1.16675 6.99983 1.16675C3.77817 1.16675 1.1665 3.77842 1.1665 7.00008C1.1665 10.2218 3.77817 12.8334 6.99983 12.8334Z" stroke="#62748E" strokeWidth="1.16667" strokeLinecap="round" strokeLinejoin="round" />
+                      </g>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              <div className={styles.Text5_488_884}><span className={styles.Dibuka_5Mei_2025_488_885}>Dibuka: 5 Mei 2025</span></div>
+            </div>
+            <div className={styles.Container27_488_886}>
+              <div className={styles.Button3_488_887}>
+                <div className={styles.Paragraph_488_888}><span className={styles.Lanjutkan_488_889}>Lanjutkan</span></div>
+              </div>
+              <div className={styles.Button4_488_890}>
+                <div className={styles.Paragraph_488_891}><span className={styles.DetailTryout_488_892}>Detail Tryout</span></div>
+                <div className={styles.Icon7_488_893}>
+                  <div className={styles.Icon_488_894}>
+                    <div className={styles.Icon_488_895}><svg width="3" height="6" viewBox="0 0 3 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M0 6L3 3L0 0" stroke="#89B0C7" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className={styles.TryoutCard2_488_897}>
+            <div className={styles.Container30_488_898}>
+              <div className={styles.Container28_488_899}>
+                <div className={styles.Heading5_488_900}><span className={styles.TryoutUtbk_2024MatematikaDasar_488_901}>Tryout UTBK 2024 &#x2013; Matematika Dasar</span></div>
+                <div className={styles.Paragraph6_488_902}><span className={styles.SoalDurasi_50Menit_488_903}>35 Soal &#x2013; Durasi 50 menit</span></div>
+              </div>
+              <div className={styles.Container29_488_904}>
+                <div className={styles.Text6_488_905}><span className={styles.BelumDimulai_488_906}>Belum Dimulai</span></div>
+              </div>
+            </div>
+            <div className={styles.Container31_488_907}>
+              <div className={styles.Icon8_488_908}>
+                <div className={styles.Icon_488_909}>
+                  <div className={styles.ClipPathGroup_488_910}><svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <mask id="mask0_488_910" style={{"maskType":"luminance"}} maskUnits="userSpaceOnUse" x="0" y="0" width="14" height="14">
+                        <path d="M14 0H0V14H14V0Z" fill="white" />
+                      </mask>
+                      <g mask="url(#mask0_488_910)">
+                        <path d="M7 3.5V7L9.33333 8.16667" stroke="#62748E" strokeWidth="1.16667" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M6.99983 12.8334C10.2215 12.8334 12.8331 10.2218 12.8331 7.00008C12.8331 3.77842 10.2215 1.16675 6.99983 1.16675C3.77817 1.16675 1.1665 3.77842 1.1665 7.00008C1.1665 10.2218 3.77817 12.8334 6.99983 12.8334Z" stroke="#62748E" strokeWidth="1.16667" strokeLinecap="round" strokeLinejoin="round" />
+                      </g>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              <div className={styles.Text7_488_916}><span className={styles.Dibuka_8Mei_2025_488_917}>Dibuka: 8 Mei 2025</span></div>
+            </div>
+            <div className={styles.Container32_488_918}>
+              <div className={styles.Button5_488_919}>
+                <div className={styles.Paragraph_488_920}><span className={styles.Mulai_488_921}>Mulai</span></div>
+              </div>
+              <div className={styles.Button6_488_922}>
+                <div className={styles.Paragraph_488_923}><span className={styles.DetailTryout_488_924}>Detail Tryout</span></div>
+                <div className={styles.Icon9_488_925}>
+                  <div className={styles.Icon_488_926}>
+                    <div className={styles.Icon_488_927}><svg width="3" height="6" viewBox="0 0 3 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M0 6L3 3L0 0" stroke="#89B0C7" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className={styles.TryoutCard3_488_929}>
+            <div className={styles.Container35_488_930}>
+              <div className={styles.Container33_488_931}>
+                <div className={styles.Heading6_488_932}><span className={styles.TryoutUtbk_2024SaintekFisika_488_933}>Tryout UTBK 2024 &#x2013; Saintek Fisika</span></div>
+                <div className={styles.Paragraph7_488_934}><span className={styles.SoalDurasi_55Menit_488_935}>45 Soal &#x2013; Durasi 55 menit</span></div>
+              </div>
+              <div className={styles.Container34_488_936}>
+                <div className={styles.Text8_488_937}><span className={styles.BelumDimulai_488_938}>Belum Dimulai</span></div>
+              </div>
+            </div>
+            <div className={styles.Container36_488_939}>
+              <div className={styles.Icon10_488_940}>
+                <div className={styles.Icon_488_941}>
+                  <div className={styles.ClipPathGroup_488_942}><svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <mask id="mask0_488_942" style={{"maskType":"luminance"}} maskUnits="userSpaceOnUse" x="0" y="0" width="14" height="14">
+                        <path d="M14 0H0V14H14V0Z" fill="white" />
+                      </mask>
+                      <g mask="url(#mask0_488_942)">
+                        <path d="M7 3.5V7L9.33333 8.16667" stroke="#62748E" strokeWidth="1.16667" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M7.00008 12.8334C10.2218 12.8334 12.8334 10.2218 12.8334 7.00008C12.8334 3.77842 10.2218 1.16675 7.00008 1.16675C3.77842 1.16675 1.16675 3.77842 1.16675 7.00008C1.16675 10.2218 3.77842 12.8334 7.00008 12.8334Z" stroke="#62748E" strokeWidth="1.16667" strokeLinecap="round" strokeLinejoin="round" />
+                      </g>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              <div className={styles.Text9_488_948}><span className={styles.Dibuka_10Mei_2025_488_949}>Dibuka: 10 Mei 2025</span></div>
+            </div>
+            <div className={styles.Container37_488_950}>
+              <div className={styles.Button7_488_951}>
+                <div className={styles.Paragraph_488_952}><span className={styles.Mulai_488_953}>Mulai</span></div>
+              </div>
+              <div className={styles.Button8_488_954}>
+                <div className={styles.Paragraph_488_955}><span className={styles.DetailTryout_488_956}>Detail Tryout</span></div>
+                <div className={styles.Icon11_488_957}>
+                  <div className={styles.Icon_488_958}>
+                    <div className={styles.Icon_488_959}><svg width="3" height="6" viewBox="0 0 3 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M0 6L3 3L0 0" stroke="#89B0C7" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className={styles.TryoutCard4_488_961}>
+            <div className={styles.Container40_488_962}>
+              <div className={styles.Container38_488_963}>
+                <div className={styles.Heading7_488_964}><span className={styles.TryoutUtbk_2024SoshumSejarah_488_965}>Tryout UTBK 2024 &#x2013; Soshum Sejarah</span></div>
+                <div className={styles.Paragraph8_488_966}><span className={styles.SoalDurasi_45Menit_488_967}>40 Soal &#x2013; Durasi 45 menit</span></div>
+              </div>
+              <div className={styles.Container39_488_968}>
+                <div className={styles.Text10_488_969}><span className={styles.Selesai_488_970}>Selesai</span></div>
+              </div>
+            </div>
+            <div className={styles.Container41_488_971}>
+              <div className={styles.Icon12_488_972}>
+                <div className={styles.Icon_488_973}>
+                  <div className={styles.ClipPathGroup_488_974}><svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <mask id="mask0_488_974" style={{"maskType":"luminance"}} maskUnits="userSpaceOnUse" x="0" y="0" width="14" height="14">
+                        <path d="M14 0H0V14H14V0Z" fill="white" />
+                      </mask>
+                      <g mask="url(#mask0_488_974)">
+                        <path d="M7 3.5V7L9.33333 8.16667" stroke="#62748E" strokeWidth="1.16667" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M6.99983 12.8334C10.2215 12.8334 12.8331 10.2218 12.8331 7.00008C12.8331 3.77842 10.2215 1.16675 6.99983 1.16675C3.77817 1.16675 1.1665 3.77842 1.1665 7.00008C1.1665 10.2218 3.77817 12.8334 6.99983 12.8334Z" stroke="#62748E" strokeWidth="1.16667" strokeLinecap="round" strokeLinejoin="round" />
+                      </g>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              <div className={styles.Text11_488_980}><span className={styles.Dibuka_1Mei_2025_488_981}>Dibuka: 1 Mei 2025</span></div>
+            </div>
+            <div className={styles.Container42_488_982}>
+              <div className={styles.Button9_488_983}>
+                <div className={styles.Paragraph_488_984}><span className={styles.ReviewHasil_488_985}>Review Hasil</span></div>
+              </div>
+              <div className={styles.Button10_488_986}>
+                <div className={styles.Paragraph_488_987}><span className={styles.DetailTryout_488_988}>Detail Tryout</span></div>
+                <div className={styles.Icon13_488_989}>
+                  <div className={styles.Icon_488_990}>
+                    <div className={styles.Icon_488_991}><svg width="3" height="6" viewBox="0 0 3 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M0 6L3 3L0 0" stroke="#89B0C7" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className={styles.TryoutCard5_488_993}>
+            <div className={styles.Container45_488_994}>
+              <div className={styles.Container43_488_995}>
+                <div className={styles.Heading8_488_996}><span className={styles.TryoutUtbk_2024LiterasiBahasaInggris_488_997}>Tryout UTBK 2024 &#x2013; Literasi Bahasa Inggris</span></div>
+                <div className={styles.Paragraph9_488_998}><span className={styles.SoalDurasi_40Menit_488_999}>35 Soal &#x2013; Durasi 40 menit</span></div>
+              </div>
+              <div className={styles.Container44_488_1000}>
+                <div className={styles.Text16_488_1001}><span className={styles.Berlangsung_488_1002}>Berlangsung</span></div>
+              </div>
+            </div>
+            <div className={styles.Container49_488_1003}>
+              <div className={styles.Container46_488_1004}>
+                <div className={styles.Text17_488_1005}><span className={styles.Progress_15_35Soal_488_1006}>Progress: 15/35 Soal</span></div>
+                <div className={styles.Text18_488_1007}><span className={styles.generated_43_488_1008}>43%</span></div>
+              </div>
+              <div className={styles.Container48_488_1009}>
+                <div className={styles.Container47_488_1010}></div>
+              </div>
+            </div>
+            <div className={styles.Container50_488_1011}>
+              <div className={styles.Icon14_488_1012}>
+                <div className={styles.Icon_488_1013}>
+                  <div className={styles.ClipPathGroup_488_1014}><svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <mask id="mask0_488_1014" style={{"maskType":"luminance"}} maskUnits="userSpaceOnUse" x="0" y="0" width="14" height="14">
+                        <path d="M14 0H0V14H14V0Z" fill="white" />
+                      </mask>
+                      <g mask="url(#mask0_488_1014)">
+                        <path d="M7 3.5V7L9.33333 8.16667" stroke="#62748E" strokeWidth="1.16667" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M6.99983 12.8334C10.2215 12.8334 12.8331 10.2218 12.8331 7.00008C12.8331 3.77842 10.2215 1.16675 6.99983 1.16675C3.77817 1.16675 1.1665 3.77842 1.1665 7.00008C1.1665 10.2218 3.77817 12.8334 6.99983 12.8334Z" stroke="#62748E" strokeWidth="1.16667" strokeLinecap="round" strokeLinejoin="round" />
+                      </g>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              <div className={styles.Text19_488_1020}><span className={styles.Dibuka_3Mei_2025_488_1021}>Dibuka: 3 Mei 2025</span></div>
+            </div>
+            <div className={styles.Container51_488_1022}>
+              <div className={styles.Button11_488_1023}>
+                <div className={styles.Paragraph_488_1024}><span className={styles.Lanjutkan_488_1025}>Lanjutkan</span></div>
+              </div>
+              <div className={styles.Button12_488_1026}>
+                <div className={styles.Paragraph_488_1027}><span className={styles.DetailTryout_488_1028}>Detail Tryout</span></div>
+                <div className={styles.Icon15_488_1029}>
+                  <div className={styles.Icon_488_1030}>
+                    <div className={styles.Icon_488_1031}><svg width="3" height="6" viewBox="0 0 3 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M0 6L3 3L0 0" stroke="#89B0C7" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className={styles.TryoutCard6_488_1033}>
+            <div className={styles.Container54_488_1034}>
+              <div className={styles.Container52_488_1035}>
+                <div className={styles.Heading9_488_1036}><span className={styles.TryoutUtbk_2024KimiaOrganik_488_1037}>Tryout UTBK 2024 &#x2013; Kimia Organik</span></div>
+                <div className={styles.Paragraph10_488_1038}><span className={styles.SoalDurasi_65Menit_488_1039}>50 Soal &#x2013; Durasi 65 menit</span></div>
+              </div>
+              <div className={styles.Container53_488_1040}>
+                <div className={styles.Text20_488_1041}><span className={styles.BelumDimulai_488_1042}>Belum Dimulai</span></div>
+              </div>
+            </div>
+            <div className={styles.Container59_488_1043}>
+              <div className={styles.Icon16_488_1044}>
+                <div className={styles.Icon_488_1045}>
+                  <div className={styles.ClipPathGroup_488_1046}><svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <mask id="mask0_488_1046" style={{"maskType":"luminance"}} maskUnits="userSpaceOnUse" x="0" y="0" width="14" height="14">
+                        <path d="M14 0H0V14H14V0Z" fill="white" />
+                      </mask>
+                      <g mask="url(#mask0_488_1046)">
+                        <path d="M7 3.5V7L9.33333 8.16667" stroke="#62748E" strokeWidth="1.16667" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M7.00008 12.8334C10.2218 12.8334 12.8334 10.2218 12.8334 7.00008C12.8334 3.77842 10.2218 1.16675 7.00008 1.16675C3.77842 1.16675 1.16675 3.77842 1.16675 7.00008C1.16675 10.2218 3.77842 12.8334 7.00008 12.8334Z" stroke="#62748E" strokeWidth="1.16667" strokeLinecap="round" strokeLinejoin="round" />
+                      </g>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              <div className={styles.Text21_488_1052}><span className={styles.Dibuka_12Mei_2025_488_1053}>Dibuka: 12 Mei 2025</span></div>
+            </div>
+            <div className={styles.Container60_488_1054}>
+              <div className={styles.Button13_488_1055}>
+                <div className={styles.Paragraph_488_1056}><span className={styles.Mulai_488_1057}>Mulai</span></div>
+              </div>
+              <div className={styles.Button14_488_1058}>
+                <div className={styles.Paragraph_488_1059}><span className={styles.DetailTryout_488_1060}>Detail Tryout</span></div>
+                <div className={styles.Icon17_488_1061}>
+                  <div className={styles.Icon_488_1062}>
+                    <div className={styles.Icon_488_1063}><svg width="3" height="6" viewBox="0 0 3 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M0 6L3 3L0 0" stroke="#89B0C7" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className={styles.TryoutCard7_488_1065}>
+            <div className={styles.Container63_488_1066}>
+              <div className={styles.Container61_488_1067}>
+                <div className={styles.Heading10_488_1068}><span className={styles.TryoutUtbk_2024EkonomiMikro_488_1069}>Tryout UTBK 2024 &#x2013; Ekonomi Mikro</span></div>
+                <div className={styles.Paragraph11_488_1070}><span className={styles.SoalDurasi_50Menit_488_1071}>45 Soal &#x2013; Durasi 50 menit</span></div>
+              </div>
+              <div className={styles.Container62_488_1072}>
+                <div className={styles.Text22_488_1073}><span className={styles.Berlangsung_488_1074}>Berlangsung</span></div>
+              </div>
+            </div>
+            <div className={styles.Container67_488_1075}>
+              <div className={styles.Container64_488_1076}>
+                <div className={styles.Text23_488_1077}><span className={styles.Progress_28_45Soal_488_1078}>Progress: 28/45 Soal</span></div>
+                <div className={styles.Text24_488_1079}><span className={styles.generated_62_488_1080}>62%</span></div>
+              </div>
+              <div className={styles.Container66_488_1081}>
+                <div className={styles.Container65_488_1082}></div>
+              </div>
+            </div>
+            <div className={styles.Container68_488_1083}>
+              <div className={styles.Icon18_488_1084}>
+                <div className={styles.Icon_488_1085}>
+                  <div className={styles.ClipPathGroup_488_1086}><svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <mask id="mask0_488_1086" style={{"maskType":"luminance"}} maskUnits="userSpaceOnUse" x="0" y="0" width="14" height="14">
+                        <path d="M14 0H0V14H14V0Z" fill="white" />
+                      </mask>
+                      <g mask="url(#mask0_488_1086)">
+                        <path d="M7 3.5V7L9.33333 8.16667" stroke="#62748E" strokeWidth="1.16667" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M6.99983 12.8334C10.2215 12.8334 12.8331 10.2218 12.8331 7.00008C12.8331 3.77842 10.2215 1.16675 6.99983 1.16675C3.77817 1.16675 1.1665 3.77842 1.1665 7.00008C1.1665 10.2218 3.77817 12.8334 6.99983 12.8334Z" stroke="#62748E" strokeWidth="1.16667" strokeLinecap="round" strokeLinejoin="round" />
+                      </g>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              <div className={styles.Text25_488_1092}><span className={styles.Dibuka_7Mei_2025_488_1093}>Dibuka: 7 Mei 2025</span></div>
+            </div>
+            <div className={styles.Container69_488_1094}>
+              <div className={styles.Button15_488_1095}>
+                <div className={styles.Paragraph_488_1096}><span className={styles.Lanjutkan_488_1097}>Lanjutkan</span></div>
+              </div>
+              <div className={styles.Button16_488_1098}>
+                <div className={styles.Paragraph_488_1099}><span className={styles.DetailTryout_488_1100}>Detail Tryout</span></div>
+                <div className={styles.Icon19_488_1101}>
+                  <div className={styles.Icon_488_1102}>
+                    <div className={styles.Icon_488_1103}><svg width="3" height="6" viewBox="0 0 3 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M0 6L3 3L0 0" stroke="#89B0C7" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className={styles.Pagination_488_1105}>
+          <div className={styles.Button17_488_1106}>
+            <div className={styles.Container_488_1107}></div>
+            <div className={styles.Container_488_1108}>
+              <div className={styles.Icon20_488_1109}>
+                <div className={styles.Icon_488_1110}>
+                  <div className={styles.Icon_488_1111}><svg width="4" height="8" viewBox="0 0 4 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M4 8L0 4L4 0" stroke="#62748E" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              <div className={styles.Paragraph_488_1113}><span className={styles.Previous_488_1114}>Previous</span></div>
+            </div>
+          </div>
+          <div className={styles.Container71_488_1115}>
+            <div className={styles.Button18_488_1116}>
+              <div className={styles.Paragraph_488_1117}><span className={styles.generated_1_488_1118}>1</span></div>
+            </div>
+            <div className={styles.Button19_488_1119}>
+              <div className={styles.Container_488_1120}></div>
+              <div className={styles.Container_488_1121}>
+                <div className={styles.Paragraph_488_1122}><span className={styles.generated_2_488_1123}>2</span></div>
+              </div>
+            </div>
+          </div>
+          <div className={styles.Button20_488_1124}>
+            <div className={styles.Container_488_1125}></div>
+            <div className={styles.Container_488_1126}>
+              <div className={styles.Paragraph_488_1127}><span className={styles.Next_488_1128}>Next</span></div>
+              <div className={styles.Icon21_488_1129}>
+                <div className={styles.Icon_488_1130}>
+                  <div className={styles.Icon_488_1131}><svg width="4" height="8" viewBox="0 0 4 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M0 8L4 4L0 0" stroke="#62748E" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className={styles.Container_516_417}>
+          <div className={styles.Heading2_516_418}><span className={styles.SemuaTryout_516_419}>Semua Tryout</span></div>
+          <div className={styles.Paragraph3_516_420}><span className={styles.PilihTryoutUntukMulaiLatihanAtauLanjutkan_516_421}>Pilih tryout untuk mulai latihan atau lanjutkan.</span></div>
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
