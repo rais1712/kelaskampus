@@ -30,12 +30,14 @@ client/                   # React SPA frontend
 │   ├── admin/           # Admin pages (dashboard, tryouts, users, etc.)
 │   ├── Dashboard.tsx    # Student dashboard
 │   ├── Profile.tsx      # User profile
+│   ├── TryoutList.tsx   # Tryout list with filters
 │   ├── SignIn.tsx       # Login page
 │   └── SignUp.tsx       # Registration page
 ├── components/          # Reusable components
 │   ├── ui/             # UI component library
 │   └── admin/          # Admin-specific components
 ├── stores/             # Zustand state stores
+│   └── tryoutStore.ts  # Tryout state management
 ├── App.tsx             # Main app with routing
 └── global.css          # TailwindCSS configuration
 
@@ -84,7 +86,8 @@ Required environment variables (managed via Replit Secrets):
 ## Key Features
 
 - **Student Features**:
-  - Browse and purchase tryout packages
+  - Browse tryout packages with advanced filtering (category, schedule, status, search)
+  - View tryout details including question count, duration, and progress
   - Take online practice exams
   - View results and analytics
   - Manage profile and account
@@ -114,6 +117,16 @@ The application is configured for autoscale deployment on Replit:
 
 ## Recent Changes
 
+- **2025-10-27**: Tryout List Page Implementation
+  - Created TryoutList.tsx page with complete Figma design implementation
+  - Implemented 4 filter types: Kategori (SNBT, UTBK, Saintek, Soshum, Campuran), Jadwal (Hari Ini, Minggu Ini, Bulan Ini), Status (Belum Dikerjakan, Sedang Dikerjakan, Selesai), and Search
+  - Added tryout_progress table to database for tracking user progress
+  - Integrated with Supabase to fetch tryouts, questions count, and user progress
+  - Added status badges and progress bars to tryout cards
+  - Implemented date-based filtering using date-fns library
+  - Added protected route /tryouts for siswa role
+  - Created tryoutStore for state management
+  
 - **2025-10-27**: Initial Replit setup
   - Configured Vite to run on port 5000 with proper host settings
   - Set up HMR (Hot Module Reload) for Replit environment
