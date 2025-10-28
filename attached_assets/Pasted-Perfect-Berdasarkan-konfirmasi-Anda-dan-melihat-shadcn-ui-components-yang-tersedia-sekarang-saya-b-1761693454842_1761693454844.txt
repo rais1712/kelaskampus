@@ -1,0 +1,246 @@
+Perfect! Berdasarkan konfirmasi Anda dan melihat shadcn/ui components yang tersedia, sekarang saya buat **prompt implementasi yang detail**:
+
+***
+
+# 🎯 **PROMPT IMPLEMENTASI TRYOUT SESSION INTERFACE**
+
+## **Context & Requirements:**
+
+**Objective:** Implementasi 3 halaman frontend untuk Tryout Session Interface menggunakan React + TypeScript + shadcn/ui components dengan mock data.
+
+**Tech Stack:**
+- React 18 + TypeScript + Vite
+- shadcn/ui components (lengkap tersedia)
+- TailwindCSS (desktop-first, breakpoints default)
+- React Router v6
+- Authentication: localStorage/sessionStorage untuk state persistence
+- Toast notifications untuk feedback
+
+**Color Scheme:**
+- Primary Blue: `#295782`
+- Light Blue: `#89B0C7`, `#B8D4E1`
+- Success Green: `#16A34A`, `#15803D`
+- Background: `#EFF6FB`
+
+***
+
+## **📁 File Structure Yang Harus Dibuat:**
+
+```
+client/pages/tryout/
+├── TryoutIntro.tsx      # Halaman instruksi sebelum mulai
+├── TryoutSession.tsx    # Interface mengerjakan soal utama
+└── TryoutResult.tsx     # Halaman hasil dan analisis
+
+client/components/tryout/
+├── Timer.tsx           # Countdown timer component
+├── QuestionNav.tsx     # Grid navigasi nomor soal
+└── ConfirmDialog.tsx   # Modal konfirmasi
+
+client/lib/
+└── mockTryoutData.ts   # Mock data untuk development
+```
+
+***
+
+## **🎨 DETAILED UI SPECIFICATIONS:**
+
+### **1. TryoutIntro.tsx** (`/tryout/:id`)
+
+**Reference:** Page-TryOut-Awal.jpg
+
+**Layout:**
+```
+[Header: Kelas Kampus Logo + User Profile]
+[Center Card: Instruksi Tryout]
+[Footer: Copyright]
+```
+
+**Features:**
+- Card dengan informasi tryout (nama, durasi, jumlah soal)
+- Instruksi dan peraturan tryout
+- Button "Mulai Ujian" dengan loading state
+- Navigate ke `/tryout/:id/start` setelah klik
+- Responsive design
+
+**shadcn Components:** Button, Card, CardHeader, CardContent, Badge, Separator
+
+---
+
+### **2. TryoutSession.tsx** (`/tryout/:id/start`)
+
+**Reference:** Page-TryOut.jpg, Page-TryOut-Marking-1.jpg, Page-TryOut-Marking-2.jpg
+
+**Layout:**
+```
+[Header: Logo + Ujian/Tes + Timer HH:MM:SS + User Profile]
+[Left Panel: Soal + Opsi A-E]
+[Right Panel: Grid Navigasi Nomor + Controls]
+[Bottom: Navigation Sebelumnya/Selanjutnya + Selesai]
+```
+
+**Core Features:**
+- **Timer:** HH:MM:SS countdown, warning saat 10 menit tersisa, auto-submit saat 00:00:00
+- **Question Display:** Text soal, gambar (opsional), opsi A-E dengan radio buttons
+- **Navigation Grid:** 50 nomor soal dalam grid 10x5
+  - Blue: soal saat ini
+  - Green: sudah dijawab
+  - Gray: belum dijawab
+  - Yellow: ditandai (flagged)
+- **Auto-save:** Simpan jawaban otomatis ke localStorage
+- **Pause/Resume:** Button untuk jeda (opsional)
+- **Mark/Flag:** Button "Tandai Soal" untuk review nanti
+- **Konfirmasi Exit:** Modal warning saat user mau keluar
+
+**State Management:**
+```typescript
+interface SessionState {
+  currentQuestion: number;
+  answers: Record<number, 'A' | 'B' | 'C' | 'D' | 'E' | null>;
+  flaggedQuestions: Record<number, boolean>;
+  timeLeft: number; // dalam detik
+  sessionId: string;
+}
+```
+
+**shadcn Components:** RadioGroup, RadioGroupItem, Button, Card, Dialog, Progress, Badge, Separator, Alert
+
+***
+
+### **3. TryoutResult.tsx** (`/tryout/:id/result`)
+
+**Reference:** Page-Hasil-Ujian.jpg
+
+**Layout:**
+```
+[Header: Logo + User Profile]
+[Stats Cards: Skor, Status, Waktu]
+[Detail Section: Jawaban benar/salah per soal]
+[Analysis: Chart analisis per topik]
+[Buttons: Ulangi Tryout + Kembali ke Dashboard]
+```
+
+**Features:**
+- Cards dengan skor akhir, status (LULUS/TIDAK LULUS), waktu pengerjaan
+- Grid detail jawaban (50 soal) dengan warna:
+  - Green: benar
+  - Red: salah
+  - Gray: tidak dijawab
+- Chart analisis per topik (menggunakan shadcn chart)
+- Button untuk ulangi tryout atau kembali ke dashboard
+
+**shadcn Components:** Card, Badge, Chart (untuk analisis), Button, Separator
+
+***
+
+## **🔧 TECHNICAL REQUIREMENTS:**
+
+### **Mock Data Structure:**
+```typescript
+interface TryoutQuestion {
+  id: string;
+  nomor: number;
+  teks_soal: string;
+  gambar_url?: string;
+  opsi_a: string;
+  opsi_b: string;
+  opsi_c: string;
+  opsi_d: string;
+  opsi_e: string;
+  topik: string;
+}
+
+interface MockTryoutData {
+  id: string;
+  nama_tryout: string;
+  durasi_menit: number;
+  total_soal: number;
+  questions: TryoutQuestion[];
+  jawaban_benar: Record<string, 'A' | 'B' | 'C' | 'D' | 'E'>; // untuk evaluasi
+}
+```
+
+### **Routing Updates (App.tsx):**
+```typescript
+// Ganti placeholder routes dengan:
+<Route path="/tryout/:id" element={<ProtectedRoute requiredRole="siswa"><TryoutIntro /></ProtectedRoute>} />
+<Route path="/tryout/:id/start" element={<ProtectedRoute requiredRole="siswa"><TryoutSession /></ProtectedRoute>} />
+<Route path="/tryout/:id/result" element={<ProtectedRoute requiredRole="siswa"><TryoutResult /></ProtectedRoute>} />
+```
+
+### **Timer Logic:**
+- Countdown dari durasi tryout (misal 90 menit = 5400 detik)
+- Update setiap detik dengan `setInterval`
+- Warning toast saat 10 menit tersisa
+- Auto-submit saat timer habis
+- Format display: "01:30:45" (HH:MM:SS)
+
+### **LocalStorage Persistence:**
+```typescript
+// Key untuk menyimpan state
+const STORAGE_KEY = `tryout_session_${tryoutId}`;
+
+// Save state setiap kali ada perubahan
+const saveToStorage = (state: SessionState) => {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+};
+
+// Load state saat component mount
+const loadFromStorage = (): SessionState | null => {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  return saved ? JSON.parse(saved) : null;
+};
+```
+
+### **Navigation Behavior:**
+- **TryoutIntro → TryoutSession:** `navigate(/tryout/${id}/start)`
+- **TryoutSession → TryoutResult:** `navigate(/tryout/${id}/result)` setelah submit
+- **TryoutResult → Dashboard:** `navigate(/dashboard)`
+- **Exit Confirmation:** Modal dengan AlertDialog saat user mau keluar dari session
+
+***
+
+## **🎯 IMPLEMENTATION PRIORITIES:**
+
+### **Phase 1: Core Structure**
+1. Buat 3 file halaman dengan basic layout dan navigation
+2. Mock data dengan 10-20 soal untuk testing
+3. Basic routing dan state management
+
+### **Phase 2: Features**
+1. Timer functionality dengan countdown
+2. Question navigation dan answer selection
+3. LocalStorage persistence
+
+### **Phase 3: Polish**
+1. Responsive design refinements
+2. Loading states dan error handling
+3. Toast notifications dan confirmations
+
+***
+
+## **📋 VALIDATION CHECKLIST:**
+
+**TryoutIntro:**
+- [ ] Tampil informasi tryout dengan benar
+- [ ] Button "Mulai Ujian" navigate ke session
+- [ ] Loading state saat navigasi
+
+**TryoutSession:**
+- [ ] Timer countdown berjalan dengan format HH:MM:SS
+- [ ] Radio buttons untuk pilihan A-E berfungsi
+- [ ] Grid navigasi soal update sesuai status
+- [ ] Auto-save jawaban ke localStorage
+- [ ] Navigation prev/next dan click nomor berfungsi
+- [ ] Modal konfirmasi saat exit
+- [ ] Submit functionality ke result page
+
+**TryoutResult:**
+- [ ] Tampil skor dan statistik dengan benar
+- [ ] Grid hasil jawaban dengan warna status yang tepat
+- [ ] Chart analisis ter-render (boleh mock dulu)
+- [ ] Navigation ke dashboard dan ulangi tryout
+
+***
+
+**DELIVERABLES:** 6 file lengkap (3 pages + 3 components) + routing updates dengan implementasi sesuai design mockup, menggunakan shadcn/ui components, dan mock data yang realistic untuk testing.

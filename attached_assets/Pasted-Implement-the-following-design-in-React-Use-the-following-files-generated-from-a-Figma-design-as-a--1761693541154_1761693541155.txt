@@ -1,0 +1,2172 @@
+Implement the following design in React. Use the following files generated from a Figma design as a specification and guide:
+
+```src/styles/App.module.css
+@import "https://fonts.googleapis.com/css?family=Montserrat:0,700;0,400;0,500;0,600&display=swap";
+.App_496_595 {
+  background: linear-gradient(120deg, #e6f3ff 7.8%, #f8fbff 92.2%),
+    linear-gradient(90deg, #fff 0% 100%);
+  border-radius: 16px;
+  flex-flow: row;
+  flex-shrink: 0;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 0;
+  width: 1363px;
+  height: 845px;
+  display: flex;
+  overflow: hidden;
+  box-shadow:
+    0 20px 25px -5px #0000001a,
+    0 8px 10px -6px #0000001a;
+}
+.Header_496_596 {
+  background: #fffffff2;
+  flex-shrink: 0;
+  width: 1363px;
+  height: 80.8px;
+}
+.Container3_496_597 {
+  flex-flow: row;
+  flex-grow: 1;
+  justify-content: center;
+  align-items: center;
+  gap: 973.025px;
+  padding: 16px 0;
+  display: flex;
+}
+.Container2_496_598 {
+  flex-flow: row;
+  flex-grow: 1;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  height: 48px;
+  display: flex;
+}
+.Container_496_599 {
+  background: linear-gradient(#89b0c7 0%, #89b1c7 100%);
+  border-radius: 16px;
+  justify-content: center;
+  align-items: center;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  box-shadow:
+    0 10px 15px -3px #0000001a,
+    0 4px 6px -4px #0000001a;
+}
+.Container_496_600 {
+  border-radius: 32px;
+  flex-flow: row;
+  flex-shrink: 0;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 0;
+  width: 56px;
+  height: 56px;
+  display: flex;
+}
+.Container_496_601 {
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+}
+.Image_496_602 {
+  background: #d3d3d3 url(<path-to-image>) 50% / cover no-repeat;
+  border-radius: 32px;
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  overflow: hidden;
+}
+.Container1_496_603 {
+  flex-flow: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: -0.4px;
+  width: 123.138px;
+  height: 39.975px;
+  display: flex;
+}
+.Heading1_496_604 {
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  height: 24px;
+  display: flex;
+}
+.KelasKampus_496_605 {
+  color: #1d293d;
+  font-family: Montserrat;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 24px;
+  display: inline-block;
+}
+.Paragraph_496_606 {
+  flex-shrink: 0;
+  align-items: flex-start;
+  height: 16px;
+  display: flex;
+}
+.TryoutIndonesia_496_607 {
+  color: #62748e;
+  flex: 1 0 0;
+  font-family: Montserrat;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 16px;
+  display: inline-block;
+}
+.Button_496_619 {
+  background: linear-gradient(#89b0c7 0%, #89b1c7 100%);
+  border-radius: 16px;
+  justify-content: center;
+  align-items: center;
+  height: 36px;
+  padding-left: 0.013px;
+  display: flex;
+  box-shadow:
+    0 10px 15px -3px #0000001a,
+    0 4px 6px -4px #0000001a;
+}
+.Paragraph_496_620 {
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+.Masuk_496_621 {
+  color: #fff;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  display: inline-block;
+}
+.Header_496_622 {
+  background: #fffffff2;
+  flex-shrink: 0;
+  width: 1363px;
+  height: 80.8px;
+}
+.Container3_496_623 {
+  flex-shrink: 0;
+  align-items: center;
+  width: 1267px;
+  height: 80px;
+  padding: 16px 1083.88px 16px 0;
+  display: flex;
+}
+.Container2_496_624 {
+  flex-flow: row;
+  flex-grow: 1;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  height: 48px;
+  display: flex;
+}
+.Container_496_625 {
+  background: linear-gradient(#89b0c7 0%, #89b1c7 100%);
+  border-radius: 16px;
+  justify-content: center;
+  align-items: center;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  box-shadow:
+    0 10px 15px -3px #0000001a,
+    0 4px 6px -4px #0000001a;
+}
+.Container_496_626 {
+  border-radius: 32px;
+  flex-flow: row;
+  flex-shrink: 0;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 0;
+  width: 56px;
+  height: 56px;
+  display: flex;
+}
+.Container_496_627 {
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+}
+.Image_496_628 {
+  background: #d3d3d3 url(<path-to-image>) 50% / cover no-repeat;
+  border-radius: 32px;
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  overflow: hidden;
+}
+.Container1_496_629 {
+  flex-flow: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: -0.4px;
+  width: 123.138px;
+  height: 39.975px;
+  display: flex;
+}
+.Heading1_496_630 {
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  height: 24px;
+  display: flex;
+}
+.KelasKampus_496_631 {
+  color: #1d293d;
+  font-family: Montserrat;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 24px;
+  display: inline-block;
+}
+.Paragraph_496_632 {
+  flex-shrink: 0;
+  align-items: flex-start;
+  height: 16px;
+  display: flex;
+}
+.TryoutIndonesia_496_633 {
+  color: #62748e;
+  flex: 1 0 0;
+  font-family: Montserrat;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 16px;
+  display: inline-block;
+}
+.Container_496_634 {
+  box-sizing: border-box;
+  border-bottom: 0.8px solid #e2e8f0;
+  flex-shrink: 0;
+  width: 1363px;
+  height: 80.8px;
+}
+.Button_496_635 {
+  background: linear-gradient(#89b0c7 0%, #89b1c7 100%);
+  border-radius: 16px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  width: 167px;
+  height: 36px;
+  padding-left: 0;
+  display: flex;
+  box-shadow:
+    0 10px 15px -3px #0000001a,
+    0 4px 6px -4px #0000001a;
+}
+.ProfileInitials_496_636 {
+  background: #fff;
+  border-radius: 26843500px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 24px;
+  height: 24px;
+  padding-right: 0.012px;
+  display: flex;
+}
+.Paragraph_496_637 {
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+.Ja_496_638 {
+  color: #89b0c7;
+  font-family: Montserrat;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 18px;
+  display: inline-block;
+}
+.ProfileText_496_639 {
+  flex-shrink: 0;
+  align-items: center;
+  gap: 4px;
+  width: 99.325px;
+  height: 21px;
+  display: flex;
+}
+.Paragraph_496_640 {
+  align-items: center;
+  padding-right: 12.325px;
+  display: flex;
+}
+.JakkHere_496_641 {
+  color: #fff;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 21px;
+  display: inline-block;
+}
+.Icon_496_642 {
+  flex-shrink: 0;
+  width: 12px;
+  height: 12px;
+  overflow: hidden;
+}
+.Container_496_644 {
+  flex-shrink: 0;
+  width: 1024px;
+  height: 782.44px;
+}
+.TestHeader_496_645 {
+  box-sizing: border-box;
+  border-bottom: 1.067px solid #ffffff4d;
+  flex-shrink: 0;
+  justify-content: space-between;
+  align-items: center;
+  width: 972.8px;
+  height: 64.853px;
+  padding-right: 0;
+  display: flex;
+}
+.Heading_1_496_646 {
+  justify-content: flex-end;
+  align-items: center;
+  display: flex;
+}
+.UjianTes_496_647 {
+  color: #1e2939;
+  font-family: Montserrat;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 32px;
+  display: inline-block;
+}
+.Container_496_648 {
+  align-items: center;
+  height: 22.4px;
+  padding: 2.56px 43.36px 2.773px 0;
+  display: flex;
+}
+.Text_496_649 {
+  align-items: flex-start;
+  height: 17.067px;
+  display: flex;
+}
+.WaktuTersisa_496_650 {
+  color: #364153;
+  font-family: Montserrat;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 28px;
+  display: inline-block;
+}
+.Text_496_651 {
+  flex-shrink: 0;
+  align-items: flex-start;
+  width: 39.587px;
+  height: 17.067px;
+  display: flex;
+}
+._06_496_652 {
+  color: #364153;
+  font-family: Consolas;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 28px;
+  display: inline-block;
+}
+.ProgressIndicator_496_653 {
+  align-items: center;
+  width: 972.8px;
+  padding: 0 846.4px 0 0.4px;
+  display: flex;
+}
+.Soal_5Dari_50_496_654 {
+  color: #4a90e2;
+  flex-shrink: 0;
+  width: 126px;
+  font-family: Montserrat;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 28px;
+  display: inline-block;
+}
+.Container_496_655 {
+  flex-shrink: 0;
+  align-items: flex-start;
+  gap: 19.2px;
+  width: 972.8px;
+  height: 577.427px;
+  display: flex;
+}
+.Container_496_656 {
+  flex-direction: column;
+  flex: 1 0 0;
+  align-items: flex-start;
+  gap: 19.2px;
+  width: 100%;
+  height: 551.827px;
+  display: flex;
+}
+.QuestionCard_496_657 {
+  background: #fff;
+  border-radius: 14px;
+  flex-direction: column;
+  flex-shrink: 0;
+  align-items: flex-start;
+  width: 100%;
+  height: 247.4px;
+  padding: 25.6px 25.6px 0;
+  display: flex;
+  box-shadow:
+    0 10px 15px -3px #0000001a,
+    0 4px 6px -4px #0000001a;
+}
+.Container_496_658 {
+  flex-flow: column;
+  flex-grow: 1;
+  justify-content: center;
+  align-items: center;
+  gap: 19.2px;
+  width: 100%;
+  display: flex;
+}
+.Paragraph_496_659 {
+  justify-content: center;
+  align-items: center;
+  height: 23.4px;
+  padding: 0 133.227px 0 134.173px;
+  display: flex;
+}
+.ApaFungsiUtamaMitokondriaDalamSel_496_660 {
+  color: #1e2939;
+  text-align: center;
+  font-family: Montserrat;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 29.25px;
+  display: inline-block;
+}
+.Container_496_661 {
+  background: #f3f4f6;
+  border-radius: 10px;
+  justify-content: center;
+  align-items: center;
+  width: 358.4px;
+  height: 153.6px;
+  padding-right: 0;
+  display: flex;
+}
+.Text_496_662 {
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+.GambarSoalJikaAda_496_663 {
+  color: #6a7282;
+  text-align: center;
+  font-family: Montserrat;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 24px;
+  display: inline-block;
+}
+.Container_496_664 {
+  flex-flow: column;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 9.60006px;
+  width: 100%;
+  height: 285.227px;
+  padding-bottom: 0;
+  display: flex;
+}
+.OptionCard_496_665 {
+  box-sizing: border-box;
+  background: #fff;
+  border: 1.067px solid #e5e7eb;
+  border-radius: 14px;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 12.8px;
+  width: 697.6px;
+  height: 49.707px;
+  padding-left: 12.587px;
+  display: flex;
+}
+.Container_496_666 {
+  box-sizing: border-box;
+  background: #fff;
+  border: 1.067px solid #d1d5dc;
+  border-radius: 35791400px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 16px;
+  height: 16px;
+  display: flex;
+}
+.Container_496_667 {
+  flex-shrink: 0;
+  align-items: center;
+  gap: 9.6px;
+  width: 257.333px;
+  height: 22.4px;
+  display: flex;
+}
+.Text_496_668 {
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  display: flex;
+}
+.A_496_669 {
+  color: #1e2939;
+  font-family: Montserrat;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 28px;
+  display: inline-block;
+}
+.Text_496_670 {
+  flex: 1 0 0;
+  justify-content: flex-end;
+  align-items: center;
+  width: 100%;
+  display: flex;
+}
+.PilihanAIniAdalahPilihanPertama_496_671 {
+  color: #364153;
+  font-family: Montserrat;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 24px;
+  display: inline-block;
+}
+.OptionCard_496_672 {
+  background: #295782;
+  border-radius: 14px;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 12.8px;
+  width: 697.6px;
+  height: 48px;
+  padding-left: 12.8px;
+  display: flex;
+  box-shadow:
+    0 4px 6px -1px #0000001a,
+    0 2px 4px -2px #0000001a;
+}
+.Container_496_673 {
+  box-sizing: border-box;
+  background: #fff;
+  border: 1.067px solid #fff;
+  border-radius: 35791400px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 16px;
+  height: 16px;
+  padding-left: 0;
+  display: flex;
+}
+.Container_496_674 {
+  background: #4a90e2;
+  border-radius: 35791400px;
+  flex-shrink: 0;
+  width: 9.6px;
+  height: 9.6px;
+}
+.Container_496_675 {
+  flex-shrink: 0;
+  align-items: center;
+  gap: 9.6px;
+  width: 242.76px;
+  height: 22.4px;
+  display: flex;
+}
+.Text_496_676 {
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  display: flex;
+}
+.B_496_677 {
+  color: #fff;
+  font-family: Montserrat;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 28px;
+  display: inline-block;
+}
+.Text_496_678 {
+  flex: 1 0 0;
+  justify-content: flex-end;
+  align-items: center;
+  width: 100%;
+  display: flex;
+}
+.PilihanBIniAdalahPilihanKedua_496_679 {
+  color: #fff;
+  font-family: Montserrat;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 24px;
+  display: inline-block;
+}
+.OptionCard_496_680 {
+  box-sizing: border-box;
+  background: #fff;
+  border: 1.067px solid #e5e7eb;
+  border-radius: 14px;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 12.8px;
+  width: 697.6px;
+  height: 49.707px;
+  padding-left: 12.587px;
+  display: flex;
+}
+.Container_496_681 {
+  box-sizing: border-box;
+  background: #fff;
+  border: 1.067px solid #d1d5dc;
+  border-radius: 35791400px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 16px;
+  height: 16px;
+  display: flex;
+}
+.Container_496_682 {
+  flex-shrink: 0;
+  align-items: center;
+  gap: 9.6px;
+  width: 241.667px;
+  height: 22.4px;
+  display: flex;
+}
+.Text_496_683 {
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  display: flex;
+}
+.C_496_684 {
+  color: #1e2939;
+  font-family: Montserrat;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 28px;
+  display: inline-block;
+}
+.Text_496_685 {
+  justify-content: flex-end;
+  align-items: center;
+  display: flex;
+}
+.PilihanCIniAdalahPilihanKetiga_496_686 {
+  color: #364153;
+  font-family: Montserrat;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 24px;
+  display: inline-block;
+}
+.OptionCard_496_687 {
+  box-sizing: border-box;
+  background: #fff;
+  border: 1.067px solid #e5e7eb;
+  border-radius: 14px;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 12.8px;
+  width: 697.6px;
+  height: 49.707px;
+  padding-left: 12.587px;
+  display: flex;
+}
+.Container_496_688 {
+  box-sizing: border-box;
+  background: #fff;
+  border: 1.067px solid #d1d5dc;
+  border-radius: 35791400px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 16px;
+  height: 16px;
+  display: flex;
+}
+.Container_496_689 {
+  flex-shrink: 0;
+  align-items: center;
+  gap: 9.6px;
+  width: 262.533px;
+  height: 22.4px;
+  display: flex;
+}
+.Text_496_690 {
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  display: flex;
+}
+.D_496_691 {
+  color: #1e2939;
+  font-family: Montserrat;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 28px;
+  display: inline-block;
+}
+.Text_496_692 {
+  justify-content: flex-end;
+  align-items: center;
+  display: flex;
+}
+.PilihanDIniAdalahPilihanKeempat_496_693 {
+  color: #364153;
+  font-family: Montserrat;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 24px;
+  display: inline-block;
+}
+.OptionCard_496_694 {
+  box-sizing: border-box;
+  background: #fff;
+  border: 1.067px solid #e5e7eb;
+  border-radius: 14px;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 12.8px;
+  width: 697.6px;
+  height: 49.707px;
+  padding-left: 12.587px;
+  display: flex;
+}
+.Container_496_695 {
+  box-sizing: border-box;
+  background: #fff;
+  border: 1.067px solid #d1d5dc;
+  border-radius: 35791400px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 16px;
+  height: 16px;
+  display: flex;
+}
+.Container_496_696 {
+  flex-shrink: 0;
+  align-items: center;
+  gap: 9.6px;
+  width: 243.6px;
+  height: 22.4px;
+  display: flex;
+}
+.Text_496_697 {
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  display: flex;
+}
+.E_496_698 {
+  color: #1e2939;
+  font-family: Montserrat;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 28px;
+  display: inline-block;
+}
+.Text_496_699 {
+  justify-content: flex-end;
+  align-items: center;
+  display: flex;
+}
+.PilihanEIniAdalahPilihanKelima_496_700 {
+  color: #364153;
+  font-family: Montserrat;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 24px;
+  display: inline-block;
+}
+.QuestionNavigation_496_701 {
+  background: #fff;
+  border-radius: 14px;
+  flex-flow: column;
+  flex-grow: 1;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 6.40001px;
+  height: 548.053px;
+  padding: 44.8px 0 0;
+  display: flex;
+  overflow: hidden;
+  box-shadow:
+    0 10px 15px -3px #0000001a,
+    0 4px 6px -4px #0000001a;
+}
+.Button_496_702 {
+  background: #6a7282;
+  border-radius: 10px;
+  flex-flow: row;
+  flex-grow: 1;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 22.2px;
+  height: 28.8px;
+  padding: 4.347px 54.599px 4.453px 18.801px;
+  display: flex;
+}
+.Icon_496_703 {
+  width: 12.8px;
+  height: 12.8px;
+  overflow: hidden;
+}
+.BatalTandaiSoal_496_705 {
+  color: #fff;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  display: inline-block;
+}
+.Container_496_706 {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12.8px;
+  width: 256px;
+  padding: 12.8px 12.8px 0;
+  display: flex;
+}
+.Container_496_707 {
+  width: 100%;
+  height: 377.6px;
+}
+.Button_496_708 {
+  background: #f3f4f6;
+  border-radius: 10px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  display: flex;
+}
+.generated_1_496_709 {
+  color: #364153;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  display: inline-block;
+}
+.Button_496_710 {
+  background: #f3f4f6;
+  border-radius: 10px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  display: flex;
+}
+.generated_2_496_711 {
+  color: #364153;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  display: inline-block;
+}
+.Button_496_712 {
+  background: #6a7282;
+  border-radius: 10px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  display: flex;
+}
+.generated_3_496_713 {
+  color: #fff;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  display: inline-block;
+}
+.Button_496_714 {
+  background: #f3f4f6;
+  border-radius: 10px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  display: flex;
+}
+.generated_4_496_715 {
+  color: #364153;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  display: inline-block;
+}
+.Button_496_716 {
+  background: #295782;
+  border-radius: 10px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  box-shadow:
+    0 4px 6px -1px #0000001a,
+    0 2px 4px -2px #0000001a;
+}
+.generated_5_496_717 {
+  color: #fff;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  display: inline-block;
+}
+.Button_496_718 {
+  background: #f3f4f6;
+  border-radius: 10px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  display: flex;
+}
+.generated_6_496_719 {
+  color: #364153;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  display: inline-block;
+}
+.Button_496_720 {
+  background: #f3f4f6;
+  border-radius: 10px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  display: flex;
+}
+.generated_7_496_721 {
+  color: #364153;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  display: inline-block;
+}
+.Button_496_722 {
+  background: #f3f4f6;
+  border-radius: 10px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  display: flex;
+}
+.generated_8_496_723 {
+  color: #364153;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  display: inline-block;
+}
+.Button_496_724 {
+  background: #f3f4f6;
+  border-radius: 10px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  display: flex;
+}
+.generated_9_496_725 {
+  color: #364153;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  display: inline-block;
+}
+.Button_496_726 {
+  background: #f3f4f6;
+  border-radius: 10px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  display: flex;
+}
+.generated_10_496_727 {
+  color: #364153;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  display: inline-block;
+}
+.Button_496_728 {
+  background: #f3f4f6;
+  border-radius: 10px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  display: flex;
+}
+.generated_11_496_729 {
+  color: #364153;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  display: inline-block;
+}
+.Button_496_730 {
+  background: #f3f4f6;
+  border-radius: 10px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  display: flex;
+}
+.generated_12_496_731 {
+  color: #364153;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  display: inline-block;
+}
+.Button_496_732 {
+  background: #f3f4f6;
+  border-radius: 10px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  display: flex;
+}
+.generated_13_496_733 {
+  color: #364153;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  display: inline-block;
+}
+.Button_496_734 {
+  background: #f3f4f6;
+  border-radius: 10px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  display: flex;
+}
+.generated_14_496_735 {
+  color: #364153;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  display: inline-block;
+}
+.Button_496_736 {
+  background: #f3f4f6;
+  border-radius: 10px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  display: flex;
+}
+.generated_15_496_737 {
+  color: #364153;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  display: inline-block;
+}
+.Button_496_738 {
+  background: #f3f4f6;
+  border-radius: 10px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  display: flex;
+}
+.generated_16_496_739 {
+  color: #364153;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  display: inline-block;
+}
+.Button_496_740 {
+  background: #f3f4f6;
+  border-radius: 10px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  display: flex;
+}
+.generated_17_496_741 {
+  color: #364153;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  display: inline-block;
+}
+.Button_496_742 {
+  background: #f3f4f6;
+  border-radius: 10px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  display: flex;
+}
+.generated_18_496_743 {
+  color: #364153;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  display: inline-block;
+}
+.Button_496_744 {
+  background: #f3f4f6;
+  border-radius: 10px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  display: flex;
+}
+.generated_19_496_745 {
+  color: #364153;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  display: inline-block;
+}
+.Button_496_746 {
+  background: #f3f4f6;
+  border-radius: 10px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  display: flex;
+}
+.generated_20_496_747 {
+  color: #364153;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  display: inline-block;
+}
+.Button_496_748 {
+  background: #f3f4f6;
+  border-radius: 10px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  display: flex;
+}
+.generated_21_496_749 {
+  color: #364153;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  display: inline-block;
+}
+.Button_496_750 {
+  background: #f3f4f6;
+  border-radius: 10px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  display: flex;
+}
+.generated_22_496_751 {
+  color: #364153;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  display: inline-block;
+}
+.Button_496_752 {
+  background: #f3f4f6;
+  border-radius: 10px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  display: flex;
+}
+.generated_23_496_753 {
+  color: #364153;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  display: inline-block;
+}
+.Button_496_754 {
+  background: #f3f4f6;
+  border-radius: 10px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  display: flex;
+}
+.generated_24_496_755 {
+  color: #364153;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  display: inline-block;
+}
+.Button_496_756 {
+  background: #f3f4f6;
+  border-radius: 10px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  display: flex;
+}
+.generated_25_496_757 {
+  color: #364153;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  display: inline-block;
+}
+.Button_496_758 {
+  background: #f3f4f6;
+  border-radius: 10px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  display: flex;
+}
+.generated_26_496_759 {
+  color: #364153;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  display: inline-block;
+}
+.Button_496_760 {
+  background: #f3f4f6;
+  border-radius: 10px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  display: flex;
+}
+.generated_27_496_761 {
+  color: #364153;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  display: inline-block;
+}
+.Button_496_762 {
+  background: #f3f4f6;
+  border-radius: 10px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  display: flex;
+}
+.generated_28_496_763 {
+  color: #364153;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  display: inline-block;
+}
+.Button_496_764 {
+  background: #f3f4f6;
+  border-radius: 10px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  display: flex;
+}
+.generated_29_496_765 {
+  color: #364153;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  display: inline-block;
+}
+.Button_496_766 {
+  background: #f3f4f6;
+  border-radius: 10px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  display: flex;
+}
+.generated_30_496_767 {
+  color: #364153;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  display: inline-block;
+}
+.Button_496_768 {
+  background: #f3f4f6;
+  border-radius: 10px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  display: flex;
+}
+.generated_31_496_769 {
+  color: #364153;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  display: inline-block;
+}
+.Button_496_770 {
+  background: #f3f4f6;
+  border-radius: 10px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  display: flex;
+}
+.generated_32_496_771 {
+  color: #364153;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  display: inline-block;
+}
+.Button_496_772 {
+  background: #f3f4f6;
+  border-radius: 10px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  display: flex;
+}
+.generated_33_496_773 {
+  color: #364153;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  display: inline-block;
+}
+.Button_496_774 {
+  background: #f3f4f6;
+  border-radius: 10px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  display: flex;
+}
+.generated_34_496_775 {
+  color: #364153;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  display: inline-block;
+}
+.Button_496_776 {
+  background: #f3f4f6;
+  border-radius: 10px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  display: flex;
+}
+.generated_35_496_777 {
+  color: #364153;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  display: inline-block;
+}
+.Button_496_778 {
+  background: #f3f4f6;
+  border-radius: 10px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  display: flex;
+}
+.generated_36_496_779 {
+  color: #364153;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  display: inline-block;
+}
+.Button_496_780 {
+  background: #f3f4f6;
+  border-radius: 10px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  display: flex;
+}
+.generated_37_496_781 {
+  color: #364153;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  display: inline-block;
+}
+.Button_496_782 {
+  background: #f3f4f6;
+  border-radius: 10px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  display: flex;
+}
+.generated_38_496_783 {
+  color: #364153;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  display: inline-block;
+}
+.Button_496_784 {
+  background: #f3f4f6;
+  border-radius: 10px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  display: flex;
+}
+.generated_39_496_785 {
+  color: #364153;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  display: inline-block;
+}
+.Button_496_786 {
+  background: #f3f4f6;
+  border-radius: 10px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  display: flex;
+}
+.generated_40_496_787 {
+  color: #364153;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  display: inline-block;
+}
+.Button_496_788 {
+  background: #f3f4f6;
+  border-radius: 10px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  display: flex;
+}
+.generated_41_496_789 {
+  color: #364153;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  display: inline-block;
+}
+.Button_496_790 {
+  background: #f3f4f6;
+  border-radius: 10px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  display: flex;
+}
+.generated_42_496_791 {
+  color: #364153;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  display: inline-block;
+}
+.Button_496_792 {
+  background: #f3f4f6;
+  border-radius: 10px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  display: flex;
+}
+.generated_43_496_793 {
+  color: #364153;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  display: inline-block;
+}
+.Button_496_794 {
+  background: #f3f4f6;
+  border-radius: 10px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  display: flex;
+}
+.generated_44_496_795 {
+  color: #364153;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  display: inline-block;
+}
+.Button_496_796 {
+  background: #f3f4f6;
+  border-radius: 10px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  display: flex;
+}
+.generated_45_496_797 {
+  color: #364153;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  display: inline-block;
+}
+.Button_496_798 {
+  background: #f3f4f6;
+  border-radius: 10px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  display: flex;
+}
+.generated_46_496_799 {
+  color: #364153;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  display: inline-block;
+}
+.Button_496_800 {
+  background: #f3f4f6;
+  border-radius: 10px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  display: flex;
+}
+.generated_47_496_801 {
+  color: #364153;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  display: inline-block;
+}
+.Button_496_802 {
+  background: #f3f4f6;
+  border-radius: 10px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  display: flex;
+}
+.generated_48_496_803 {
+  color: #364153;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  display: inline-block;
+}
+.Button_496_804 {
+  background: #f3f4f6;
+  border-radius: 10px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  display: flex;
+}
+.generated_49_496_805 {
+  color: #364153;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  display: inline-block;
+}
+.Button_496_806 {
+  background: #f3f4f6;
+  border-radius: 10px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  display: flex;
+}
+.generated_50_496_807 {
+  color: #364153;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  display: inline-block;
+}
+.Container_496_808 {
+  box-sizing: border-box;
+  border-top: 1.067px solid #e5e7eb;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6.4px;
+  width: 100%;
+  height: 52.053px;
+  padding-top: 13.653px;
+  display: flex;
+}
+.Container_496_809 {
+  flex-shrink: 0;
+  align-items: center;
+  gap: 6.4px;
+  width: 100%;
+  height: 16px;
+  display: flex;
+}
+.Container_496_810 {
+  background: #295782;
+  border-radius: 4px;
+  width: 12.8px;
+  height: 12.8px;
+}
+.Text_496_811 {
+  justify-content: flex-end;
+  align-items: center;
+  display: flex;
+}
+.SoalSaatIni_496_812 {
+  color: #4a5565;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 20px;
+  display: inline-block;
+}
+.Container_496_813 {
+  flex-shrink: 0;
+  align-items: center;
+  gap: 6.4px;
+  width: 100%;
+  height: 16px;
+  display: flex;
+}
+.Container_496_814 {
+  background: #6a7282;
+  border-radius: 4px;
+  width: 12.8px;
+  height: 12.8px;
+}
+.Text_496_815 {
+  justify-content: flex-end;
+  align-items: center;
+  display: flex;
+}
+.SoalDitandai_496_816 {
+  color: #4a5565;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 20px;
+  display: inline-block;
+}
+.NavigationButtons_496_817 {
+  box-sizing: border-box;
+  border-top: 1.067px solid #ffffff4d;
+  flex-shrink: 0;
+  justify-content: space-between;
+  align-items: center;
+  width: 972.8px;
+  height: 92.16px;
+  padding-right: 0;
+  display: flex;
+}
+.Button_496_818 {
+  box-sizing: border-box;
+  border: 1.067px solid #4a90e2;
+  border-radius: 14px;
+  flex-flow: row;
+  flex-grow: 1;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 0;
+  padding: 8.16px 21.266px 7.947px 4.4px;
+  display: flex;
+}
+.Icon_496_819 {
+  width: 16px;
+  height: 16px;
+  overflow: hidden;
+}
+.Sebelumnya_496_821 {
+  color: #4a90e2;
+  font-family: Montserrat;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 24px;
+  display: inline-block;
+}
+.Button_496_822 {
+  background: #295782;
+  border-radius: 14px;
+  flex-shrink: 0;
+  width: 137.173px;
+  height: 38.4px;
+  box-shadow:
+    0 4px 6px -1px #0000001a,
+    0 2px 4px -2px #0000001a;
+}
+.Selanjutnya_496_823 {
+  color: #fff;
+  font-family: Montserrat;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 24px;
+  display: inline-block;
+}
+.Icon_496_824 {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  overflow: hidden;
+}
+
+```
+
+---
+
+```src/components/App.tsx
+import React from 'react';
+import styles from '../styles/App.module.css';
+
+
+export default function App() {
+  return (
+    <div className={styles.App_496_595}>
+      <div className={styles.Header_496_596}>
+        <div className={styles.Container3_496_597}>
+          <div className={styles.Container2_496_598}>
+            <div className={styles.Container_496_599}>
+              <div className={styles.Container_496_600}>
+                <div className={styles.Container_496_601}></div>
+                <div className={styles.Image_496_602}></div>
+              </div>
+            </div>
+            <div className={styles.Container1_496_603}>
+              <div className={styles.Heading1_496_604}><span className={styles.KelasKampus_496_605}>Kelas Kampus</span></div>
+              <div className={styles.Paragraph_496_606}><span className={styles.TryoutIndonesia_496_607}>Tryout Indonesia</span></div>
+            </div>
+          </div>
+          <div className={styles.Button_496_619}>
+            <div className={styles.Paragraph_496_620}><span className={styles.Masuk_496_621}>Masuk</span></div>
+          </div>
+        </div>
+        <div className={styles.Header_496_622}>
+          <div className={styles.Container3_496_623}>
+            <div className={styles.Container2_496_624}>
+              <div className={styles.Container_496_625}>
+                <div className={styles.Container_496_626}>
+                  <div className={styles.Container_496_627}></div>
+                  <div className={styles.Image_496_628}></div>
+                </div>
+              </div>
+              <div className={styles.Container1_496_629}>
+                <div className={styles.Heading1_496_630}><span className={styles.KelasKampus_496_631}>Kelas Kampus</span></div>
+                <div className={styles.Paragraph_496_632}><span className={styles.TryoutIndonesia_496_633}>Tryout Indonesia</span></div>
+              </div>
+            </div>
+          </div>
+          <div className={styles.Container_496_634}></div>
+          <div className={styles.Button_496_635}>
+            <div className={styles.ProfileInitials_496_636}>
+              <div className={styles.Paragraph_496_637}><span className={styles.Ja_496_638}>JA</span></div>
+            </div>
+            <div className={styles.ProfileText_496_639}>
+              <div className={styles.Paragraph_496_640}><span className={styles.JakkHere_496_641}>Jakk Here</span></div>
+              <div className={styles.Icon_496_642}><svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M3 4.5L6 7.5L9 4.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className={styles.Container_496_644}>
+        <div className={styles.TestHeader_496_645}>
+          <div className={styles.Heading_1_496_646}><span className={styles.UjianTes_496_647}>Ujian/Tes</span></div>
+          <div className={styles.Container_496_648}>
+            <div className={styles.Text_496_649}><span className={styles.WaktuTersisa_496_650}>Waktu Tersisa:</span></div>
+          </div>
+        </div>
+        <div className={styles.Text_496_651}><span className={styles._06_496_652}>49:06</span></div>
+        <div className={styles.ProgressIndicator_496_653}><span className={styles.Soal_5Dari_50_496_654}>Soal 5 dari 50</span></div>
+        <div className={styles.Container_496_655}>
+          <div className={styles.Container_496_656}>
+            <div className={styles.QuestionCard_496_657}>
+              <div className={styles.Container_496_658}>
+                <div className={styles.Paragraph_496_659}><span className={styles.ApaFungsiUtamaMitokondriaDalamSel_496_660}>Apa fungsi utama mitokondria dalam sel?</span></div>
+                <div className={styles.Container_496_661}>
+                  <div className={styles.Text_496_662}><span className={styles.GambarSoalJikaAda_496_663}>Gambar soal (jika ada)</span></div>
+                </div>
+              </div>
+            </div>
+            <div className={styles.Container_496_664}>
+              <div className={styles.OptionCard_496_665}>
+                <div className={styles.Container_496_666}></div>
+                <div className={styles.Container_496_667}>
+                  <div className={styles.Text_496_668}><span className={styles.A_496_669}>A</span></div>
+                  <div className={styles.Text_496_670}><span className={styles.PilihanAIniAdalahPilihanPertama_496_671}>Pilihan A - Ini adalah pilihan pertama</span></div>
+                </div>
+              </div>
+              <div className={styles.OptionCard_496_672}>
+                <div className={styles.Container_496_673}>
+                  <div className={styles.Container_496_674}></div>
+                </div>
+                <div className={styles.Container_496_675}>
+                  <div className={styles.Text_496_676}><span className={styles.B_496_677}>B</span></div>
+                  <div className={styles.Text_496_678}><span className={styles.PilihanBIniAdalahPilihanKedua_496_679}>Pilihan B - Ini adalah pilihan kedua</span></div>
+                </div>
+              </div>
+              <div className={styles.OptionCard_496_680}>
+                <div className={styles.Container_496_681}></div>
+                <div className={styles.Container_496_682}>
+                  <div className={styles.Text_496_683}><span className={styles.C_496_684}>C</span></div>
+                  <div className={styles.Text_496_685}><span className={styles.PilihanCIniAdalahPilihanKetiga_496_686}>Pilihan C - Ini adalah pilihan ketiga</span></div>
+                </div>
+              </div>
+              <div className={styles.OptionCard_496_687}>
+                <div className={styles.Container_496_688}></div>
+                <div className={styles.Container_496_689}>
+                  <div className={styles.Text_496_690}><span className={styles.D_496_691}>D</span></div>
+                  <div className={styles.Text_496_692}><span className={styles.PilihanDIniAdalahPilihanKeempat_496_693}>Pilihan D - Ini adalah pilihan keempat</span></div>
+                </div>
+              </div>
+              <div className={styles.OptionCard_496_694}>
+                <div className={styles.Container_496_695}></div>
+                <div className={styles.Container_496_696}>
+                  <div className={styles.Text_496_697}><span className={styles.E_496_698}>E</span></div>
+                  <div className={styles.Text_496_699}><span className={styles.PilihanEIniAdalahPilihanKelima_496_700}>Pilihan E - Ini adalah pilihan kelima</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className={styles.QuestionNavigation_496_701}>
+            <div className={styles.Button_496_702}>
+              <div className={styles.Icon_496_703}><svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M10.1337 11.2001L6.40033 9.06676L2.66699 11.2001V2.66676C2.66699 2.38387 2.77937 2.11256 2.97941 1.91252C3.17945 1.71248 3.45076 1.6001 3.73366 1.6001H9.06699C9.34989 1.6001 9.6212 1.71248 9.82124 1.91252C10.0213 2.11256 10.1337 2.38387 10.1337 2.66676V11.2001Z" stroke="white" strokeWidth="1.06667" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div><span className={styles.BatalTandaiSoal_496_705}>Batal Tandai Soal</span>
+            </div>
+            <div className={styles.Container_496_706}>
+              <div className={styles.Container_496_707}>
+                <div className={styles.Button_496_708}><span className={styles.generated_1_496_709}>1</span></div>
+                <div className={styles.Button_496_710}><span className={styles.generated_2_496_711}>2</span></div>
+                <div className={styles.Button_496_712}><span className={styles.generated_3_496_713}>3</span></div>
+                <div className={styles.Button_496_714}><span className={styles.generated_4_496_715}>4</span></div>
+                <div className={styles.Button_496_716}><span className={styles.generated_5_496_717}>5</span></div>
+                <div className={styles.Button_496_718}><span className={styles.generated_6_496_719}>6</span></div>
+                <div className={styles.Button_496_720}><span className={styles.generated_7_496_721}>7</span></div>
+                <div className={styles.Button_496_722}><span className={styles.generated_8_496_723}>8</span></div>
+                <div className={styles.Button_496_724}><span className={styles.generated_9_496_725}>9</span></div>
+                <div className={styles.Button_496_726}><span className={styles.generated_10_496_727}>10</span></div>
+                <div className={styles.Button_496_728}><span className={styles.generated_11_496_729}>11</span></div>
+                <div className={styles.Button_496_730}><span className={styles.generated_12_496_731}>12</span></div>
+                <div className={styles.Button_496_732}><span className={styles.generated_13_496_733}>13</span></div>
+                <div className={styles.Button_496_734}><span className={styles.generated_14_496_735}>14</span></div>
+                <div className={styles.Button_496_736}><span className={styles.generated_15_496_737}>15</span></div>
+                <div className={styles.Button_496_738}><span className={styles.generated_16_496_739}>16</span></div>
+                <div className={styles.Button_496_740}><span className={styles.generated_17_496_741}>17</span></div>
+                <div className={styles.Button_496_742}><span className={styles.generated_18_496_743}>18</span></div>
+                <div className={styles.Button_496_744}><span className={styles.generated_19_496_745}>19</span></div>
+                <div className={styles.Button_496_746}><span className={styles.generated_20_496_747}>20</span></div>
+                <div className={styles.Button_496_748}><span className={styles.generated_21_496_749}>21</span></div>
+                <div className={styles.Button_496_750}><span className={styles.generated_22_496_751}>22</span></div>
+                <div className={styles.Button_496_752}><span className={styles.generated_23_496_753}>23</span></div>
+                <div className={styles.Button_496_754}><span className={styles.generated_24_496_755}>24</span></div>
+                <div className={styles.Button_496_756}><span className={styles.generated_25_496_757}>25</span></div>
+                <div className={styles.Button_496_758}><span className={styles.generated_26_496_759}>26</span></div>
+                <div className={styles.Button_496_760}><span className={styles.generated_27_496_761}>27</span></div>
+                <div className={styles.Button_496_762}><span className={styles.generated_28_496_763}>28</span></div>
+                <div className={styles.Button_496_764}><span className={styles.generated_29_496_765}>29</span></div>
+                <div className={styles.Button_496_766}><span className={styles.generated_30_496_767}>30</span></div>
+                <div className={styles.Button_496_768}><span className={styles.generated_31_496_769}>31</span></div>
+                <div className={styles.Button_496_770}><span className={styles.generated_32_496_771}>32</span></div>
+                <div className={styles.Button_496_772}><span className={styles.generated_33_496_773}>33</span></div>
+                <div className={styles.Button_496_774}><span className={styles.generated_34_496_775}>34</span></div>
+                <div className={styles.Button_496_776}><span className={styles.generated_35_496_777}>35</span></div>
+                <div className={styles.Button_496_778}><span className={styles.generated_36_496_779}>36</span></div>
+                <div className={styles.Button_496_780}><span className={styles.generated_37_496_781}>37</span></div>
+                <div className={styles.Button_496_782}><span className={styles.generated_38_496_783}>38</span></div>
+                <div className={styles.Button_496_784}><span className={styles.generated_39_496_785}>39</span></div>
+                <div className={styles.Button_496_786}><span className={styles.generated_40_496_787}>40</span></div>
+                <div className={styles.Button_496_788}><span className={styles.generated_41_496_789}>41</span></div>
+                <div className={styles.Button_496_790}><span className={styles.generated_42_496_791}>42</span></div>
+                <div className={styles.Button_496_792}><span className={styles.generated_43_496_793}>43</span></div>
+                <div className={styles.Button_496_794}><span className={styles.generated_44_496_795}>44</span></div>
+                <div className={styles.Button_496_796}><span className={styles.generated_45_496_797}>45</span></div>
+                <div className={styles.Button_496_798}><span className={styles.generated_46_496_799}>46</span></div>
+                <div className={styles.Button_496_800}><span className={styles.generated_47_496_801}>47</span></div>
+                <div className={styles.Button_496_802}><span className={styles.generated_48_496_803}>48</span></div>
+                <div className={styles.Button_496_804}><span className={styles.generated_49_496_805}>49</span></div>
+                <div className={styles.Button_496_806}><span className={styles.generated_50_496_807}>50</span></div>
+              </div>
+              <div className={styles.Container_496_808}>
+                <div className={styles.Container_496_809}>
+                  <div className={styles.Container_496_810}></div>
+                  <div className={styles.Text_496_811}><span className={styles.SoalSaatIni_496_812}>Soal Saat Ini</span></div>
+                </div>
+                <div className={styles.Container_496_813}>
+                  <div className={styles.Container_496_814}></div>
+                  <div className={styles.Text_496_815}><span className={styles.SoalDitandai_496_816}>Soal Ditandai</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className={styles.NavigationButtons_496_817}>
+          <div className={styles.Button_496_818}>
+            <div className={styles.Icon_496_819}><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 12L6 8L10 4" stroke="#4A90E2" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div><span className={styles.Sebelumnya_496_821}>Sebelumnya</span>
+          </div>
+          <div className={styles.Button_496_822}><span className={styles.Selanjutnya_496_823}>Selanjutnya</span>
+            <div className={styles.Icon_496_824}><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 12L10 8L6 4" stroke="white" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
