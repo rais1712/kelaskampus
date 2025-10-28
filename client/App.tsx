@@ -59,6 +59,82 @@ const App = () => (
               } 
             />
 
+            {/* ✅ Siswa Routes */}
+            <Route 
+              path="/tryouts" 
+              element={
+                <ProtectedRoute requiredRole="siswa">
+                  <TryoutList />
+                </ProtectedRoute>
+              } 
+            />
+
+            <Route 
+              path="/profile" 
+              element={
+                <ProtectedRoute requiredRole="siswa">
+                  <Profile />
+                </ProtectedRoute>
+              } 
+            />
+
+            {/* ✅ TAMBAH ROUTE INI - Tryout Session Routes */}
+            <Route 
+              path="/tryout/:id/start" 
+              element={
+                <ProtectedRoute requiredRole="siswa">
+                  <div className="min-h-screen flex items-center justify-center bg-[#EFF6FB]">
+                    <div className="text-center max-w-md mx-auto p-8">
+                      <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-[#295782] to-[#1E3A5F] rounded-full flex items-center justify-center">
+                        <span className="text-2xl text-white">📝</span>
+                      </div>
+                      <h2 className="text-2xl font-bold text-[#1D293D] mb-4">
+                        Tryout Session
+                      </h2>
+                      <p className="text-[#64748B] mb-8">
+                        Halaman soal tryout sedang dalam tahap pengembangan. 
+                        Fitur ini akan segera tersedia!
+                      </p>
+                      <button
+                        onClick={() => window.history.back()}
+                        className="bg-[#295782] text-white px-6 py-3 rounded-xl font-semibold hover:bg-[#1E3A5F] transition-colors"
+                      >
+                        Kembali ke Daftar Tryout
+                      </button>
+                    </div>
+                  </div>
+                </ProtectedRoute>
+              } 
+            />
+
+            <Route 
+              path="/tryout/:id" 
+              element={
+                <ProtectedRoute requiredRole="siswa">
+                  <div className="min-h-screen flex items-center justify-center bg-[#EFF6FB]">
+                    <div className="text-center max-w-md mx-auto p-8">
+                      <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-[#16A34A] to-[#15803D] rounded-full flex items-center justify-center">
+                        <span className="text-2xl text-white">📊</span>
+                      </div>
+                      <h2 className="text-2xl font-bold text-[#1D293D] mb-4">
+                        Detail Tryout
+                      </h2>
+                      <p className="text-[#64748B] mb-8">
+                        Halaman detail tryout sedang dalam tahap pengembangan. 
+                        Fitur ini akan segera tersedia!
+                      </p>
+                      <button
+                        onClick={() => window.history.back()}
+                        className="bg-[#16A34A] text-white px-6 py-3 rounded-xl font-semibold hover:bg-[#15803D] transition-colors"
+                      >
+                        Kembali ke Daftar Tryout
+                      </button>
+                    </div>
+                  </div>
+                </ProtectedRoute>
+              } 
+            />
+
             {/* ✅ Admin Routes (Protected - Admin Only) */}
             <Route 
               path="/admin" 
@@ -141,30 +217,13 @@ const App = () => (
               } 
             />
 
-            <Route 
-              path="/profile" 
-              element={
-                <ProtectedRoute requiredRole="siswa">
-                  <Profile />
-                </ProtectedRoute>
-              } 
-            />
-
-            <Route 
-              path="/tryouts" 
-              element={
-                <ProtectedRoute requiredRole="siswa">
-                  <TryoutList />
-                </ProtectedRoute>
-              } 
-            />
-
             {/* 404 */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
-    </QueryClientProvider>
+    </QueryClientProvider>r
+  
   </GoogleOAuthProvider>
 );
 

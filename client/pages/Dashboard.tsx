@@ -59,7 +59,7 @@ export default function Dashboard() {
           .single();
 
         if (userData) {
-          setUserPhoto(userData.photo_profile || null); // ← TAMBAH INI
+          setUserPhoto(userData.photo_profile || null);
         }
           
         if (userError) {
@@ -70,7 +70,7 @@ export default function Dashboard() {
         const inisial = nama.split(" ").map((n: string) => n[0]).join("").substring(0, 2).toUpperCase();
         setUser({ nama, inisial });
       } else {
-        // ✅ UPDATED: Supabase Auth user (email/password signup)
+        // Supabase Auth user (email/password signup)
         const { data: { user: authUser } } = await supabase.auth.getUser();
         
         if (!authUser) {
@@ -80,10 +80,10 @@ export default function Dashboard() {
 
         console.log("Auth user:", authUser);
 
-        // ✅ Prioritas 1: Cek user_metadata
+        // Prioritas 1: Cek user_metadata
         let nama = authUser.user_metadata?.nama_lengkap || authUser.user_metadata?.full_name;
 
-        // ✅ Prioritas 2: Jika tidak ada, cek tabel users
+        // Prioritas 2: Jika tidak ada, cek tabel users
         if (!nama) {
           const { data: userData, error: userError } = await supabase
             .from("users")
@@ -96,7 +96,7 @@ export default function Dashboard() {
           }
         }
 
-        // ✅ Prioritas 3: Fallback ke email
+        // Prioritas 3: Fallback ke email
         if (!nama) {
           nama = authUser.email?.split("@")[0] || "Pengguna";
         }
@@ -163,6 +163,20 @@ export default function Dashboard() {
     }
   }
 
+  // Handler functions untuk navigasi
+  const handleStartTryout = () => {
+    navigate('/tryouts');
+  };
+
+  const handleViewAllTryouts = () => {
+    navigate('/tryouts');
+  };
+
+  const handleActivityClick = (activity: any) => {
+    // Navigasi ke detail hasil atau lanjutkan tryout
+    navigate('/tryouts');
+  };
+
   // Loading state
   if (!user) {
     return (
@@ -196,7 +210,10 @@ export default function Dashboard() {
             <p className="text-[14px] md:text-[16px] text-white/90 mb-4">
               Siap lanjut tryout hari ini? Mari mulai persiapan UTBK terbaikmu!
             </p>
-            <Button className="bg-white text-[#89B0C7] font-semibold px-6 py-2 rounded-2xl shadow-lg hover:bg-white/95">
+            <Button 
+              onClick={handleStartTryout}
+              className="bg-white text-[#89B0C7] font-semibold px-6 py-2 rounded-2xl shadow-lg hover:bg-white/95 cursor-pointer"
+            >
               Mulai Tryout
             </Button>
           </div>
@@ -252,7 +269,10 @@ export default function Dashboard() {
                         </div>
                       </div>
                     </div>
-                    <button className="flex items-center gap-1 text-[12px] text-[#89B0C7] font-medium hover:underline">
+                    <button 
+                      onClick={() => handleActivityClick(activity)}
+                      className="flex items-center gap-1 text-[12px] text-[#89B0C7] font-medium hover:underline cursor-pointer"
+                    >
                       {activity.action}
                       <ArrowRight className="w-3 h-3" />
                     </button>
@@ -271,7 +291,10 @@ export default function Dashboard() {
               <FileText className="w-8 h-8 text-[#89B1C7]" />
             </div>
             <p className="text-[16px] text-[#45556C]">Lihat dan mulai tryout terbaru</p>
-            <Button className="w-full bg-[#295782] hover:bg-[#295782]/90 text-white font-semibold rounded-2xl shadow-lg">
+            <Button 
+              onClick={handleViewAllTryouts}
+              className="w-full bg-[#295782] hover:bg-[#295782]/90 text-white font-semibold rounded-2xl shadow-lg cursor-pointer"
+            >
               Lihat Semua Tryout
             </Button>
           </div>

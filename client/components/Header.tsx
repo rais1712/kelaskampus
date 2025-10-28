@@ -17,6 +17,7 @@ export default function Header({ userName = "User", userPhoto, activeMenu, varia
   const handleLogout = async () => {
     await supabase.auth.signOut();
     localStorage.removeItem("sb_token");
+    localStorage.removeItem("auth_token");
     navigate("/signin");
   };
 
@@ -42,6 +43,34 @@ export default function Header({ userName = "User", userPhoto, activeMenu, varia
               </div>
             </Link>
           </div>
+
+          {/* Navigation Menu - TAMBAH INI */}
+          <nav className="hidden md:flex items-center space-x-8">
+            <Link 
+              to="/dashboard" 
+              className={`text-sm font-medium transition-colors hover:text-[#295782] ${
+                activeMenu === 'dashboard' ? 'text-[#295782] border-b-2 border-[#295782] pb-1' : 'text-gray-700'
+              }`}
+            >
+              Dashboard
+            </Link>
+            <Link 
+              to="/tryouts" 
+              className={`text-sm font-medium transition-colors hover:text-[#295782] ${
+                activeMenu === 'tryout' ? 'text-[#295782] border-b-2 border-[#295782] pb-1' : 'text-gray-700'
+              }`}
+            >
+              Tryout
+            </Link>
+            <Link 
+              to="/profile" 
+              className={`text-sm font-medium transition-colors hover:text-[#295782] ${
+                activeMenu === 'profile' ? 'text-[#295782] border-b-2 border-[#295782] pb-1' : 'text-gray-700'
+              }`}
+            >
+              Profil
+            </Link>
+          </nav>
 
           {/* Profile Menu */}
           <div className="relative">
@@ -71,12 +100,27 @@ export default function Header({ userName = "User", userPhoto, activeMenu, varia
             {showProfileMenu && (
               <div className="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-lg py-1 z-50 border border-gray-200">
                 <Link
+                  to="/dashboard"
+                  className="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100"
+                  onClick={() => setShowProfileMenu(false)}
+                >
+                  Dashboard
+                </Link>
+                <Link
+                  to="/tryouts"
+                  className="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100"
+                  onClick={() => setShowProfileMenu(false)}
+                >
+                  Tryout
+                </Link>
+                <Link
                   to="/profile"
                   className="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100"
                   onClick={() => setShowProfileMenu(false)}
                 >
                   Profil Saya
                 </Link>
+                <hr className="my-1" />
                 <button
                   onClick={handleLogout}
                   className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
