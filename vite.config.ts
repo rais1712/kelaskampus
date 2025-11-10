@@ -9,7 +9,9 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
     fs: {
-      allow: ["./client", "./shared"],
+      // ✅ FIX: Tambahkan "." untuk mengizinkan akses ke root directory
+      // Ini mengatasi error 403 Restricted saat mengakses index.html
+      allow: [".", "./client", "./shared"],
       deny: [".env", ".env.*", "*.{crt,pem}", "**/.git/**", "server/**"],
     },
   },

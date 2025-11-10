@@ -1,14 +1,31 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string | undefined;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
+export class SupabaseConfigError extends Error {}
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  // In development it's helpful to see a clear warning rather than creating a broken client
-  // that may produce harder to debug runtime errors.
-  console.warn(
-    'Warning: VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY is not set. Add them to your .env file or set environment variables.',
-  );
+export function getSupabaseClient(): SupabaseClient {
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL ?? "";
+  const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY ?? "";
+
+  const looksLikePlaceholder = (s: string) =>
+    !s || 
+    s.includes("your-supabase") || 
+    s.includes("your-anon-key") || 
+    s.includes("__BUILDER_PUBLIC_KEY__");
+
+  if (looksLikePlaceholder(supabaseUrl) || looksLikePlaceholder(supabaseAnonKey)) {
+    console.error(
+      "❌ Supabase not configured properly!\n" +
+      "Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in your .env file.\n" +
+      "See .env.example for reference."
+    );
+    
+    throw new SupabaseConfigError(
+      "Supabase not configured: set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in your .env (do not use the placeholder values)."
+    );
+  }
+
+  return createClient(supabaseUrl, supabaseAnonKey);
 }
 
-export const supabase = createClient(supabaseUrl ?? '', supabaseAnonKey ?? '');
+// Export a default instance for easy imports
+export const supabase = getSupabaseClient();

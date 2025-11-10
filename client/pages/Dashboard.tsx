@@ -292,9 +292,13 @@ export default function Dashboard() {
             <p className="text-xs md:text-sm text-white/90 mb-3">
               Siap lanjut tryout hari ini? Mari mulai persiapan UTBK terbaikmu!
             </p>
-            <Button className="bg-white text-[#89B0C7] font-semibold px-4 py-1.5 text-sm rounded-xl shadow-md hover:bg-white/95">
+            <Button 
+              onClick={() => navigate('/packages')}
+              className="bg-white text-[#89B0C7] font-semibold px-4 py-1.5 text-sm rounded-xl shadow-md hover:bg-white/95 transition-all"
+            >
               Beli Paket
             </Button>
+
           </div>
           <img 
             src="https://api.builder.io/api/v1/image/assets/TEMP/ab9e7e72930d26b30d78c7d637c199045db33620?width=320" 
