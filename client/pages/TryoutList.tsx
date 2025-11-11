@@ -1,5 +1,5 @@
 // pages/TryoutList.tsx
-// HYBRID: Tampilan code user + Fungsionalitas Direct Supabase + Empty state mockup
+
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -14,13 +14,6 @@ import { Button } from '@/components/ui/button';
 import { generateAccessToken } from '@/lib/tryoutToken';
 import { logAccessAttempt } from '@/lib/tryoutAccess';
 
-interface TryoutProgress {
-  status: 'not_started' | 'in_progress' | 'completed';
-  questions_answered: number;
-  total_questions: number;
-  score?: number | null;
-}
-
 interface Tryout {
   id: string;
   nama_tryout: string;
@@ -29,7 +22,6 @@ interface Tryout {
   status: string;
   durasi_menit: number;
   jumlah_soal: number;
-  progress: TryoutProgress;
 }
 
 export default function TryoutList() {
@@ -40,16 +32,13 @@ export default function TryoutList() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentUser, setCurrentUser] = useState<any>(null);
-  const [userProgress, setUserProgress] = useState<Map<string, TryoutProgress>>(new Map());
 
   const [selectedKategori, setSelectedKategori] = useState('Semua');
   const [selectedJadwal, setSelectedJadwal] = useState('Semua');
-  const [selectedStatus, setSelectedStatus] = useState('Semua');
   const [searchQuery, setSearchQuery] = useState('');
 
   const kategoriOptions = ['Semua', 'SNBT', 'UTBK', 'Saintek', 'Soshum', 'Campuran'];
   const jadwalOptions = ['Semua', 'Hari Ini', 'Minggu Ini', 'Bulan Ini'];
-  const statusOptions = ['Semua', 'Belum Dikerjakan', 'Sedang Dikerjakan', 'Selesai'];
 
   useEffect(() => {
     fetchCurrentUser();
@@ -57,14 +46,8 @@ export default function TryoutList() {
   }, []);
 
   useEffect(() => {
-    if (currentUser) {
-      fetchUserProgress();
-    }
-  }, [currentUser]);
-
-  useEffect(() => {
     filterTryouts();
-  }, [tryouts, selectedKategori, selectedJadwal, selectedStatus, searchQuery, userProgress]);
+  }, [tryouts, selectedKategori, selectedJadwal, searchQuery]);
 
   const fetchCurrentUser = async () => {
     try {
@@ -83,7 +66,7 @@ export default function TryoutList() {
     }
   };
 
-  // ✅ IMPROVED: Direct Supabase with API fallback
+  // ✅ FIXED: Only fetch tryouts via API
   const fetchTryouts = async () => {
     try {
       setIsLoading(true);
@@ -126,42 +109,6 @@ export default function TryoutList() {
     }
   };
 
-  const fetchUserProgress = async () => {
-    if (!currentUser?.user_id) return;
-    
-    try {
-      const { data, error } = await supabase
-        .from('user_attempts')
-        .select('tryout_id, status, score, finished_at, answers')
-        .eq('user_id', currentUser.user_id)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-
-      const progressMap = new Map<string, TryoutProgress>();
-      data?.forEach(attempt => {
-        if (!progressMap.has(attempt.tryout_id)) {
-          const answersCount = Object.keys(attempt.answers || {}).length;
-          const totalQuestions = 40; // Default, can be fetched from tryout
-
-          progressMap.set(attempt.tryout_id, {
-            tryout_id: attempt.tryout_id,
-            status: attempt.status,
-            score: attempt.score,
-            questions_answered: answersCount,
-            total_questions: totalQuestions,
-          });
-        }
-      });
-
-      setUserProgress(progressMap);
-      console.log(`✅ Loaded progress for ${progressMap.size} tryouts`);
-      
-    } catch (error) {
-      console.error('Error fetching progress:', error);
-    }
-  };
-
   const filterTryouts = () => {
     let filtered = [...tryouts];
 
@@ -197,21 +144,6 @@ export default function TryoutList() {
       });
     }
 
-    if (selectedStatus !== 'Semua') {
-      const statusMap: Record<string, string> = {
-        'Belum Dikerjakan': 'not_started',
-        'Sedang Dikerjakan': 'in_progress',
-        'Selesai': 'completed'
-      };
-      const mappedStatus = statusMap[selectedStatus];
-      
-      filtered = filtered.filter(t => {
-        const progress = userProgress.get(t.id);
-        if (!progress) return mappedStatus === 'not_started';
-        return progress.status === mappedStatus;
-      });
-    }
-
     if (searchQuery) {
       filtered = filtered.filter(t => 
         t.nama_tryout.toLowerCase().includes(searchQuery.toLowerCase())
@@ -221,57 +153,19 @@ export default function TryoutList() {
     setFilteredTryouts(filtered);
   };
 
-  const getStatusBadge = (tryoutId: string) => {
-    const progress = userProgress.get(tryoutId);
-
-    if (!progress || progress.status === 'not_started') {
-      return (
-        <div className="bg-gray-100 px-3 py-2 rounded-lg">
-          <span className="text-gray-700 text-[11px] font-medium">Belum Dimulai</span>
-        </div>
-      );
-    }
-    
-    if (progress.status === 'in_progress') {
-      return (
-        <div className="bg-blue-100 px-3 py-2 rounded-lg">
-          <span className="text-blue-600 text-[11px] font-medium">Berlangsung</span>
-        </div>
-      );
-    }
-    
+  // ✅ SIMPLIFIED: No progress status
+  const getStatusBadge = () => {
     return (
-      <div className="bg-green-100 px-3 py-2 rounded-lg">
-        <span className="text-green-600 text-[11px] font-medium">Selesai</span>
+      <div className="bg-blue-100 px-3 py-2 rounded-lg">
+        <span className="text-blue-700 text-[11px] font-medium">Tersedia</span>
       </div>
     );
-  };
-
-  const getButtonText = (tryoutId: string) => {
-    const progress = userProgress.get(tryoutId);
-    
-    if (!progress || progress.status === 'not_started') return 'Mulai';
-    if (progress.status === 'in_progress') return 'Lanjutkan';
-    return 'Review Hasil';
   };
 
   const handleStartTryout = async (tryoutId: string) => {
     if (!currentUser?.user_id) {
       toast.error('Silakan login terlebih dahulu');
       navigate('/signin');
-      return;
-    }
-
-    const progress = userProgress.get(tryoutId);
-
-    if (progress?.status === 'in_progress') {
-      toast.info('Melanjutkan sesi yang belum selesai...');
-      navigate(`/tryout/${tryoutId}/start`);
-      return;
-    }
-
-    if (progress?.status === 'completed') {
-      navigate(`/tryout/${tryoutId}/result`);
       return;
     }
 
@@ -329,12 +223,12 @@ export default function TryoutList() {
       <div className="max-w-[1363px] mx-auto px-8 py-6">
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-[#1d293d] mb-1">Semua Tryout</h1>
-          <p className="text-[#62748e]">Pilih tryout untuk mulai latihan atau lanjutkan.</p>
+          <p className="text-[#62748e]">Pilih tryout untuk mulai latihan.</p>
         </div>
 
         {/* Filter Bar */}
         <div className="bg-white rounded-xl shadow-sm p-5 mb-6">
-          <div className="grid grid-cols-4 gap-4">
+          <div className="grid grid-cols-3 gap-4">
             <div className="flex flex-col gap-1">
               <label className="text-[#1d293d] text-[13px] font-medium">Kategori</label>
               <div className="relative">
@@ -368,22 +262,6 @@ export default function TryoutList() {
             </div>
 
             <div className="flex flex-col gap-1">
-              <label className="text-[#1d293d] text-[13px] font-medium">Status</label>
-              <div className="relative">
-                <select
-                  value={selectedStatus}
-                  onChange={(e) => setSelectedStatus(e.target.value)}
-                  className="w-full bg-[#f1f5f9] rounded-lg px-3 py-2 text-[13px] text-[#717182] appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#89b0c7]"
-                >
-                  {statusOptions.map(option => (
-                    <option key={option} value={option}>{option}</option>
-                  ))}
-                </select>
-                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-1">
               <label className="text-[#1d293d] text-[13px] font-medium">Cari Tryout</label>
               <div className="relative">
                 <input
@@ -399,7 +277,7 @@ export default function TryoutList() {
           </div>
         </div>
 
-        {/* Empty State - Sesuai Mockup */}
+        {/* Empty State */}
         {filteredTryouts.length === 0 && (
           <div className="flex flex-col items-center justify-center py-16 bg-white rounded-2xl shadow-sm max-w-2xl mx-auto">
             <div className="w-24 h-24 bg-[#e6f3ff] rounded-full flex items-center justify-center mb-6">
@@ -426,79 +304,43 @@ export default function TryoutList() {
         {/* Tryout Grid */}
         {filteredTryouts.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredTryouts.map((tryout) => {
-              const progress = userProgress.get(tryout.id);
-
-              return (
-                <div
-                  key={tryout.id}
-                  className="bg-white rounded-2xl shadow-sm p-5 flex flex-col gap-3 hover:shadow-md transition-all hover:scale-[1.02] duration-200"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex-1">
-                      <h3 className="text-[#1d293d] text-[15px] font-semibold mb-1.5 line-clamp-2">
-                        {tryout.nama_tryout}
-                      </h3>
-                      <p className="text-[#62748e] text-[13px]">
-                        {tryout.jumlah_soal} Soal • {tryout.durasi_menit} Menit
-                      </p>
-                    </div>
-                    {getStatusBadge(tryout.id)}
+            {filteredTryouts.map((tryout) => (
+              <div
+                key={tryout.id}
+                className="bg-white rounded-2xl shadow-sm p-5 flex flex-col gap-3 hover:shadow-md transition-all hover:scale-[1.02] duration-200"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex-1">
+                    <h3 className="text-[#1d293d] text-[15px] font-semibold mb-1.5 line-clamp-2">
+                      {tryout.nama_tryout}
+                    </h3>
+                    <p className="text-[#62748e] text-[13px]">
+                      {tryout.jumlah_soal} Soal • {tryout.durasi_menit} Menit
+                    </p>
                   </div>
+                  {getStatusBadge()}
+                </div>
 
-                  {progress?.status === 'in_progress' && (
-                    <div className="flex flex-col gap-1.5">
-                      <div className="flex justify-between items-center text-[11px]">
-                        <span className="text-[#62748e]">
-                          Progress: {progress.questions_answered}/{progress.total_questions} Soal
-                        </span>
-                        <span className="text-[#1d293d] font-medium">
-                          {Math.round((progress.questions_answered / progress.total_questions) * 100)}%
-                        </span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-1.5">
-                        <div
-                          className="bg-[#89b0c7] h-1.5 rounded-full transition-all"
-                          style={{
-                            width: `${(progress.questions_answered / progress.total_questions) * 100}%`
-                          }}
-                        />
-                      </div>
-                    </div>
-                  )}
-
-                  {progress?.status === 'completed' && progress?.score !== null && (
-                    <div className="bg-green-50 rounded-lg p-3">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[#62748e] text-[11px]">Nilai Akhir</span>
-                        <span className="text-green-600 text-[15px] font-bold">
-                          {progress.score?.toFixed(1)}
-                        </span>
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-1.5">
-                      <Calendar className="w-3.5 h-3.5 text-[#62748e]" />
-                      <span className="text-[#62748e] text-[11px]">
-                        {format(new Date(tryout.tanggal_ujian), 'd MMM yyyy', { locale: idLocale })}
-                      </span>
-                    </div>
-                    <span className="text-[#89b0c7] text-[11px] font-medium bg-[#e6f3ff] px-2 py-1 rounded">
-                      {tryout.kategori}
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-1.5">
+                    <Calendar className="w-3.5 h-3.5 text-[#62748e]" />
+                    <span className="text-[#62748e] text-[11px]">
+                      {format(new Date(tryout.tanggal_ujian), 'd MMM yyyy', { locale: idLocale })}
                     </span>
                   </div>
-
-                  <button
-                    onClick={() => handleStartTryout(tryout.id)}
-                    className="w-full bg-gradient-to-r from-[#295782] to-[#295782] text-white px-4 py-2.5 rounded-xl text-[13px] font-semibold shadow-lg hover:shadow-xl transition-all hover:scale-[1.02]"
-                  >
-                    {getButtonText(tryout.id)}
-                  </button>
+                  <span className="text-[#89b0c7] text-[11px] font-medium bg-[#e6f3ff] px-2 py-1 rounded">
+                    {tryout.kategori}
+                  </span>
                 </div>
-              );
-            })}
+
+                <button
+                  onClick={() => handleStartTryout(tryout.id)}
+                  className="w-full bg-gradient-to-r from-[#295782] to-[#295782] text-white px-4 py-2.5 rounded-xl text-[13px] font-semibold shadow-lg hover:shadow-xl transition-all hover:scale-[1.02]"
+                >
+                  Mulai
+                </button>
+              </div>
+            ))}
           </div>
         )}
       </div>

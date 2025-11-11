@@ -1,508 +1,477 @@
 // pages/TryoutExam.tsx
-// Halaman ujian tryout dengan auto-save dan timer
+// ✅ FINAL VERSION - Handler sudah sesuai dengan QuestionDisplay props
 
-import { useEffect, useState, useCallback, useRef } from 'react';
-import { useNavigate, useParams, useLocation } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { toast } from 'sonner';
+import { useState, useEffect } from 'react';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { Flag } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { supabase } from '@/lib/supabase';
-import { getTryoutSession, clearTryoutSession } from '@/lib/tryoutToken';
-import { logAccessAttempt } from '@/lib/tryoutAccess';
-import { Timer } from '@/components/tryout/Timer';
-import { ConfirmDialog } from '@/components/tryout/ConfirmDialog';
+import Header from '@/components/Header';
 import QuestionDisplay from '@/components/exam/QuestionDisplay';
 import QuestionSidebar from '@/components/exam/QuestionSidebar';
-import QuestionNavigation from '@/components/exam/QuestionNavigation';
-
-interface Question {
-  id: string;
-  soal_text: string;
-  pilihan_a: string;
-  pilihan_b: string;
-  pilihan_c: string;
-  pilihan_d: string;
-  pilihan_e?: string;
-  jawaban_benar: string;
-  nomor_soal: number;
-  topik?: string;
-  kategori?: string;
-  irt_discrimination?: number;
-  irt_difficulty?: number;
-  irt_guessing?: number;
-}
+import { useExamSession } from '@/hooks/useExamSession';
 
 export default function TryoutExam() {
+  const { tryoutId } = useParams<{ tryoutId: string }>();
   const navigate = useNavigate();
-  const location = useLocation();
-  const { tryoutId } = useParams();
+  const [searchParams] = useSearchParams();
 
-  // State
+  const sessionId = searchParams.get('session');
+  const kategoriId = searchParams.get('kategori');
+
+  const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);
+  const [showSidebar, setShowSidebar] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>(null);
-  const [questions, setQuestions] = useState<Question[]>([]);
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [bookmarks, setBookmarks] = useState<Set<string>>(new Set());
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
-  const [showSubmitDialog, setShowSubmitDialog] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [attemptId, setAttemptId] = useState<string | null>(null);
-  const [timeRemaining, setTimeRemaining] = useState(0);
-  const [startTime] = useState(Date.now());
 
-  // Refs
-  const autoSaveIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const lastSaveRef = useRef<number>(Date.now());
+  // ✅ Get hook data
+  const {
+    questions,
+    currentIndex,
+    setCurrentIndex,
+    answers,
+    saveAnswer,
+    submitExam,
+    isLoading,
+    timeRemaining,
+    tryoutId: examTryoutId,
+    isSaving,
+    bookmarkedQuestions,
+    saveBookmarks
+  } = useExamSession(sessionId || '', kategoriId || undefined);
 
-  const sessionData = location.state?.sessionId;
-  const tryoutData = location.state?.tryoutData;
-  const subtestId = location.state?.subtestId;
-  const continueAttempt = location.state?.continueAttempt;
-  const attemptIdFromState = location.state?.attemptId;
-
+  // ✅ Fetch current user
   useEffect(() => {
-    loadUserData();
-    initializeExam();
-
-    return () => {
-      if (autoSaveIntervalRef.current) {
-        clearInterval(autoSaveIntervalRef.current);
-      }
-    };
+    fetchCurrentUser();
   }, []);
 
-  // ✅ Auto-save every 10 seconds
-  useEffect(() => {
-    autoSaveIntervalRef.current = setInterval(() => {
-      handleAutoSave();
-    }, 10000); // 10 seconds
-
-    return () => {
-      if (autoSaveIntervalRef.current) {
-        clearInterval(autoSaveIntervalRef.current);
-      }
-    };
-  }, [answers, attemptId]);
-
-  const loadUserData = async () => {
+  const fetchCurrentUser = async () => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        const { data: { user: authUser } } = await supabase.auth.getUser();
-        if (authUser) {
-          const { data: userData } = await supabase
-            .from("users")
-            .select("user_id, nama_lengkap")
-            .eq("auth_id", authUser.id)
-            .single();
-          
-          if (userData) {
-            setCurrentUser(userData);
-            return;
-          }
-        }
+        const { data: userData } = await supabase
+          .from('users')
+          .select('nama_lengkap, username, photo_profile')
+          .eq('auth_id', session.user.id)
+          .single();
+        setCurrentUser(userData);
       }
-      setCurrentUser({ user_id: 'temp-user', nama_lengkap: 'User' });
-    } catch (error) {
-      console.error('Error loading user:', error);
+    } catch (err) {
+      console.error('Error fetching user:', err);
     }
   };
 
-  const initializeExam = async () => {
+  // Redirect if no session
+  useEffect(() => {
+    if (!sessionId) {
+      toast.error('Session tidak valid');
+      navigate(`/tryout/${tryoutId}/start`);
+    }
+  }, [sessionId, navigate, tryoutId]);
+
+  // Auto-submit when time is up
+  useEffect(() => {
+    if (timeRemaining === 0 && questions.length > 0) {
+      handleAutoSubmit();
+    }
+  }, [timeRemaining, questions.length]);
+
+  const handleAutoSubmit = async () => {
+    toast.error('Waktu habis! Tryout akan disubmit otomatis.');
     try {
-      setIsLoading(true);
-
-      // If continuing, load existing attempt
-      if (continueAttempt && attemptIdFromState) {
-        await loadExistingAttempt(attemptIdFromState);
-        return;
-      }
-
-      // Verify session
-      if (!sessionData || !tryoutData) {
-        toast.error('Sesi tidak valid');
-        navigate('/tryout');
-        return;
-      }
-
-      const session = getTryoutSession(tryoutId!);
-      if (!session) {
-        toast.error('Sesi expired');
-        navigate('/tryout');
-        return;
-      }
-
-      // Load questions (Direct Supabase)
-      await loadQuestions();
-
-      // Create new attempt
-      await createNewAttempt(session);
-
-      // Set timer
-      const durationMs = (tryoutData.durasi_menit || 60) * 60 * 1000;
-      setTimeRemaining(durationMs);
-
-    } catch (error: any) {
-      console.error('Error initializing exam:', error);
-      toast.error('Gagal memulai ujian');
-      navigate('/tryout');
-    } finally {
-      setIsLoading(false);
+      await submitExam();
+      navigate(`/tryout/${tryoutId}/result?session=${sessionId}`);
+    } catch (err) {
+      console.error('Auto submit error:', err);
     }
   };
 
-  const loadQuestions = async () => {
-    console.log('🔄 [EXAM] Loading questions...');
-
+  const handleManualSubmit = async () => {
     try {
-      let query = supabase
-        .from('soal')
-        .select('*');
-
-      if (subtestId) {
-        query = query.eq('subtest_id', subtestId);
-      } else {
-        query = query.eq('tryout_id', tryoutId);
-      }
-
-      query = query.order('nomor_soal', { ascending: true });
-
-      const { data, error } = await query;
-
-      if (error) throw error;
-
-      // Randomize questions
-      const randomized = (data || []).sort(() => Math.random() - 0.5);
-      
-      setQuestions(randomized);
-      console.log(`✅ [EXAM] Loaded ${randomized.length} questions`);
-
-    } catch (error) {
-      console.error('❌ [EXAM] Failed to load questions:', error);
-      throw error;
+      await submitExam();
+      toast.success('Tryout berhasil disubmit!');
+      navigate(`/tryout/${tryoutId}/result?session=${sessionId}`);
+    } catch (err) {
+      toast.error('Gagal submit tryout');
     }
   };
 
-  const createNewAttempt = async (session: any) => {
-    console.log('🔄 [EXAM] Creating new attempt...');
-
-    try {
-      const { data, error } = await supabase
-        .from('user_attempts')
-        .insert([{
-          user_id: session.user_id,
-          tryout_id: session.tryout_id,
-          subtest_id: subtestId || null,
-          answers: {},
-          status: 'in_progress',
-          started_at: new Date().toISOString(),
-          session_data: {
-            session_id: session.session_id,
-            duration_minutes: session.duration_minutes,
-          }
-        }])
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      setAttemptId(data.id);
-      console.log(`✅ [EXAM] Attempt created: ${data.id}`);
-
-    } catch (error) {
-      console.error('❌ [EXAM] Failed to create attempt:', error);
-      throw error;
-    }
-  };
-
-  const loadExistingAttempt = async (id: string) => {
-    console.log(`🔄 [EXAM] Loading existing attempt: ${id}`);
-
-    try {
-      const { data, error } = await supabase
-        .from('user_attempts')
-        .select('*')
-        .eq('id', id)
-        .single();
-
-      if (error) throw error;
-
-      setAttemptId(data.id);
-      setAnswers(data.answers || {});
-
-      // Load questions
-      await loadQuestions();
-
-      // Calculate remaining time
-      const startedAt = new Date(data.started_at).getTime();
-      const elapsed = Date.now() - startedAt;
-      const durationMs = (data.session_data?.duration_minutes || 60) * 60 * 1000;
-      const remaining = Math.max(0, durationMs - elapsed);
-      
-      setTimeRemaining(remaining);
-
-      console.log(`✅ [EXAM] Loaded existing attempt`);
-      setIsLoading(false);
-
-    } catch (error) {
-      console.error('❌ [EXAM] Failed to load attempt:', error);
-      toast.error('Gagal memuat sesi sebelumnya');
-      navigate('/tryout');
-    }
-  };
-
-  const handleAutoSave = useCallback(async () => {
-    if (!attemptId || Object.keys(answers).length === 0) return;
-
-    // Throttle: only save if 5 seconds passed since last save
-    const now = Date.now();
-    if (now - lastSaveRef.current < 5000) return;
-
-    try {
-      setIsSaving(true);
-      lastSaveRef.current = now;
-
-      const { error } = await supabase
-        .from('user_attempts')
-        .update({
-          answers,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', attemptId);
-
-      if (error) throw error;
-
-      console.log('💾 [EXAM] Auto-saved');
-
-    } catch (error) {
-      console.error('❌ [EXAM] Auto-save failed:', error);
-    } finally {
-      setIsSaving(false);
-    }
-  }, [attemptId, answers]);
-
-  const handleAnswerChange = (questionId: string, answer: string) => {
-    setAnswers(prev => ({
-      ...prev,
-      [questionId]: answer
-    }));
-  };
-
-  const handleBookmark = (questionId: string) => {
-    setBookmarks(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(questionId)) {
-        newSet.delete(questionId);
-      } else {
-        newSet.add(questionId);
-      }
-      return newSet;
-    });
-  };
-
-  const handleTimeUp = () => {
-    toast.warning('Waktu habis! Mengumpulkan jawaban...');
-    setTimeout(() => {
-      handleSubmit();
-    }, 2000);
-  };
-
-  const handleSubmit = async () => {
-    if (!attemptId) {
-      toast.error('Attempt ID tidak ditemukan');
+  // ✅ CRITICAL FIX: Handler yang sesuai dengan QuestionDisplay props
+  // QuestionDisplay expects: onAnswerSelect: (answer: string) => void
+  // Hanya terima 1 parameter (answer key), bukan questionId
+  const handleAnswerSelect = (answer: string) => {
+    if (!currentQuestion) {
+      console.error('❌ No current question');
       return;
     }
 
-    setIsSubmitting(true);
-    setShowSubmitDialog(false);
+    console.log('✅ Answer selected:', answer, 'for question ID:', currentQuestion.id);
+    
+    // ✅ Call saveAnswer dari hook dengan question.id
+    saveAnswer(currentQuestion.id, answer);
+  };
+
+  // Get current question
+  const currentQuestion = questions[currentIndex];
+
+  // ✅ Exit handler
+  const handleExit = async () => {
+    console.log('🚪 Exit button clicked');
 
     try {
-      // Calculate statistics
-      const correctAnswers = questions.filter(q => answers[q.id] === q.jawaban_benar).length;
-      const wrongAnswers = questions.filter(q => answers[q.id] && answers[q.id] !== q.jawaban_benar).length;
-      const unanswered = questions.length - correctAnswers - wrongAnswers;
-      const timeSpent = Math.floor((Date.now() - startTime) / 1000); // seconds
-
-      // Simple score (will be recalculated with IRT in result page)
-      const simpleScore = Math.round((correctAnswers / questions.length) * 100);
-
-      // Update attempt
-      const { error } = await supabase
-        .from('user_attempts')
-        .update({
-          answers,
-          status: 'completed',
-          finished_at: new Date().toISOString(),
-          time_spent: timeSpent,
-          correct_answers: correctAnswers,
-          wrong_answers: wrongAnswers,
-          unanswered,
-          score: simpleScore,
-        })
-        .eq('id', attemptId);
-
-      if (error) throw error;
-
-      // Log completion
-      if (currentUser) {
-        logAccessAttempt(currentUser.user_id, tryoutId!, 'submit', true, {
-          attempt_id: attemptId,
-          score: simpleScore,
-        });
+      if (bookmarkedQuestions.length > 0) {
+        console.log('💾 Saving bookmarks before exit:', bookmarkedQuestions);
+        await saveBookmarks(bookmarkedQuestions);
       }
 
-      // Clear session
-      clearTryoutSession(tryoutId!);
+      await supabase
+        .from('tryout_sessions')
+        .update({
+          time_remaining: timeRemaining,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', sessionId);
 
-      toast.success('Jawaban berhasil dikumpulkan!');
+      toast.success('Progress tersimpan');
+    } catch (err) {
+      console.error('Error saving progress:', err);
+      toast.error('Gagal menyimpan progress');
+    }
 
-      // Navigate to result
-      setTimeout(() => {
-        navigate(`/tryout/${tryoutId}/result`, {
-          state: { attemptId }
-        });
-      }, 1500);
+    navigate(`/tryout/${tryoutId}/start`);
+  };
 
-    } catch (error) {
-      console.error('❌ [EXAM] Failed to submit:', error);
-      toast.error('Gagal mengumpulkan jawaban');
-      setIsSubmitting(false);
+  // ✅ Toggle bookmark
+  const handleToggleBookmark = async () => {
+    let updated: number[];
+
+    if (bookmarkedQuestions.includes(currentIndex)) {
+      updated = bookmarkedQuestions.filter(q => q !== currentIndex);
+      toast.success('Tanda soal dihapus');
+    } else {
+      updated = [...bookmarkedQuestions, currentIndex];
+      toast.success('Soal ditandai');
+    }
+
+    await saveBookmarks(updated);
+  };
+
+  const handlePrevious = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex(currentIndex - 1);
     }
   };
 
+  const handleNext = () => {
+    if (currentIndex < questions.length - 1) {
+      setCurrentIndex(currentIndex + 1);
+    }
+  };
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft' && currentIndex > 0) {
+        setCurrentIndex(currentIndex - 1);
+      } else if (e.key === 'ArrowRight' && currentIndex < questions.length - 1) {
+        setCurrentIndex(currentIndex + 1);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [currentIndex, questions.length, setCurrentIndex]);
+
+  // Prevent accidental page close
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = '';
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, []);
+
+  // Format time display
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  // Guard: Return null while redirecting
+  if (!sessionId) {
+    return null;
+  }
+
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-lg font-semibold text-gray-700">Memuat soal...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#295782] mx-auto"></div>
+          <p className="mt-4 text-gray-600">Memuat soal...</p>
         </div>
       </div>
     );
   }
 
-  if (questions.length === 0) {
+  if (!currentQuestion) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <Card className="p-8 text-center">
-          <p className="text-lg font-semibold text-gray-700 mb-4">
-            Tidak ada soal tersedia
-          </p>
-          <Button onClick={() => navigate('/tryout')}>
-            Kembali ke Daftar Tryout
-          </Button>
-        </Card>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600">Soal tidak ditemukan</p>
+        </div>
       </div>
     );
   }
-
-  const currentQuestion = questions[currentQuestionIndex];
-  const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
-  const answeredCount = Object.keys(answers).length;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b shadow-sm sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-xl font-bold text-gray-900">
-                {tryoutData?.nama_tryout}
-              </h1>
-              <p className="text-sm text-gray-500">
-                Soal {currentQuestionIndex + 1} dari {questions.length}
-              </p>
-            </div>
-
-            <div className="flex items-center gap-4">
-              {isSaving && (
-                <Badge variant="outline" className="bg-blue-50 text-blue-700">
-                  💾 Menyimpan...
-                </Badge>
-              )}
-              
-              <Timer
-                initialTime={timeRemaining}
-                onTimeUp={handleTimeUp}
-              />
-
-              <Button
-                onClick={() => setShowSubmitDialog(true)}
-                variant="default"
-                className="bg-green-600 hover:bg-green-700"
-              >
-                Selesai
-              </Button>
-            </div>
-          </div>
-
-          {/* Progress Bar */}
-          <div className="mt-4">
-            <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
-              <span>Progress: {answeredCount}/{questions.length} terjawab</span>
-              <span>{Math.round(progress)}%</span>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div
-                className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                style={{ width: `${progress}%` }}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-blue-50/30 to-white">
+      {/* Header Component */}
+      <Header
+        userName={currentUser?.username || currentUser?.nama_lengkap || 'User'}
+        userPhoto={currentUser?.photo_profile}
+      />
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Question Display - 3 columns */}
-          <div className="lg:col-span-3">
-            <QuestionDisplay
-              question={currentQuestion}
-              questionNumber={currentQuestionIndex + 1}
-              selectedAnswer={answers[currentQuestion.id]}
-              onAnswerChange={handleAnswerChange}
-              isBookmarked={bookmarks.has(currentQuestion.id)}
-              onBookmark={handleBookmark}
-            />
+      <div className="container mx-auto px-4 sm:px-6 lg:px-12 py-6">
+        {/* Title and Timer Section with Exit Button */}
+        <div className="flex items-start justify-between mb-6">
+          <div className="flex items-center gap-4">
+            {/* Tombol Keluar */}
+            <button
+              onClick={handleExit}
+              className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
+                />
+              </svg>
+              <span className="font-medium">Keluar</span>
+            </button>
 
-            <QuestionNavigation
-              currentIndex={currentQuestionIndex}
-              totalQuestions={questions.length}
-              onPrevious={() => setCurrentQuestionIndex(prev => Math.max(0, prev - 1))}
-              onNext={() => setCurrentQuestionIndex(prev => Math.min(questions.length - 1, prev + 1))}
-              hasPrevious={currentQuestionIndex > 0}
-              hasNext={currentQuestionIndex < questions.length - 1}
-            />
+            <div>
+              <h1 className="text-2xl font-medium text-gray-800 mb-2">
+                Ujian/Tes
+              </h1>
+              <p className="text-lg font-medium text-[#4A90E2]">
+                Soal {currentIndex + 1} dari {questions.length}
+              </p>
+            </div>
           </div>
 
-          {/* Sidebar - 1 column */}
-          <div className="lg:col-span-1">
-            <QuestionSidebar
-              questions={questions}
-              answers={answers}
-              bookmarks={bookmarks}
-              currentIndex={currentQuestionIndex}
-              onQuestionSelect={setCurrentQuestionIndex}
+          <div className="hidden sm:flex items-center gap-2 text-lg text-gray-700">
+            <span className="font-medium">Waktu Tersisa:</span>
+            <span className="font-mono text-xl font-bold">
+              {formatTime(timeRemaining)}
+            </span>
+          </div>
+        </div>
+
+        {/* Mobile Timer */}
+        <div className="sm:hidden mb-4 flex items-center gap-2 text-base text-gray-700">
+          <span className="font-medium">Waktu Tersisa:</span>
+          <span className="font-mono text-lg font-bold">
+            {formatTime(timeRemaining)}
+          </span>
+        </div>
+
+        {/* Question Card and Sidebar Layout */}
+        <div className="flex flex-col lg:flex-row gap-5">
+          {/* Main Question Area */}
+          <div className="flex-1">
+            {/* ✅ CRITICAL FIX: Passing props yang PERSIS sesuai dengan QuestionDisplay interface */}
+            <QuestionDisplay
+              question={currentQuestion}
+              selectedAnswer={answers[currentQuestion.id]}
+              onAnswerSelect={handleAnswerSelect}
+              isSaving={isSaving}
             />
+
+            {/* Navigation Buttons */}
+            <div className="mt-8 pt-6 border-t border-gray-200 flex flex-col sm:flex-row justify-between gap-4">
+              {/* Tombol Sebelumnya */}
+              {currentIndex > 0 && (
+                <button
+                  onClick={handlePrevious}
+                  className="rounded-xl border-2 border-[#4A90E2] text-[#4A90E2] hover:bg-blue-50 px-6 py-2.5 font-medium transition-colors flex items-center justify-center gap-2"
+                >
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 19l-7-7 7-7"
+                    />
+                  </svg>
+                  <span>Sebelumnya</span>
+                </button>
+              )}
+
+              {/* Spacer */}
+              {currentIndex === 0 && <div></div>}
+
+              {/* Tombol Selanjutnya atau Selesai */}
+              {currentIndex < questions.length - 1 ? (
+                <button
+                  onClick={handleNext}
+                  className="rounded-xl bg-[#295782] hover:bg-[#1e3f5f] text-white px-8 py-2.5 font-medium transition-colors flex items-center justify-center gap-2"
+                >
+                  <span>Selanjutnya</span>
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </button>
+              ) : (
+                <button
+                  onClick={() => setShowSubmitConfirm(true)}
+                  className="rounded-xl bg-[#00A63E] hover:bg-[#009038] text-white px-10 py-2.5 font-medium shadow-md transition-colors"
+                >
+                  Selesai
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Right Sidebar - Question Navigator */}
+          <div className="lg:w-64">
+            <div className="bg-white rounded-xl shadow-lg p-6 sticky top-6">
+              {/* Bookmark Button */}
+              <button
+                onClick={handleToggleBookmark}
+                className={`w-full mb-6 px-4 py-2.5 rounded-xl transition-colors flex items-center justify-center gap-2 font-medium ${
+                  bookmarkedQuestions.includes(currentIndex)
+                    ? 'bg-red-600 hover:bg-red-700 text-white'
+                    : 'bg-gray-700 hover:bg-gray-800 text-white'
+                }`}
+              >
+                <Flag
+                  size={18}
+                  className={
+                    bookmarkedQuestions.includes(currentIndex)
+                      ? 'fill-current'
+                      : ''
+                  }
+                />
+                {bookmarkedQuestions.includes(currentIndex)
+                  ? 'Batal Tandai Soal'
+                  : 'Tandai Soal'}
+              </button>
+
+              {/* Question Grid */}
+              <div className="grid grid-cols-5 gap-2 mb-6">
+                {questions.map((question, index) => {
+                  const isAnswered = !!answers[question.id];
+                  const isCurrent = index === currentIndex;
+                  const isBookmarked = bookmarkedQuestions.includes(index);
+
+                  return (
+                    <button
+                      key={question.id}
+                      onClick={() => setCurrentIndex(index)}
+                      className={`aspect-square rounded-lg font-bold text-sm transition-all ${
+                        isCurrent ? 'ring-2 ring-[#295782] ring-offset-2' : ''
+                      } ${
+                        isBookmarked
+                          ? 'bg-gray-500 text-white hover:bg-gray-600'
+                          : isAnswered
+                          ? 'bg-[#295782] text-white hover:bg-[#1e3f5f]'
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      }`}
+                    >
+                      {index + 1}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Legend */}
+              <div className="space-y-2.5 text-xs">
+                <p className="font-semibold text-gray-700 mb-3">Keterangan:</p>
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 rounded bg-[#295782]"></div>
+                  <span className="text-gray-600">Sudah dijawab</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 rounded bg-gray-500"></div>
+                  <span className="text-gray-600">Soal ditandai</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Submit Confirmation Dialog */}
-      <ConfirmDialog
-        open={showSubmitDialog}
-        onClose={() => setShowSubmitDialog(false)}
-        onConfirm={handleSubmit}
-        title="Konfirmasi Pengumpulan"
-        description={`Anda telah menjawab ${answeredCount} dari ${questions.length} soal. Apakah Anda yakin ingin mengumpulkan jawaban?`}
-        confirmText="Ya, Kumpulkan"
-        cancelText="Belum"
-        variant="warning"
-        isLoading={isSubmitting}
+      {/* Submit Confirmation Modal */}
+      {showSubmitConfirm && (
+        <>
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 z-40"
+            onClick={() => setShowSubmitConfirm(false)}
+          />
+          <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
+              <h3 className="text-xl font-bold mb-4">Konfirmasi Selesai</h3>
+              <p className="text-gray-600 mb-2">
+                Apakah kamu yakin ingin mengakhiri tryout? Pastikan semua jawaban
+                sudah benar.
+              </p>
+              <p className="text-sm text-gray-500 mb-6">
+                ⚠️ Soal terjawab: {Object.keys(answers).length}/{questions.length}
+              </p>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowSubmitConfirm(false)}
+                  className="flex-1 px-4 py-2.5 border-2 border-gray-300 rounded-xl hover:bg-gray-50 font-medium transition-colors"
+                >
+                  Batal
+                </button>
+                <button
+                  onClick={handleManualSubmit}
+                  className="flex-1 px-4 py-2.5 bg-[#00A63E] text-white rounded-xl hover:bg-[#009038] font-medium transition-colors"
+                >
+                  Ya, Selesai
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Question Sidebar Modal (Mobile) */}
+      <QuestionSidebar
+        show={showSidebar}
+        questions={questions}
+        answers={answers}
+        currentIndex={currentIndex}
+        bookmarkedQuestions={bookmarkedQuestions}
+        onQuestionSelect={setCurrentIndex}
+        onClose={() => setShowSidebar(false)}
       />
     </div>
   );
