@@ -1,346 +1,105 @@
-// ============================================
-// TRYOUT TOKENIZATION SYSTEM
-// ============================================
+// lib/tryoutToken.ts
+// Simple token management untuk tryout access (NO uuid dependency)
 
-export interface TryoutAccessToken {
+interface AccessToken {
   token: string;
-  tryout_id: string;
   user_id: string;
-  issued_at: number;
+  tryout_id: string;
+  created_at: number;
   expires_at: number;
-  session_id: string;
-  attempt_number: number;
 }
 
-export interface TryoutSession {
+interface TryoutSession {
   session_id: string;
-  tryout_id: string;
   user_id: string;
+  tryout_id: string;
   started_at: number;
-  expires_at: number;
   duration_minutes: number;
-  time_left: number;
-  is_active: boolean;
-  answers: Record<number, string>;
-  flagged_questions: Record<number, boolean>;
-  current_question: number;
 }
 
-export interface SubmissionToken {
-  token: string;
-  session_id: string;
-  tryout_id: string;
-  user_id: string;
-  answers: Record<number, string>;
-  time_spent: number;
-  submitted_at: number;
+// ✅ Generate unique ID (without uuid library)
+function generateUniqueId(): string {
+  return `${Date.now()}-${Math.random().toString(36).substring(2, 15)}`;
 }
 
-// ============================================
-// TOKEN GENERATION
-// ============================================
-
-/**
- * Generate access token untuk entry gate tryout
- */
-export const generateAccessToken = (
-  tryoutId: string,
-  userId: string,
-  attemptNumber: number = 1
-): TryoutAccessToken => {
-  const issuedAt = Date.now();
-  const expiresAt = issuedAt + (60 * 60 * 1000); // Valid for 1 hour
-  const sessionId = `sess-${userId}-${tryoutId}-${issuedAt}`;
-
-  const tokenData = {
-    tryout_id: tryoutId,
+// ✅ Generate access token
+export function generateAccessToken(userId: string, tryoutId: string): AccessToken {
+  const now = Date.now();
+  const token = {
+    token: `tryout_${generateUniqueId()}`,
     user_id: userId,
-    issued_at: issuedAt,
-    expires_at: expiresAt,
-    session_id: sessionId,
-    attempt_number: attemptNumber,
+    tryout_id: tryoutId,
+    created_at: now,
+    expires_at: now + (30 * 60 * 1000), // 30 minutes
   };
 
-  // Encode token (Base64 untuk MVP, production pakai JWT)
-  const token = btoa(JSON.stringify(tokenData));
+  // Store in localStorage
+  localStorage.setItem(`tryout_access_${tryoutId}`, JSON.stringify(token));
+  
+  return token;
+}
 
-  console.log('✅ Access token generated:', { tryoutId, userId, sessionId });
-
-  return {
-    token,
-    ...tokenData,
-  };
-};
-
-/**
- * Verify access token validity
- */
-export const verifyAccessToken = (token: string): TryoutAccessToken | null => {
+// ✅ Verify access token
+export function verifyAccessToken(token: string): { user_id: string; tryout_id: string } | null {
   try {
-    const decoded = JSON.parse(atob(token));
+    const stored = Object.keys(localStorage).find(key => {
+      if (key.startsWith('tryout_access_')) {
+        const data = JSON.parse(localStorage.getItem(key) || '{}');
+        return data.token === token;
+      }
+      return false;
+    });
 
-    // Check required fields
-    if (!decoded.tryout_id || !decoded.user_id || !decoded.session_id) {
-      console.error('❌ Token missing required fields');
+    if (!stored) return null;
+
+    const data: AccessToken = JSON.parse(localStorage.getItem(stored) || '{}');
+    
+    // Check expiry
+    if (Date.now() > data.expires_at) {
+      localStorage.removeItem(stored);
       return null;
     }
 
-    // Check expiration
-    if (decoded.expires_at < Date.now()) {
-      console.error('❌ Token expired');
-      return null;
-    }
-
-    console.log('✅ Access token verified');
     return {
-      token,
-      ...decoded,
+      user_id: data.user_id,
+      tryout_id: data.tryout_id,
     };
-  } catch (error) {
-    console.error('❌ Invalid token format:', error);
+  } catch {
     return null;
   }
-};
+}
 
-// ============================================
-// SESSION MANAGEMENT
-// ============================================
-
-/**
- * Create tryout session
- */
-export const createTryoutSession = (
-  accessToken: TryoutAccessToken,
+// ✅ Create tryout session
+export function createTryoutSession(
+  verified: { user_id: string; tryout_id: string },
   durationMinutes: number
-): TryoutSession => {
-  const startedAt = Date.now();
-  const expiresAt = startedAt + durationMinutes * 60 * 1000;
-
+): TryoutSession {
   const session: TryoutSession = {
-    session_id: accessToken.session_id,
-    tryout_id: accessToken.tryout_id,
-    user_id: accessToken.user_id,
-    started_at: startedAt,
-    expires_at: expiresAt,
+    session_id: `session_${generateUniqueId()}`,
+    user_id: verified.user_id,
+    tryout_id: verified.tryout_id,
+    started_at: Date.now(),
     duration_minutes: durationMinutes,
-    time_left: durationMinutes * 60,
-    is_active: true,
-    answers: {},
-    flagged_questions: {},
-    current_question: 1,
   };
 
-  // Save to localStorage
-  const storageKey = `tryout_session_${accessToken.tryout_id}`;
-  localStorage.setItem(storageKey, JSON.stringify(session));
-
-  console.log('✅ Session created:', session);
-
+  // Store in sessionStorage
+  sessionStorage.setItem(`tryout_session_${verified.tryout_id}`, JSON.stringify(session));
+  
   return session;
-};
+}
 
-/**
- * Get active session
- */
-export const getSession = (tryoutId: string): TryoutSession | null => {
+// ✅ Get session
+export function getTryoutSession(tryoutId: string): TryoutSession | null {
   try {
-    const storageKey = `tryout_session_${tryoutId}`;
-    const stored = localStorage.getItem(storageKey);
-
-    if (!stored) {
-      console.log('⚠️ No session found');
-      return null;
-    }
-
-    const session: TryoutSession = JSON.parse(stored);
-    return session;
-  } catch (error) {
-    console.error('❌ Error getting session:', error);
+    const stored = sessionStorage.getItem(`tryout_session_${tryoutId}`);
+    if (!stored) return null;
+    return JSON.parse(stored);
+  } catch {
     return null;
   }
-};
+}
 
-/**
- * Verify session validity
- */
-export const verifySession = (
-  sessionId: string,
-  tryoutId: string
-): TryoutSession | null => {
-  try {
-    const session = getSession(tryoutId);
-
-    if (!session) {
-      console.error('❌ Session not found');
-      return null;
-    }
-
-    // Check session ID match
-    if (session.session_id !== sessionId) {
-      console.error('❌ Session ID mismatch');
-      return null;
-    }
-
-    // Check if expired
-    if (session.expires_at < Date.now()) {
-      console.error('❌ Session expired');
-      return null;
-    }
-
-    // Check if active
-    if (!session.is_active) {
-      console.error('❌ Session not active');
-      return null;
-    }
-
-    console.log('✅ Session verified');
-    return session;
-  } catch (error) {
-    console.error('❌ Error verifying session:', error);
-    return null;
-  }
-};
-
-/**
- * Update session data
- */
-export const updateSession = (
-  tryoutId: string,
-  updates: Partial<TryoutSession>
-): boolean => {
-  try {
-    const session = getSession(tryoutId);
-    if (!session) return false;
-
-    const updatedSession = { ...session, ...updates };
-    const storageKey = `tryout_session_${tryoutId}`;
-    localStorage.setItem(storageKey, JSON.stringify(updatedSession));
-
-    return true;
-  } catch (error) {
-    console.error('❌ Error updating session:', error);
-    return false;
-  }
-};
-
-/**
- * Invalidate session (after submit)
- */
-export const invalidateSession = (tryoutId: string): void => {
-  try {
-    const session = getSession(tryoutId);
-    if (session) {
-      session.is_active = false;
-      const storageKey = `tryout_session_${tryoutId}`;
-      localStorage.setItem(storageKey, JSON.stringify(session));
-      console.log('✅ Session invalidated');
-    }
-  } catch (error) {
-    console.error('❌ Error invalidating session:', error);
-  }
-};
-
-/**
- * Clear session completely
- */
-export const clearSession = (tryoutId: string): void => {
-  const storageKey = `tryout_session_${tryoutId}`;
-  localStorage.removeItem(storageKey);
-  localStorage.removeItem(`tryout_access_${tryoutId}`);
-  console.log('✅ Session cleared');
-};
-
-// ============================================
-// SUBMISSION TOKEN
-// ============================================
-
-/**
- * Generate submission token
- */
-export const generateSubmissionToken = (
-  sessionId: string,
-  tryoutId: string,
-  userId: string,
-  answers: Record<number, string>,
-  timeSpent: number
-): SubmissionToken => {
-  const submittedAt = Date.now();
-
-  const submissionData = {
-    session_id: sessionId,
-    tryout_id: tryoutId,
-    user_id: userId,
-    answers,
-    time_spent: timeSpent,
-    submitted_at: submittedAt,
-  };
-
-  const token = btoa(JSON.stringify(submissionData));
-
-  console.log('✅ Submission token generated');
-
-  return {
-    token,
-    ...submissionData,
-  };
-};
-
-/**
- * Verify submission token
- */
-export const verifySubmissionToken = (token: string): SubmissionToken | null => {
-  try {
-    const decoded = JSON.parse(atob(token));
-
-    // Validate required fields
-    if (!decoded.session_id || !decoded.tryout_id || !decoded.answers) {
-      console.error('❌ Submission token missing required fields');
-      return null;
-    }
-
-    console.log('✅ Submission token verified');
-
-    return {
-      token,
-      ...decoded,
-    };
-  } catch (error) {
-    console.error('❌ Invalid submission token:', error);
-    return null;
-  }
-};
-
-// ============================================
-// HELPER UTILITIES
-// ============================================
-
-/**
- * Check if user has active session
- */
-export const hasActiveSession = (tryoutId: string): boolean => {
-  const session = getSession(tryoutId);
-  return session !== null && session.is_active && session.expires_at > Date.now();
-};
-
-/**
- * Get remaining time in session
- */
-export const getSessionTimeLeft = (tryoutId: string): number => {
-  const session = getSession(tryoutId);
-  if (!session) return 0;
-
-  const timeElapsed = Math.floor((Date.now() - session.started_at) / 1000);
-  const totalTime = session.duration_minutes * 60;
-  const timeLeft = totalTime - timeElapsed;
-
-  return Math.max(0, timeLeft);
-};
-
-/**
- * Format time for display (seconds to MM:SS)
- */
-export const formatTime = (seconds: number): string => {
-  const mins = Math.floor(seconds / 60);
-  const secs = seconds % 60;
-  return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-};
+// ✅ Clear session
+export function clearTryoutSession(tryoutId: string): void {
+  sessionStorage.removeItem(`tryout_session_${tryoutId}`);
+}
