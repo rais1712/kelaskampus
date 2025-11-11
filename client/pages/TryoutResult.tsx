@@ -1,543 +1,637 @@
 // pages/TryoutResult.tsx
-// Halaman hasil tryout dengan IRT scoring dan visualisasi
+// ✅ FINAL VERSION - Match UI screenshot + Direct Supabase pattern
 
-import { useEffect, useState } from 'react';
-import { useNavigate, useParams, useLocation } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { 
-  TrendingUp, 
-  Award, 
-  Clock, 
-  CheckCircle, 
-  XCircle, 
-  MinusCircle,
-  ArrowLeft,
-  Download,
-  Share2
-} from 'lucide-react';
-import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
-import { toast } from 'sonner';
+import { useState, useEffect } from 'react';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { ArrowLeft, Trophy, Target, Clock, BarChart3, RefreshCw, Home } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
-import { calculateIRTScore, calculateWeightedScore, calculateSimpleScore } from '@/lib/tryoutScoring';
+import toast from 'react-hot-toast';
+import Header from '@/components/Header';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  RadarChart,
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis,
+  Radar
+} from 'recharts';
 
-interface AttemptData {
+interface QuestionResult {
   id: string;
-  user_id: string;
-  tryout_id: string;
-  answers: Record<string, string>;
-  status: string;
-  started_at: string;
-  finished_at: string;
-  time_spent: number;
-  correct_answers: number;
-  wrong_answers: number;
+  questionNumber: number;
+  userAnswer: string | null;
+  correctAnswer: string;
+  isCorrect: boolean;
+  topic: string;
+  soal_text: string;
+}
+
+interface TopicStats {
+  topic: string;
+  correct: number;
+  wrong: number;
   unanswered: number;
+  totalQuestions: number;
+  percentage: number;
+}
+
+interface ResultStats {
   score: number;
+  totalQuestions: number;
+  correct: number;
+  wrong: number;
+  unanswered: number;
+  timeSpent: number;
+  isPassed: boolean;
+  passingGrade: number;
 }
 
 export default function TryoutResult() {
+  const { tryoutId } = useParams<{ tryoutId: string }>();
   const navigate = useNavigate();
-  const location = useLocation();
-  const { tryoutId } = useParams();
+  const [searchParams] = useSearchParams();
+  const sessionId = searchParams.get('session');
+  const kategoriId = searchParams.get('kategori');
 
   const [isLoading, setIsLoading] = useState(true);
-  const [attemptData, setAttemptData] = useState<AttemptData | null>(null);
-  const [questions, setQuestions] = useState<any[]>([]);
+  const [currentUser, setCurrentUser] = useState<any>(null);
   const [tryoutData, setTryoutData] = useState<any>(null);
-  const [irtResult, setIrtResult] = useState<any>(null);
-  const [viewMode, setViewMode] = useState<'summary' | 'detail'>('summary');
-
-  const attemptIdFromState = location.state?.attemptId;
+  const [sessionData, setSessionData] = useState<any>(null);
+  const [questions, setQuestions] = useState<QuestionResult[]>([]);
+  const [stats, setStats] = useState<ResultStats | null>(null);
+  const [topicStats, setTopicStats] = useState<TopicStats[]>([]);
+  const [viewMode, setViewMode] = useState<'table' | 'grid'>('grid');
 
   useEffect(() => {
-    loadResultData();
-  }, []);
+    // ✅ Validate sessionId
+    if (!sessionId) {
+      toast.error('Session tidak valid');
+      navigate('/tryout');
+      return;
+    }
 
-  const loadResultData = async () => {
+    fetchCurrentUser();
+    fetchResultData();
+  }, [sessionId]);
+
+  // ✅ PATTERN DARI ADMIN: Fetch current user via direct Supabase
+  const fetchCurrentUser = async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        const { data: userData } = await supabase
+          .from('users')
+          .select('user_id, nama_lengkap, username, photo_profile')
+          .eq('auth_id', session.user.id)
+          .single();
+        
+        setCurrentUser(userData);
+      }
+    } catch (err) {
+      console.error('Error fetching user:', err);
+    }
+  };
+
+  // ✅ PATTERN DARI ADMIN: Direct Supabase access (seperti ViewTryout.tsx)
+  const fetchResultData = async () => {
     try {
       setIsLoading(true);
+      console.log('🔍 Fetching result for session:', sessionId);
 
-      if (!attemptIdFromState) {
-        toast.error('Attempt ID tidak ditemukan');
-        navigate('/tryout');
-        return;
-      }
-
-      // Load attempt data (Direct Supabase)
-      const { data: attempt, error: attemptError } = await supabase
-        .from('user_attempts')
+      // ✅ 1. Fetch session data (DIRECT SUPABASE)
+      const { data: session, error: sessionError } = await supabase
+        .from('tryout_sessions')
         .select('*')
-        .eq('id', attemptIdFromState)
+        .eq('id', sessionId)
         .single();
 
-      if (attemptError) throw attemptError;
-      setAttemptData(attempt);
+      if (sessionError) throw sessionError;
+      if (!session) throw new Error('Session tidak ditemukan');
 
-      // Load tryout data
+      console.log('✅ Session data:', session);
+      setSessionData(session);
+
+      // ✅ 2. Fetch tryout detail (DIRECT SUPABASE)
       const { data: tryout, error: tryoutError } = await supabase
         .from('tryouts')
         .select('*')
-        .eq('id', attempt.tryout_id)
+        .eq('id', session.tryout_id)
         .single();
 
       if (tryoutError) throw tryoutError;
+      console.log('✅ Tryout data:', tryout);
       setTryoutData(tryout);
 
-      // Load questions
-      let query = supabase
-        .from('soal')
-        .select('*');
+      // ✅ 3. Fetch questions (DIRECT SUPABASE - Filter by kategori if provided)
+      let questionsQuery = supabase
+        .from('questions')
+        .select('*')
+        .eq('tryout_id', session.tryout_id)
+        .order('urutan', { ascending: true });
 
-      if (attempt.subtest_id) {
-        query = query.eq('subtest_id', attempt.subtest_id);
-      } else {
-        query = query.eq('tryout_id', attempt.tryout_id);
+      // ✅ Filter by kategori if kategoriId is provided (per subtest)
+      if (kategoriId) {
+        questionsQuery = questionsQuery.eq('kategori_id', kategoriId);
       }
 
-      const { data: questionsData, error: questionsError } = await query;
+      const { data: questionsData, error: questionsError } = await questionsQuery;
+
       if (questionsError) throw questionsError;
+      console.log('✅ Questions loaded:', questionsData?.length || 0);
 
-      setQuestions(questionsData || []);
+      // ✅ 4. Fetch answers (DIRECT SUPABASE)
+      const { data: answersData, error: answersError } = await supabase
+        .from('answers')
+        .select('*')
+        .eq('session_id', sessionId);
 
-      // Calculate IRT score
-      await calculateScore(attempt, questionsData || []);
+      if (answersError) throw answersError;
+
+      // Convert answers array to map
+      const answersMap: Record<string, string> = {};
+      answersData?.forEach(answer => {
+        answersMap[answer.question_id] = answer.selected_answer;
+      });
+
+      console.log('✅ Answers loaded:', Object.keys(answersMap).length);
+
+      // ✅ 5. Process questions with answers
+      const processedQuestions: QuestionResult[] = (questionsData || []).map((q, index) => ({
+        id: q.id,
+        questionNumber: index + 1,
+        userAnswer: answersMap[q.id] || null,
+        correctAnswer: q.jawaban_benar,
+        isCorrect: answersMap[q.id] === q.jawaban_benar,
+        topic: q.kategori_id || 'General',
+        soal_text: q.soal_text
+      }));
+
+      setQuestions(processedQuestions);
+
+      // ✅ 6. Calculate statistics
+      const calculatedStats = calculateStats(processedQuestions, tryout);
+      setStats(calculatedStats);
+
+      // ✅ 7. Calculate per-topic analysis
+      const topicAnalysis = calculateTopicStats(processedQuestions);
+      setTopicStats(topicAnalysis);
 
     } catch (error: any) {
-      console.error('Error loading result:', error);
-      toast.error('Gagal memuat hasil');
-      navigate('/tryout');
+      console.error('❌ Error fetching result:', error);
+      toast.error(error.message || 'Gagal memuat hasil tryout');
+      setTimeout(() => navigate('/tryout'), 2000);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const calculateScore = async (attempt: AttemptData, questionsData: any[]) => {
-    console.log('🔄 Calculating IRT score...');
+  // Calculate overall statistics
+  const calculateStats = (questions: QuestionResult[], tryout: any): ResultStats => {
+    let correct = 0;
+    let wrong = 0;
+    let unanswered = 0;
 
-    try {
-      // Try IRT first
-      const irtScore = calculateIRTScore(questionsData, attempt.answers);
-      
-      if (irtScore.success) {
-        console.log('✅ IRT score calculated:', irtScore);
-        setIrtResult(irtScore);
-
-        // Update attempt with IRT score
-        await supabase
-          .from('user_attempts')
-          .update({ 
-            score: irtScore.finalScore,
-            irt_theta: irtScore.theta,
-            irt_se: irtScore.standardError
-          })
-          .eq('id', attempt.id);
-
-        return;
+    questions.forEach(q => {
+      if (!q.userAnswer) {
+        unanswered++;
+      } else if (q.isCorrect) {
+        correct++;
+      } else {
+        wrong++;
       }
+    });
 
-      // Fallback to weighted score
-      console.warn('⚠️ IRT failed, trying weighted score...');
-      const weightedScore = calculateWeightedScore(questionsData, attempt.answers);
-      
-      if (weightedScore.success) {
-        console.log('✅ Weighted score calculated:', weightedScore);
-        setIrtResult(weightedScore);
+    const totalQuestions = questions.length;
+    const score = totalQuestions > 0 
+      ? Math.round((correct / totalQuestions) * 100) 
+      : 0;
 
-        await supabase
-          .from('user_attempts')
-          .update({ score: weightedScore.finalScore })
-          .eq('id', attempt.id);
+    const passingGrade = 65; // Default passing grade
+    const isPassed = score >= passingGrade;
 
-        return;
-      }
+    // Calculate time spent (from session data)
+    const durasiTotal = (tryout?.durasi_menit || 0) * 60; // in seconds
+    const timeRemaining = sessionData?.time_remaining || 0;
+    const timeSpent = durasiTotal - timeRemaining;
 
-      // Final fallback to simple score
-      console.warn('⚠️ Weighted failed, using simple score...');
-      const simpleScore = calculateSimpleScore(questionsData, attempt.answers);
-      console.log('✅ Simple score calculated:', simpleScore);
-      setIrtResult(simpleScore);
-
-    } catch (error) {
-      console.error('❌ Error calculating score:', error);
-      toast.error('Gagal menghitung skor');
-    }
+    return {
+      score,
+      totalQuestions,
+      correct,
+      wrong,
+      unanswered,
+      timeSpent: Math.max(0, timeSpent),
+      isPassed,
+      passingGrade
+    };
   };
 
+  // Calculate per-topic statistics
+  const calculateTopicStats = (questions: QuestionResult[]): TopicStats[] => {
+    const topicMap: Record<string, TopicStats> = {};
+
+    // Topic name mapping
+    const topicNameMap: Record<string, string> = {
+      'biologi': 'Biologi',
+      'kimia': 'Kimia',
+      'fisika': 'Fisika',
+      'matematika': 'Matematika',
+      'penmat': 'Matematika',
+      'pm': 'Matematika',
+      'kpu': 'Penalaran Umum',
+      'ppu': 'Penalaran Umum',
+      'kmbm': 'Literasi',
+      'pbm': 'Literasi',
+      'pk': 'Kuantitatif',
+      'pbi': 'Umum'
+    };
+
+    questions.forEach(q => {
+      const topicKey = q.topic.toLowerCase();
+      const topicName = topicNameMap[topicKey] || q.topic;
+
+      if (!topicMap[topicName]) {
+        topicMap[topicName] = {
+          topic: topicName,
+          correct: 0,
+          wrong: 0,
+          unanswered: 0,
+          totalQuestions: 0,
+          percentage: 0
+        };
+      }
+
+      topicMap[topicName].totalQuestions++;
+
+      if (!q.userAnswer) {
+        topicMap[topicName].unanswered++;
+      } else if (q.isCorrect) {
+        topicMap[topicName].correct++;
+      } else {
+        topicMap[topicName].wrong++;
+      }
+    });
+
+    // Calculate percentages
+    const statsArray = Object.values(topicMap);
+    statsArray.forEach(stat => {
+      stat.percentage = stat.totalQuestions > 0
+        ? Math.round((stat.correct / stat.totalQuestions) * 100)
+        : 0;
+    });
+
+    return statsArray.sort((a, b) => b.percentage - a.percentage);
+  };
+
+  // Format time display (MM:SS)
+  const formatTime = (seconds: number): string => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins} menit ${secs} detik`;
+  };
+
+  // Handle retry tryout
+  const handleRetry = () => {
+    navigate(`/tryout/${tryoutId}/start`);
+  };
+
+  // Loading state
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#EFF6FB] to-white">
+      <div className="min-h-screen bg-gradient-to-br from-[#e6f3ff] via-[#f8fbff] to-white flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-lg font-semibold text-gray-700">Menghitung hasil...</p>
+          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#295782] mx-auto mb-4"></div>
+          <p className="text-[#62748e] font-medium text-lg">Menghitung hasil...</p>
         </div>
       </div>
     );
   }
 
-  if (!attemptData || !irtResult) {
+  // No data state
+  if (!stats || !tryoutData) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <Card className="p-8 text-center">
-          <p className="text-lg font-semibold text-gray-700 mb-4">
-            Data hasil tidak ditemukan
-          </p>
-          <Button onClick={() => navigate('/tryout')}>
-            Kembali ke Daftar Tryout
-          </Button>
-        </Card>
+      <div className="min-h-screen bg-gradient-to-br from-[#e6f3ff] via-[#f8fbff] to-white flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto px-6">
+          <div className="bg-white rounded-2xl shadow-lg p-8">
+            <p className="text-lg text-[#1d293d] font-semibold mb-4">
+              Data hasil tidak ditemukan
+            </p>
+            <button
+              onClick={() => navigate('/tryout')}
+              className="px-6 py-3 bg-[#295782] text-white rounded-xl font-semibold hover:bg-[#1e3f5f] transition-colors"
+            >
+              Kembali ke Daftar Tryout
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
 
-  const { correct, wrong, unanswered, totalQuestions } = irtResult.statistics;
-  const timeSpentMinutes = Math.floor(attemptData.time_spent / 60);
-  const timeSpentSeconds = attemptData.time_spent % 60;
-
-  // Data for Pie Chart
-  const pieData = [
-    { name: 'Benar', value: correct, color: '#10b981' },
-    { name: 'Salah', value: wrong, color: '#ef4444' },
-    { name: 'Tidak Dijawab', value: unanswered, color: '#9ca3af' },
+  // Prepare chart data
+  const distributionData = [
+    { name: 'Benar', value: stats.correct, fill: '#3b82f6' },
+    { name: 'Salah', value: stats.wrong, fill: '#3b82f6' },
+    { name: 'Tidak Dijawab', value: stats.unanswered, fill: '#3b82f6' }
   ];
 
-  // Data for Topic Analysis Bar Chart
-  const topicData = irtResult.topicAnalysis?.map((topic: any) => ({
-    name: topic.topik || 'General',
-    Benar: topic.correct,
-    Salah: topic.wrong,
-    'Tidak Dijawab': topic.unanswered,
-  })) || [];
-
-  // Data for Radar Chart (Performance by Topic)
-  const radarData = irtResult.topicAnalysis?.map((topic: any) => ({
-    subject: topic.topik || 'General',
-    score: topic.percentage,
-  })) || [];
+  const radarData = topicStats.map(stat => ({
+    topic: stat.topic,
+    percentage: stat.percentage
+  }));
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#EFF6FB] to-white py-8 px-4">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <Button
-            variant="ghost"
-            onClick={() => navigate('/tryout')}
-            className="mb-4 hover:bg-gray-100"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Kembali ke Daftar Tryout
-          </Button>
+    <div className="min-h-screen bg-gradient-to-br from-[#e6f3ff] via-[#f8fbff] to-white">
+      <Header
+        userName={currentUser?.username || currentUser?.nama_lengkap || 'User'}
+        userPhoto={currentUser?.photo_profile}
+      />
 
-          <div className="text-center">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Hasil Tryout
-            </h1>
-            <p className="text-lg text-gray-600">{tryoutData?.nama_tryout}</p>
-            <p className="text-sm text-gray-500 mt-1">
-              Selesai pada {new Date(attemptData.finished_at).toLocaleString('id-ID')}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Back Button */}
+        <button
+          onClick={() => navigate('/tryout')}
+          className="flex items-center gap-2 text-[#62748e] hover:text-[#295782] mb-6 transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span className="text-sm font-medium">Kembali ke Daftar Tryout</span>
+        </button>
+
+        {/* =============== TOP SUMMARY CARDS =============== */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          {/* Score Card */}
+          <div className="bg-white rounded-2xl shadow-sm p-6 text-center">
+            <div className="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+              <Trophy className="w-7 h-7 text-blue-600" />
+            </div>
+            <div className="text-5xl font-bold text-[#1d293d] mb-2">
+              {stats.score}/100
+            </div>
+            <p className="text-[#62748e]">Skor Anda</p>
+          </div>
+
+          {/* Grade Badge */}
+          <div className="bg-white rounded-2xl shadow-sm p-6 text-center">
+            <div className={`w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-3 ${
+              stats.isPassed ? 'bg-green-100' : 'bg-red-100'
+            }`}>
+              <Target className={`w-7 h-7 ${stats.isPassed ? 'text-green-600' : 'text-red-600'}`} />
+            </div>
+            <div className={`inline-block px-6 py-2 rounded-full font-bold text-xl mb-2 ${
+              stats.isPassed ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+            }`}>
+              {stats.isPassed ? 'LULUS' : 'TIDAK LULUS'}
+            </div>
+            <p className="text-[#62748e] text-sm mt-2">
+              Passing Grade: {stats.passingGrade}
+            </p>
+          </div>
+
+          {/* Time Card */}
+          <div className="bg-white rounded-2xl shadow-sm p-6 text-center">
+            <div className="w-14 h-14 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
+              <Clock className="w-7 h-7 text-purple-600" />
+            </div>
+            <div className="text-2xl font-bold text-[#1d293d] mb-2">
+              {formatTime(stats.timeSpent)}
+            </div>
+            <p className="text-[#62748e] text-sm">
+              Dari total {stats.totalQuestions} soal
             </p>
           </div>
         </div>
 
-        {/* Score Card - Big & Beautiful */}
-        <Card className="mb-8 bg-gradient-to-br from-blue-600 to-purple-600 text-white shadow-2xl">
-          <CardContent className="p-8">
-            <div className="text-center">
-              <div className="inline-flex items-center justify-center w-32 h-32 bg-white rounded-full mb-6">
-                <Award className="w-16 h-16 text-blue-600" />
-              </div>
-              <h2 className="text-2xl font-semibold mb-2">Skor Akhir</h2>
-              <div className="text-7xl font-bold mb-4">
-                {irtResult.finalScore}
-              </div>
-              <div className="flex items-center justify-center gap-4 text-white/90">
-                <Badge className={`text-lg px-4 py-2 ${
-                  irtResult.performanceLevel === 'Sangat Baik' ? 'bg-green-500' :
-                  irtResult.performanceLevel === 'Baik' ? 'bg-blue-500' :
-                  irtResult.performanceLevel === 'Cukup' ? 'bg-yellow-500' :
-                  'bg-red-500'
-                }`}>
-                  {irtResult.performanceLevel}
-                </Badge>
-                {irtResult.method && (
-                  <Badge variant="outline" className="text-white border-white bg-white/20 px-4 py-2">
-                    {irtResult.method === 'irt' ? '📊 IRT 3PL' :
-                     irtResult.method === 'weighted' ? '⚖️ Weighted' : '📝 Simple'}
-                  </Badge>
-                )}
+        {/* =============== DETAIL HASIL UJIAN =============== */}
+        <div className="bg-white rounded-2xl shadow-sm p-6 mb-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+            <h2 className="text-xl font-bold text-[#1d293d]">
+              Detail Hasil Ujian
+            </h2>
+
+            {/* Toggle View */}
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-[#62748e]">Tampilan:</span>
+              <div className="flex bg-gray-100 rounded-lg p-1">
+                <button
+                  onClick={() => setViewMode('table')}
+                  className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                    viewMode === 'table'
+                      ? 'bg-[#295782] text-white shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  Tabel
+                </button>
+                <button
+                  onClick={() => setViewMode('grid')}
+                  className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                    viewMode === 'grid'
+                      ? 'bg-[#295782] text-white shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  Grid
+                </button>
               </div>
             </div>
-          </CardContent>
-        </Card>
-
-        {/* View Mode Toggle */}
-        <div className="flex justify-center mb-6">
-          <div className="inline-flex rounded-lg border border-gray-300 bg-white p-1">
-            <Button
-              variant={viewMode === 'summary' ? 'default' : 'ghost'}
-              onClick={() => setViewMode('summary')}
-              className="rounded-md"
-            >
-              📊 Ringkasan
-            </Button>
-            <Button
-              variant={viewMode === 'detail' ? 'default' : 'ghost'}
-              onClick={() => setViewMode('detail')}
-              className="rounded-md"
-            >
-              📋 Detail
-            </Button>
           </div>
+
+          {/* Grid View (10 columns per row) */}
+          {viewMode === 'grid' && (
+            <div className="grid grid-cols-5 sm:grid-cols-10 gap-2">
+              {questions.map((q) => {
+                const isAnswered = q.userAnswer !== null;
+                const bgColor = !isAnswered
+                  ? 'bg-gray-400'
+                  : q.isCorrect
+                  ? 'bg-green-500'
+                  : 'bg-red-500';
+
+                return (
+                  <div
+                    key={q.id}
+                    className={`aspect-square rounded-lg flex items-center justify-center font-bold text-sm text-white ${bgColor} hover:opacity-80 transition-opacity cursor-pointer`}
+                    title={`Soal ${q.questionNumber}: ${!isAnswered ? 'Tidak dijawab' : q.isCorrect ? 'Benar' : 'Salah'}`}
+                  >
+                    {q.questionNumber}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Table View */}
+          {viewMode === 'table' && (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b">
+                    <th className="text-left p-3 font-semibold">No</th>
+                    <th className="text-left p-3 font-semibold">Soal</th>
+                    <th className="text-left p-3 font-semibold">Jawaban Anda</th>
+                    <th className="text-left p-3 font-semibold">Jawaban Benar</th>
+                    <th className="text-left p-3 font-semibold">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {questions.map((q) => (
+                    <tr key={q.id} className="border-b hover:bg-gray-50">
+                      <td className="p-3">{q.questionNumber}</td>
+                      <td className="p-3 max-w-md truncate" dangerouslySetInnerHTML={{ __html: q.soal_text.substring(0, 100) + '...' }} />
+                      <td className="p-3">
+                        <span className={`px-2 py-1 rounded ${
+                          !q.userAnswer ? 'bg-gray-200 text-gray-600' : 'bg-blue-100 text-blue-700'
+                        }`}>
+                          {q.userAnswer || '-'}
+                        </span>
+                      </td>
+                      <td className="p-3">
+                        <span className="px-2 py-1 rounded bg-green-100 text-green-700">
+                          {q.correctAnswer}
+                        </span>
+                      </td>
+                      <td className="p-3">
+                        {!q.userAnswer ? (
+                          <span className="text-gray-500">Tidak dijawab</span>
+                        ) : q.isCorrect ? (
+                          <span className="text-green-600 font-semibold">✓ Benar</span>
+                        ) : (
+                          <span className="text-red-600 font-semibold">✗ Salah</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
 
-        {/* Summary View */}
-        {viewMode === 'summary' && (
-          <div className="space-y-6">
-            {/* Statistics Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-gray-500">Jawaban Benar</p>
-                      <p className="text-3xl font-bold text-green-600">{correct}</p>
-                    </div>
-                    <CheckCircle className="w-12 h-12 text-green-600" />
-                  </div>
-                </CardContent>
-              </Card>
+        {/* =============== ANALISIS & STATISTIK =============== */}
+        <div className="bg-white rounded-2xl shadow-sm p-6 mb-6">
+          <h2 className="text-xl font-bold text-[#1d293d] mb-6">
+            Analisis & Statistik
+          </h2>
 
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-gray-500">Jawaban Salah</p>
-                      <p className="text-3xl font-bold text-red-600">{wrong}</p>
-                    </div>
-                    <XCircle className="w-12 h-12 text-red-600" />
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-gray-500">Tidak Dijawab</p>
-                      <p className="text-3xl font-bold text-gray-600">{unanswered}</p>
-                    </div>
-                    <MinusCircle className="w-12 h-12 text-gray-600" />
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-gray-500">Waktu</p>
-                      <p className="text-3xl font-bold text-blue-600">
-                        {timeSpentMinutes}:{timeSpentSeconds.toString().padStart(2, '0')}
-                      </p>
-                    </div>
-                    <Clock className="w-12 h-12 text-blue-600" />
-                  </div>
-                </CardContent>
-              </Card>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Bar Chart - Distribusi Jawaban */}
+            <div>
+              <h3 className="font-semibold text-gray-700 mb-4">
+                Distribusi Jawaban
+              </h3>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={distributionData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="value" fill="#3b82f6" radius={[8, 8, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
             </div>
 
-            {/* Charts Row */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Pie Chart */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Distribusi Jawaban</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <PieChart>
-                      <Pie
-                        data={pieData}
-                        cx="50%"
-                        cy="50%"
-                        labelLine={false}
-                        label={({ name, value, percent }) => 
-                          `${name}: ${value} (${(percent * 100).toFixed(0)}%)`
-                        }
-                        outerRadius={100}
-                        fill="#8884d8"
-                        dataKey="value"
-                      >
-                        {pieData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
-                        ))}
-                      </Pie>
-                      <Tooltip />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
-
-              {/* Radar Chart */}
-              {radarData.length > 0 && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Performa per Topik</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ResponsiveContainer width="100%" height={300}>
-                      <RadarChart data={radarData}>
-                        <PolarGrid />
-                        <PolarAngleAxis dataKey="subject" />
-                        <PolarRadiusAxis domain={[0, 100]} />
-                        <Radar
-                          name="Persentase"
-                          dataKey="score"
-                          stroke="#3b82f6"
-                          fill="#3b82f6"
-                          fillOpacity={0.6}
-                        />
-                        <Tooltip />
-                      </RadarChart>
-                    </ResponsiveContainer>
-                  </CardContent>
-                </Card>
+            {/* Radar Chart - Analisis Per Topik */}
+            <div>
+              <h3 className="font-semibold text-gray-700 mb-4">
+                Analisis Per Topik
+              </h3>
+              {radarData.length > 0 ? (
+                <ResponsiveContainer width="100%" height={300}>
+                  <RadarChart data={radarData}>
+                    <PolarGrid />
+                    <PolarAngleAxis dataKey="topic" />
+                    <PolarRadiusAxis angle={90} domain={[0, 100]} />
+                    <Radar
+                      name="Persentase"
+                      dataKey="percentage"
+                      stroke="#3b82f6"
+                      fill="#3b82f6"
+                      fillOpacity={0.6}
+                    />
+                    <Tooltip />
+                  </RadarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-[300px] flex items-center justify-center text-gray-500">
+                  Tidak ada data topik
+                </div>
               )}
             </div>
-
-            {/* Topic Analysis Table */}
-            {irtResult.topicAnalysis && irtResult.topicAnalysis.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Analisis per Topik</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead>
-                        <tr className="border-b">
-                          <th className="text-left p-3">Topik</th>
-                          <th className="text-center p-3">Benar</th>
-                          <th className="text-center p-3">Salah</th>
-                          <th className="text-center p-3">Tidak Dijawab</th>
-                          <th className="text-center p-3">Persentase</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {irtResult.topicAnalysis.map((topic: any, index: number) => (
-                          <tr key={index} className="border-b hover:bg-gray-50">
-                            <td className="p-3 font-medium">{topic.topik || 'General'}</td>
-                            <td className="text-center p-3 text-green-600">{topic.correct}</td>
-                            <td className="text-center p-3 text-red-600">{topic.wrong}</td>
-                            <td className="text-center p-3 text-gray-600">{topic.unanswered}</td>
-                            <td className="text-center p-3">
-                              <Badge className={
-                                topic.percentage >= 80 ? 'bg-green-100 text-green-700' :
-                                topic.percentage >= 60 ? 'bg-blue-100 text-blue-700' :
-                                topic.percentage >= 40 ? 'bg-yellow-100 text-yellow-700' :
-                                'bg-red-100 text-red-700'
-                              }>
-                                {topic.percentage.toFixed(1)}%
-                              </Badge>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
           </div>
-        )}
 
-        {/* Detail View */}
-        {viewMode === 'detail' && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Detail Jawaban</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {questions.map((question, index) => {
-                  const userAnswer = attemptData.answers[question.id];
-                  const isCorrect = userAnswer === question.jawaban_benar;
-                  const isAnswered = !!userAnswer;
-
-                  return (
-                    <div
-                      key={question.id}
-                      className={`p-4 rounded-lg border-2 ${
-                        !isAnswered ? 'border-gray-300 bg-gray-50' :
-                        isCorrect ? 'border-green-300 bg-green-50' : 'border-red-300 bg-red-50'
-                      }`}
-                    >
-                      <div className="flex items-start gap-3">
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                          !isAnswered ? 'bg-gray-400' :
-                          isCorrect ? 'bg-green-500' : 'bg-red-500'
-                        } text-white font-bold`}>
-                          {index + 1}
-                        </div>
-                        <div className="flex-1">
-                          <p className="font-medium text-gray-900 mb-2">
-                            {question.soal_text}
-                          </p>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
-                            {['a', 'b', 'c', 'd', 'e'].filter(opt => question[`pilihan_${opt}`]).map(option => {
-                              const optionValue = option.toUpperCase();
-                              const isUserChoice = userAnswer === optionValue;
-                              const isCorrectAnswer = question.jawaban_benar === optionValue;
-
-                              return (
-                                <div
-                                  key={option}
-                                  className={`p-2 rounded ${
-                                    isCorrectAnswer ? 'bg-green-100 border-2 border-green-500' :
-                                    isUserChoice ? 'bg-red-100 border-2 border-red-500' :
-                                    'bg-white border border-gray-200'
-                                  }`}
-                                >
-                                  <span className="font-semibold">{optionValue}.</span> {question[`pilihan_${option}`]}
-                                  {isCorrectAnswer && <span className="ml-2 text-green-600">✓ Jawaban Benar</span>}
-                                  {isUserChoice && !isCorrectAnswer && <span className="ml-2 text-red-600">✗ Jawaban Anda</span>}
-                                </div>
-                              );
-                            })}
-                          </div>
-                          {!isAnswered && (
-                            <p className="text-sm text-gray-500 mt-2">Tidak dijawab</p>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
+          {/* Topic Stats Table */}
+          {topicStats.length > 0 && (
+            <div className="mt-8">
+              <h3 className="font-semibold text-gray-700 mb-4">
+                Detail Per Topik
+              </h3>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="text-left p-3 font-semibold">Topik</th>
+                      <th className="text-center p-3 font-semibold">Benar</th>
+                      <th className="text-center p-3 font-semibold">Salah</th>
+                      <th className="text-center p-3 font-semibold">Tidak Dijawab</th>
+                      <th className="text-center p-3 font-semibold">Persentase</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {topicStats.map((stat) => (
+                      <tr key={stat.topic} className="border-b hover:bg-gray-50">
+                        <td className="p-3">{stat.topic || 'General'}</td>
+                        <td className="p-3 text-center text-green-600 font-semibold">
+                          {stat.correct}
+                        </td>
+                        <td className="p-3 text-center text-red-600 font-semibold">
+                          {stat.wrong}
+                        </td>
+                        <td className="p-3 text-center text-gray-500">
+                          {stat.unanswered}
+                        </td>
+                        <td className="p-3 text-center">
+                          <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                            stat.percentage >= 70
+                              ? 'bg-green-100 text-green-700'
+                              : stat.percentage >= 50
+                              ? 'bg-yellow-100 text-yellow-700'
+                              : 'bg-red-100 text-red-700'
+                          }`}>
+                            {stat.percentage}%
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
-            </CardContent>
-          </Card>
-        )}
+            </div>
+          )}
+        </div>
 
-        {/* Action Buttons */}
-        <div className="mt-8 flex justify-center gap-4">
-          <Button
-            onClick={() => navigate('/tryout')}
-            variant="outline"
-            size="lg"
+        {/* =============== ACTION BUTTONS =============== */}
+        <div className="flex flex-col sm:flex-row gap-4">
+          <button
+            onClick={handleRetry}
+            className="flex-1 flex items-center justify-center gap-2 px-6 py-3 border-2 border-[#295782] text-[#295782] rounded-xl font-semibold hover:bg-blue-50 transition-colors"
           >
-            Kembali ke Daftar
-          </Button>
-          <Button
-            onClick={() => window.print()}
-            variant="default"
-            size="lg"
-            className="bg-blue-600 hover:bg-blue-700"
+            <RefreshCw className="w-5 h-5" />
+            Ulangi Tryout
+          </button>
+          <button
+            onClick={() => navigate('/dashboard')}
+            className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-[#295782] text-white rounded-xl font-semibold hover:bg-[#1e3f5f] transition-colors shadow-md hover:shadow-lg"
           >
-            <Download className="w-5 h-5 mr-2" />
-            Cetak Hasil
-          </Button>
+            <Home className="w-5 h-5" />
+            Kembali ke Dashboard
+          </button>
         </div>
       </div>
     </div>

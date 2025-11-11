@@ -1,3 +1,6 @@
+// pages/PackageCheckout.tsx
+// ✅ FINAL VERSION - Direct Supabase insert, match admin pattern
+
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { Check, CheckCircle2, Wallet, Building2, CreditCard, Coins } from 'lucide-react';
@@ -7,9 +10,20 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import Header from '@/components/Header';
-import { Package } from '@/lib/mockPackageData';
 import { toast } from 'sonner';
-import { supabase } from '@/lib/supabase'; // Uncomment untuk real API
+import { supabase } from '@/lib/supabase';
+
+interface Package {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  original_price: number;
+  duration: number;
+  tryout_count: number;
+  benefits: string[];
+  is_popular: boolean;
+}
 
 export default function PackageCheckout() {
   const navigate = useNavigate();
@@ -17,35 +31,34 @@ export default function PackageCheckout() {
   const { id } = useParams();
   const packageData = location.state?.package as Package;
 
-  const [paymentMethod, setPaymentMethod] = useState<string>('');
+  const [paymentMethod, setPaymentMethod] = useState('');
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>(null);
 
-  // Payment Methods Configuration
   const paymentMethods = [
     {
       id: 'e_wallet',
       name: 'E-Wallet (OVO, GoPay, DANA, ShopeePay)',
-      icon: <Wallet className="w-5 h-5 text-[#295782]" />,
+      icon: <Wallet className="w-5 h-5" />,
       bgColor: 'bg-[#295782]/10'
     },
     {
       id: 'bank_transfer',
       name: 'Transfer Bank (BCA, Mandiri, BNI, BRI)',
-      icon: <Building2 className="w-5 h-5 text-[#295782]" />,
+      icon: <Building2 className="w-5 h-5" />,
       bgColor: 'bg-[#295782]/10'
     },
     {
       id: 'virtual_account',
       name: 'Virtual Account',
-      icon: <CreditCard className="w-5 h-5 text-[#295782]" />,
+      icon: <CreditCard className="w-5 h-5" />,
       bgColor: 'bg-[#295782]/10'
     },
     {
       id: 'saldo_kampus',
       name: 'Saldo Kelas Kampus',
-      icon: <Coins className="w-5 h-5 text-[#295782]" />,
+      icon: <Coins className="w-5 h-5" />,
       bgColor: 'bg-[#295782]/10'
     }
   ];
@@ -56,78 +69,70 @@ export default function PackageCheckout() {
       navigate('/packages');
       return;
     }
+
     loadUserData();
   }, [packageData, navigate]);
 
   const loadUserData = async () => {
-  try {
-    // ✅ REAL USER DATA dari Supabase
-    const { data: { session } } = await supabase.auth.getSession();
-    
-    if (session) {
-      // OAuth user
-      const { data: { user: authUser } } = await supabase.auth.getUser();
-      
-      if (authUser) {
-        const { data: userData } = await supabase
-          .from("users")
-          .select("user_id, nama_lengkap, email, photo_profile")
-          .eq("auth_id", authUser.id)
-          .single();
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        const { data: { user: authUser } } = await supabase.auth.getUser();
+        if (authUser) {
+          const { data: userData } = await supabase
+            .from('users')
+            .select('user_id, nama_lengkap, email, photo_profile, username')
+            .eq('auth_id', authUser.id)
+            .single();
 
-        if (userData) {
-          setCurrentUser({
-            user_id: userData.user_id,
-            nama: userData.nama_lengkap || authUser.user_metadata?.nama_lengkap || authUser.email?.split("@")[0] || "User",
-            email: userData.email || authUser.email,
-            photo: userData.photo_profile
-          });
-          return;
+          if (userData) {
+            setCurrentUser({
+              user_id: userData.user_id,
+              nama: userData.username || userData.nama_lengkap || authUser.email?.split('@')[0] || 'User',
+              email: userData.email || authUser.email,
+              photo: userData.photo_profile
+            });
+            return;
+          }
+        }
+      } else {
+        const token = localStorage.getItem('auth_token');
+        if (token) {
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          const { data: userData } = await supabase
+            .from('users')
+            .select('user_id, nama_lengkap, email, photo_profile, username')
+            .eq('user_id', payload.user_id)
+            .single();
+
+          if (userData) {
+            setCurrentUser({
+              user_id: userData.user_id,
+              nama: userData.username || userData.nama_lengkap || payload.email?.split('@')[0] || 'User',
+              email: userData.email || payload.email,
+              photo: userData.photo_profile
+            });
+            return;
+          }
         }
       }
-    } else {
-      // Token-based user
-      const token = localStorage.getItem("auth_token");
-      if (token) {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        
-        const { data: userData } = await supabase
-          .from("users")
-          .select("user_id, nama_lengkap, email, photo_profile")
-          .eq("user_id", payload.user_id)
-          .single();
 
-        if (userData) {
-          setCurrentUser({
-            user_id: userData.user_id,
-            nama: userData.nama_lengkap || payload.nama_lengkap || payload.email?.split("@")[0] || "User",
-            email: userData.email || payload.email,
-            photo: userData.photo_profile
-          });
-          return;
-        }
-      }
+      setCurrentUser({
+        user_id: 'temp-id',
+        nama: 'User',
+        email: 'user@example.com',
+        photo: null
+      });
+    } catch (error) {
+      console.error('Error loading user data:', error);
+      setCurrentUser({
+        user_id: 'temp-id',
+        nama: 'User',
+        email: 'user@example.com',
+        photo: null
+      });
     }
-
-    // Fallback
-    setCurrentUser({
-      user_id: "temp-id",
-      nama: "User",
-      email: "user@example.com",
-      photo: null
-    });
-
-  } catch (error) {
-    console.error('Error loading user data:', error);
-    setCurrentUser({
-      user_id: "temp-id",
-      nama: "User",
-      email: "user@example.com",
-      photo: null
-    });
-  }
-};
-
+  };
 
   const calculateDiscount = () => {
     return packageData.original_price - packageData.price;
@@ -137,7 +142,12 @@ export default function PackageCheckout() {
     return Math.round((calculateDiscount() / packageData.original_price) * 100);
   };
 
-  const handleSubmit = async () => {
+
+
+// pages/PackageCheckout.tsx
+// ✅ MINIMAL VERSION - Hanya field yang pasti ada
+
+const handleSubmit = async () => {
   if (!paymentMethod) {
     toast.error('Pilih metode pembayaran terlebih dahulu');
     return;
@@ -148,31 +158,47 @@ export default function PackageCheckout() {
     return;
   }
 
+  if (!currentUser || !currentUser.user_id || currentUser.user_id === 'temp-id') {
+    toast.error('User tidak terautentikasi. Silakan login kembali.');
+    return;
+  }
+
   try {
     setIsSubmitting(true);
+    console.log('💳 Creating transaction...');
 
-    const transactionData = {
-      id: `trx-${Date.now()}`,
+    // ✅ MINIMAL PAYLOAD - Hanya core fields
+    const transactionPayload = {
       user_id: currentUser.user_id,
-      user_name: currentUser.nama,
-      user_email: currentUser.email,
       package_id: packageData.id,
-      package_name: packageData.name,
-      package_price: packageData.price,
-      original_price: packageData.original_price,
-      discount: calculateDiscount(),
       payment_method: paymentMethod,
-      amount: packageData.price,
+      amount: Number(packageData.price),
       status: 'pending',
-      created_at: new Date().toISOString()
+      created_at: new Date().toISOString(),
+      // ❌ HAPUS: discount dan original_price (column tidak ada)
     };
 
-    // ✅ Save transaction to localStorage
-    const existingTransactions = JSON.parse(localStorage.getItem('package_transactions') || '[]');
-    existingTransactions.push(transactionData);
-    localStorage.setItem('package_transactions', JSON.stringify(existingTransactions));
+    console.log('📝 Transaction payload:', transactionPayload);
 
-    // ✅ IMPORTANT: Save current transaction ID untuk Payment Instruction page
+    // ✅ INSERT ke table "transactions"
+    const { data: transactionData, error: transactionError } = await supabase
+      .from('transactions')
+      .insert([transactionPayload])
+      .select()
+      .single();
+
+    if (transactionError) {
+      console.error('❌ Transaction error:', transactionError);
+      throw new Error(transactionError.message || 'Gagal membuat transaksi');
+    }
+
+    if (!transactionData) {
+      throw new Error('Transaksi berhasil dibuat tetapi tidak ada data yang dikembalikan');
+    }
+
+    console.log('✅ Transaction created:', transactionData);
+
+    // ✅ Save to localStorage
     localStorage.setItem('current_transaction', JSON.stringify({
       transaction: transactionData,
       paymentMethod,
@@ -180,27 +206,25 @@ export default function PackageCheckout() {
     }));
 
     toast.success('Transaksi berhasil dibuat! Silakan lakukan pembayaran.');
-    
-    // ✅ Navigate dengan state DAN localStorage backup
+
+    // ✅ Navigate to payment instruction
     setTimeout(() => {
-      navigate('/packages/payment-instruction', { 
-        state: { 
+      navigate('/packages/payment-instruction', {
+        state: {
           transaction: transactionData,
           paymentMethod,
           packageData
-        } 
+        }
       });
     }, 1500);
 
-  } catch (error) {
-    console.error('Checkout error:', error);
-    toast.error('Gagal memproses transaksi');
+  } catch (error: any) {
+    console.error('❌ Checkout error:', error);
+    toast.error(error.message || 'Gagal memproses transaksi');
   } finally {
     setIsSubmitting(false);
   }
 };
-
-
 
 
   const handleCancel = () => {
@@ -222,108 +246,98 @@ export default function PackageCheckout() {
   }
 
   return (
-    <div className="min-h-screen bg-[#EFF6FB]">
+    <div className="min-h-screen bg-gradient-to-br from-[#e6f3ff] via-[#f8fbff] to-white">
       <Header 
-        userName={currentUser?.nama || "User"}
-        activeMenu="package"
-        variant="default"
+        userName={currentUser?.nama || 'User'}
+        userPhoto={currentUser?.photo}
       />
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
-        {/* Page Title */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-[#1E293B] mb-2">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-[#1d293d] mb-2">
             Transaksi Paket
           </h1>
-          <p className="text-sm text-[#64748B]">
+          <p className="text-[#62748e]">
             Selesaikan pembayaran untuk mengaktifkan paket tryout Anda
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left: Payment Details */}
           <div className="lg:col-span-2 space-y-6">
             {/* Package Selected Card */}
-            <Card className="bg-white rounded-2xl shadow-sm p-6">
-              <h2 className="text-lg font-bold text-[#1E293B] mb-4">
+            <Card className="p-6">
+              <h2 className="text-lg font-bold text-[#1d293d] mb-4">
                 Paket yang Dipilih
               </h2>
-
-              <div className="flex items-start gap-4 p-4 bg-[#F8FAFC] rounded-xl border border-gray-200">
-                <div className="w-12 h-12 rounded-lg bg-[#295782] flex items-center justify-center flex-shrink-0">
-                  <CheckCircle2 className="w-6 h-6 text-white" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-base font-bold text-[#1E293B] mb-1">
+              <div className="flex items-start justify-between">
+                <div>
+                  <h3 className="text-xl font-bold text-[#295782] mb-2">
                     {packageData.name}
                   </h3>
-                  <p className="text-sm text-[#64748B] mb-3">
+                  <p className="text-sm text-[#62748e]">
                     Akses {packageData.tryout_count} tryout premium + analisis mendalam
                   </p>
-
-                  {/* Price Info */}
-                  <div className="flex items-baseline gap-3">
-                    <span className="text-sm text-[#94A3B8] line-through">
+                </div>
+                <div className="text-right">
+                  {packageData.original_price > packageData.price && (
+                    <p className="text-sm text-gray-400 line-through">
                       {formatPrice(packageData.original_price)}
-                    </span>
-                    <span className="text-xl font-bold text-[#295782]">
-                      {formatPrice(packageData.price)}
-                    </span>
-                    <span className="px-2 py-0.5 bg-red-500 text-white text-xs font-bold rounded">
+                    </p>
+                  )}
+                  <p className="text-2xl font-bold text-[#295782]">
+                    {formatPrice(packageData.price)}
+                  </p>
+                  {packageData.original_price > packageData.price && (
+                    <span className="text-xs bg-red-100 text-red-600 px-2 py-1 rounded-full font-semibold">
                       -{calculateDiscountPercentage()}% OFF
                     </span>
-                  </div>
-
-                  {/* Quick Benefits */}
-                  <div className="mt-3 space-y-1">
-                    {packageData.benefits.slice(0, 3).map((benefit, idx) => (
-                      <div key={idx} className="flex items-start gap-2 text-xs text-[#475569]">
-                        <Check className="w-3 h-3 text-[#16A34A] mt-0.5 flex-shrink-0" />
-                        <span>{benefit}</span>
-                      </div>
-                    ))}
-                  </div>
+                  )}
                 </div>
+              </div>
+
+              <div className="mt-6 pt-6 border-t">
+                <ul className="space-y-2">
+                  {packageData.benefits.slice(0, 3).map((benefit, idx) => (
+                    <li key={idx} className="flex items-start gap-2 text-sm text-[#62748e]">
+                      <Check className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
+                      <span>{benefit}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             </Card>
 
             {/* Payment Method Card */}
-            <Card className="bg-white rounded-2xl shadow-sm p-6">
-              <h2 className="text-lg font-bold text-[#1E293B] mb-4">
+            <Card className="p-6">
+              <h2 className="text-lg font-bold text-[#1d293d] mb-4">
                 Pilih Metode Pembayaran
               </h2>
-
               <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod}>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-3">
                   {paymentMethods.map((method) => (
-                    <div key={method.id} className="relative">
-                      <RadioGroupItem 
-                        value={method.id} 
-                        id={method.id}
-                        className="peer sr-only"
-                      />
-                      <Label
-                        htmlFor={method.id}
-                        className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                          paymentMethod === method.id
-                            ? 'border-[#295782] bg-[#F0F7FF] shadow-sm'
-                            : 'border-gray-200 hover:border-[#89B0C7] hover:bg-gray-50'
-                        }`}
-                      >
-                        <div className={`w-10 h-10 rounded-lg ${method.bgColor} flex items-center justify-center flex-shrink-0`}>
-                          {method.icon}
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium text-[#1E293B] leading-tight">
-                            {method.name}
-                          </p>
-                        </div>
-                        {paymentMethod === method.id && (
-                          <div className="w-5 h-5 rounded-full bg-[#295782] flex items-center justify-center flex-shrink-0">
-                            <Check className="w-3 h-3 text-white" />
-                          </div>
-                        )}
-                      </Label>
+                    <div
+                      key={method.id}
+                      className={`relative flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                        paymentMethod === method.id
+                          ? 'border-[#295782] bg-[#295782]/5'
+                          : 'border-gray-200 hover:border-gray-300'
+                      } ${method.bgColor}`}
+                      onClick={() => setPaymentMethod(method.id)}
+                    >
+                      <RadioGroupItem value={method.id} id={method.id} />
+                      <div className="flex items-center gap-3 flex-1">
+                        {method.icon}
+                        <Label
+                          htmlFor={method.id}
+                          className="text-sm font-medium cursor-pointer"
+                        >
+                          {method.name}
+                        </Label>
+                      </div>
+                      {paymentMethod === method.id && (
+                        <CheckCircle2 className="w-5 h-5 text-[#295782]" />
+                      )}
                     </div>
                   ))}
                 </div>
@@ -333,60 +347,47 @@ export default function PackageCheckout() {
 
           {/* Right: Summary Sidebar */}
           <div className="lg:col-span-1">
-            <Card className="bg-white rounded-2xl shadow-sm p-6 sticky top-6">
-              <h3 className="text-lg font-bold text-[#1E293B] mb-4">
+            <Card className="p-6 sticky top-6">
+              <h2 className="text-lg font-bold text-[#1d293d] mb-4">
                 Detail Transaksi
-              </h3>
+              </h2>
 
-              {/* Price Breakdown */}
               <div className="space-y-3 mb-6">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-[#64748B]">Harga Paket</span>
-                  <span className="text-sm font-medium text-[#1E293B]">
-                    {formatPrice(packageData.original_price)}
-                  </span>
+                <div className="flex justify-between text-sm">
+                  <span className="text-[#62748e]">Harga Paket</span>
+                  <span className="font-medium">{formatPrice(packageData.original_price)}</span>
                 </div>
-
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-[#16A34A] font-medium">
-                    Diskon ({calculateDiscountPercentage()}%)
-                  </span>
-                  <span className="text-sm font-medium text-[#16A34A]">
+                <div className="flex justify-between text-sm">
+                  <span className="text-[#62748e]">Diskon ({calculateDiscountPercentage()}%)</span>
+                  <span className="font-medium text-green-600">
                     -{formatPrice(calculateDiscount())}
                   </span>
                 </div>
-
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-[#64748B]">Biaya Lainnya</span>
-                  <span className="text-sm font-medium text-[#1E293B]">
-                    Rp 0
-                  </span>
+                <div className="flex justify-between text-sm">
+                  <span className="text-[#62748e]">Biaya Lainnya</span>
+                  <span className="font-medium">Rp 0</span>
                 </div>
-
-                <div className="border-t border-gray-200 pt-3 mt-3">
-                  <div className="flex justify-between items-center">
-                    <span className="text-base font-bold text-[#1E293B]">
-                      Total Pembayaran
-                    </span>
-                    <span className="text-2xl font-bold text-[#295782]">
+                <div className="border-t pt-3 mt-3">
+                  <div className="flex justify-between">
+                    <span className="font-bold text-[#1d293d]">Total Pembayaran</span>
+                    <span className="font-bold text-xl text-[#295782]">
                       {formatPrice(packageData.price)}
                     </span>
                   </div>
                 </div>
               </div>
 
-              {/* Terms & Conditions */}
               <div className="mb-6">
-                <div className="flex items-start gap-2 p-3 bg-[#F8FAFC] rounded-lg">
+                <div className="flex items-start gap-2">
                   <Checkbox
                     id="terms"
                     checked={agreeTerms}
                     onCheckedChange={(checked) => setAgreeTerms(checked as boolean)}
                     className="mt-0.5"
                   />
-                  <label htmlFor="terms" className="text-xs text-[#475569] leading-relaxed cursor-pointer">
+                  <label htmlFor="terms" className="text-sm text-[#62748e] cursor-pointer">
                     Saya setuju dengan{' '}
-                    <a href="#" className="text-[#295782] hover:underline font-medium">
+                    <a href="#" className="text-[#295782] underline">
                       Syarat & Ketentuan
                     </a>
                     {' '}yang berlaku
@@ -394,51 +395,42 @@ export default function PackageCheckout() {
                 </div>
               </div>
 
-              {/* Action Buttons */}
               <div className="space-y-3">
                 <Button
                   onClick={handleSubmit}
                   disabled={!paymentMethod || !agreeTerms || isSubmitting}
-                  className="w-full py-6 bg-[#295782] hover:bg-[#1e4060] text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full py-6 bg-[#295782] hover:bg-[#1e4060] text-white font-semibold rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isSubmitting ? 'Memproses...' : 'Bayar Sekarang'}
+                  {isSubmitting ? (
+                    <div className="flex items-center gap-2">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      Memproses...
+                    </div>
+                  ) : (
+                    'Bayar Sekarang'
+                  )}
                 </Button>
-
                 <Button
                   onClick={handleCancel}
-                  disabled={isSubmitting}
                   variant="outline"
-                  className="w-full py-6 border-gray-300 text-[#64748B] hover:bg-gray-50 font-medium rounded-xl transition-all"
+                  className="w-full py-6 border-[#295782] text-[#295782] hover:bg-[#295782] hover:text-white font-semibold rounded-xl"
+                  disabled={isSubmitting}
                 >
                   Batal / Kembali
                 </Button>
               </div>
 
-              {/* Security Note */}
-              <div className="mt-6 text-center">
-                <p className="text-xs text-[#64748B] flex items-center justify-center gap-1">
-                  🔒 Transaksi Anda dijamin aman & terenkripsi.
-                </p>
-              </div>
+              <p className="text-xs text-center text-[#62748e] mt-4">
+                🔒 Transaksi Anda dijamin aman & terenkripsi.
+              </p>
             </Card>
           </div>
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className="bg-white border-t border-gray-200 mt-16 py-6">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-[#64748B]">
-            <p>© 2025 Kelas Kampus. Semua hak cipta dilindungi.</p>
-            <div className="flex items-center gap-6">
-              <button className="hover:text-[#295782] transition-colors">Bantuan</button>
-              <button className="hover:text-[#295782] transition-colors">Kebijakan Privasi</button>
-              <button className="hover:text-[#295782] transition-colors">Syarat Layanan</button>
-              <button className="hover:text-[#295782] transition-colors">Kontak</button>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <div className="border-t mt-16 py-8 text-center text-sm text-[#62748e]">
+        <p>© 2025 Kelas Kampus. All rights reserved.</p>
+      </div>
     </div>
   );
 }
