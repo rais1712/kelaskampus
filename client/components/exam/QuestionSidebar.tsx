@@ -2,7 +2,7 @@
 
 interface Question {
   id: string;
-  soal: string;
+  soal_text: string;
 }
 
 interface QuestionSidebarProps {

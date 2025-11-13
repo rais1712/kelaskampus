@@ -67,7 +67,8 @@ export default function PaymentInstruction() {
             setCurrentUser({
               user_id: userData.user_id,
               nama: userData.nama_lengkap || authUser.user_metadata?.nama_lengkap || authUser.email?.split("@")[0] || "User",
-              email: userData.email || authUser.email
+              email: userData.email || authUser.email,
+              photo: userData.photo_profile
             });
             return;
           }
@@ -78,7 +79,7 @@ export default function PaymentInstruction() {
           const payload = JSON.parse(atob(token.split('.')[1]));
           const { data: userData } = await supabase
             .from("users")
-            .select("user_id, nama_lengkap, email")
+            .select("user_id, nama_lengkap, email, photo_profile")
             .eq("user_id", payload.user_id)
             .single();
 
@@ -86,7 +87,8 @@ export default function PaymentInstruction() {
             setCurrentUser({
               user_id: userData.user_id,
               nama: userData.nama_lengkap || payload.nama_lengkap || "User",
-              email: userData.email || payload.email
+              email: userData.email || payload.email,
+              photo: userData.photo_profile
             });
             return;
           }
@@ -167,51 +169,109 @@ export default function PaymentInstruction() {
     }
   };
 
-  // ✅ OPSI B: Upload Bukti → Dashboard
+  // ✅ UPDATED: Upload ke Supabase Storage + Update Database (FIXED)
   const handleUploadProof = async () => {
     if (!proofFile) {
-      toast.error('Pilih file bukti pembayaran terlebih dahulu');
-      return;
+        toast.error('Pilih file bukti pembayaran terlebih dahulu');
+        return;
+    }
+
+    if (!transaction?.id) {
+        toast.error('ID transaksi tidak ditemukan');
+        return;
     }
 
     try {
-      setIsUploading(true);
+        setIsUploading(true);
 
-      const existingTransactions = JSON.parse(localStorage.getItem('package_transactions') || '[]');
-      const updatedTransactions = existingTransactions.map((t: any) => {
+        // 1. Upload file ke Supabase Storage
+        const fileExt = proofFile.name.split('.').pop();
+        const fileName = `${transaction.id}_${Date.now()}.${fileExt}`;
+        
+        // ✅ FIX 1: Hapus prefix folder, langsung nama file saja
+        const filePath = fileName; // ❌ OLD: `payment-proofs/${fileName}`
+
+        console.log('📤 Uploading file to:', filePath);
+
+        const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('payment-proofs')
+        .upload(filePath, proofFile, {
+            cacheControl: '3600',
+            upsert: false
+        });
+
+        if (uploadError) {
+        console.error('Upload error:', uploadError);
+        throw new Error(`Upload gagal: ${uploadError.message}`);
+        }
+
+        console.log('✅ Upload success:', uploadData);
+
+        // 2. Get public URL
+        const { data: { publicUrl } } = supabase.storage
+        .from('payment-proofs')
+        .getPublicUrl(filePath);
+
+        console.log('🔗 Public URL:', publicUrl);
+
+        // ✅ FIX 2: Tambahkan .select() dan proper error handling
+        const { data: updatedTransaction, error: updateError } = await supabase
+        .from('transactions')
+        .update({
+            payment_proof: publicUrl,
+            updated_at: new Date().toISOString()
+        })
+        .eq('id', transaction.id)
+        .select()
+        .single();
+
+        if (updateError) {
+        console.error('Update error:', updateError);
+        
+        // Rollback: Hapus file yang sudah diupload
+        await supabase.storage
+            .from('payment-proofs')
+            .remove([filePath]);
+        
+        throw new Error(`Gagal update transaksi: ${updateError.message}`);
+        }
+
+        console.log('✅ Transaction updated:', updatedTransaction);
+
+        // 4. Update localStorage
+        const existingTransactions = JSON.parse(localStorage.getItem('package_transactions') || '[]');
+        const updatedTransactions = existingTransactions.map((t: any) => {
         if (t.id === transaction.id) {
-          return { 
+            return { 
             ...t, 
-            proof_image: proofPreview, 
+            payment_proof: publicUrl,
             proof_uploaded: true,
             proof_uploaded_at: new Date().toISOString()
-          };
+            };
         }
         return t;
-      });
-      localStorage.setItem('package_transactions', JSON.stringify(updatedTransactions));
+        });
+        localStorage.setItem('package_transactions', JSON.stringify(updatedTransactions));
+        localStorage.removeItem('current_transaction');
 
-      localStorage.removeItem('current_transaction');
-
-      toast.success('Bukti pembayaran berhasil diupload!');
-      toast.info('Admin akan memverifikasi dalam 1x24 jam. Cek status di Profile → Transaksi');
-      
-      // ✅ OPSI B: Redirect ke Dashboard
-      setTimeout(() => {
+        toast.success('Bukti pembayaran berhasil diupload!');
+        toast.info('Admin akan memverifikasi dalam 1x24 jam');
+        
+        setTimeout(() => {
         navigate('/dashboard');
-      }, 2000);
+        }, 2000);
 
-    } catch (error) {
-      console.error('Upload error:', error);
-      toast.error('Gagal upload bukti pembayaran');
+    } catch (error: any) {
+        console.error('Upload error:', error);
+        toast.error(error.message || 'Gagal upload bukti pembayaran');
     } finally {
-      setIsUploading(false);
+        setIsUploading(false);
     }
   };
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
+      style: "currency",
       currency: 'IDR',
       minimumFractionDigits: 0,
     }).format(price);
@@ -364,7 +424,6 @@ export default function PaymentInstruction() {
               {isUploading ? 'Mengupload...' : 'Kirim Bukti Pembayaran'}
             </Button>
 
-            {/* ✅ OPSI B: Button kembali ke Dashboard */}
             <Button
               onClick={() => {
                 localStorage.removeItem('current_transaction');

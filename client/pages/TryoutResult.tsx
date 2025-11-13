@@ -1,20 +1,18 @@
 // pages/TryoutResult.tsx
-// ✅ FINAL VERSION - Match UI screenshot + Direct Supabase pattern
 
 import { useState, useEffect } from 'react';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, Trophy, Target, Clock, BarChart3, RefreshCw, Home } from 'lucide-react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { ArrowLeft, Home, RotateCcw } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
-import toast from 'react-hot-toast';
 import Header from '@/components/Header';
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
+import toast from 'react-hot-toast';
+import { 
+  BarChart, 
+  Bar, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
   ResponsiveContainer,
   RadarChart,
   PolarGrid,
@@ -24,74 +22,55 @@ import {
 } from 'recharts';
 
 interface QuestionResult {
-  id: string;
-  questionNumber: number;
+  number: number;
+  isCorrect: boolean;
   userAnswer: string | null;
   correctAnswer: string;
-  isCorrect: boolean;
-  topic: string;
-  soal_text: string;
 }
 
-interface TopicStats {
-  topic: string;
+interface KategoriResult {
+  kategori_name: string;
   correct: number;
-  wrong: number;
-  unanswered: number;
-  totalQuestions: number;
-  percentage: number;
-}
-
-interface ResultStats {
+  total: number;
   score: number;
-  totalQuestions: number;
+}
+
+interface ResultData {
+  tryout_name: string;
+  total_questions: number;
   correct: number;
-  wrong: number;
+  incorrect: number;
   unanswered: number;
-  timeSpent: number;
-  isPassed: boolean;
+  score: number;
   passingGrade: number;
+  isPassed: boolean;
+  completion_time: number;
+  questionResults: QuestionResult[];
+  kategoriResults: KategoriResult[];
 }
 
 export default function TryoutResult() {
   const { tryoutId } = useParams<{ tryoutId: string }>();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const sessionId = searchParams.get('session');
-  const kategoriId = searchParams.get('kategori');
-
+  const [result, setResult] = useState<ResultData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState<any>(null);
-  const [tryoutData, setTryoutData] = useState<any>(null);
-  const [sessionData, setSessionData] = useState<any>(null);
-  const [questions, setQuestions] = useState<QuestionResult[]>([]);
-  const [stats, setStats] = useState<ResultStats | null>(null);
-  const [topicStats, setTopicStats] = useState<TopicStats[]>([]);
-  const [viewMode, setViewMode] = useState<'table' | 'grid'>('grid');
+  const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
 
   useEffect(() => {
-    // ✅ Validate sessionId
-    if (!sessionId) {
-      toast.error('Session tidak valid');
-      navigate('/tryout');
-      return;
-    }
-
     fetchCurrentUser();
-    fetchResultData();
-  }, [sessionId]);
+    loadData();
+  }, [tryoutId]);
 
-  // ✅ PATTERN DARI ADMIN: Fetch current user via direct Supabase
   const fetchCurrentUser = async () => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
         const { data: userData } = await supabase
           .from('users')
-          .select('user_id, nama_lengkap, username, photo_profile')
+          .select('nama_lengkap, username, photo_profile')
           .eq('auth_id', session.user.id)
           .single();
-        
         setCurrentUser(userData);
       }
     } catch (err) {
@@ -99,235 +78,179 @@ export default function TryoutResult() {
     }
   };
 
-  // ✅ PATTERN DARI ADMIN: Direct Supabase access (seperti ViewTryout.tsx)
-  const fetchResultData = async () => {
+  const loadData = async () => {
     try {
       setIsLoading(true);
-      console.log('🔍 Fetching result for session:', sessionId);
+      console.log('📊 Loading result for tryout:', tryoutId);
 
-      // ✅ 1. Fetch session data (DIRECT SUPABASE)
-      const { data: session, error: sessionError } = await supabase
-        .from('tryout_sessions')
-        .select('*')
-        .eq('id', sessionId)
-        .single();
+      const { data: { session } } = await supabase.auth.getSession();
+      let userId = null;
 
-      if (sessionError) throw sessionError;
-      if (!session) throw new Error('Session tidak ditemukan');
-
-      console.log('✅ Session data:', session);
-      setSessionData(session);
-
-      // ✅ 2. Fetch tryout detail (DIRECT SUPABASE)
-      const { data: tryout, error: tryoutError } = await supabase
-        .from('tryouts')
-        .select('*')
-        .eq('id', session.tryout_id)
-        .single();
-
-      if (tryoutError) throw tryoutError;
-      console.log('✅ Tryout data:', tryout);
-      setTryoutData(tryout);
-
-      // ✅ 3. Fetch questions (DIRECT SUPABASE - Filter by kategori if provided)
-      let questionsQuery = supabase
-        .from('questions')
-        .select('*')
-        .eq('tryout_id', session.tryout_id)
-        .order('urutan', { ascending: true });
-
-      // ✅ Filter by kategori if kategoriId is provided (per subtest)
-      if (kategoriId) {
-        questionsQuery = questionsQuery.eq('kategori_id', kategoriId);
+      if (session) {
+        const { data: userData } = await supabase
+          .from('users')
+          .select('user_id')
+          .eq('auth_id', session.user.id)
+          .single();
+        userId = userData?.user_id;
+      } else {
+        const token = localStorage.getItem('auth_token');
+        if (token) {
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          userId = payload.user_id;
+        }
       }
 
-      const { data: questionsData, error: questionsError } = await questionsQuery;
+      if (!userId) throw new Error('User not found');
 
-      if (questionsError) throw questionsError;
-      console.log('✅ Questions loaded:', questionsData?.length || 0);
-
-      // ✅ 4. Fetch answers (DIRECT SUPABASE)
-      const { data: answersData, error: answersError } = await supabase
-        .from('answers')
+      // Get tryout data
+      const { data: tryoutData, error: tryoutError } = await supabase
+        .from('tryouts')
         .select('*')
-        .eq('session_id', sessionId);
+        .eq('id', tryoutId)
+        .single();
+
+      if (tryoutError || !tryoutData) throw new Error('Tryout not found');
+
+      // Get completed sessions
+      const { data: sessions, error: sessionsError } = await supabase
+        .from('tryout_sessions')
+        .select('*')
+        .eq('tryout_id', tryoutId)
+        .eq('user_id', userId)
+        .eq('status', 'completed');
+
+      if (sessionsError || !sessions || sessions.length === 0) {
+        throw new Error('No completed sessions found');
+      }
+
+      // Get all answers with question details
+      const sessionIds = sessions.map(s => s.id);
+      const { data: answers, error: answersError } = await supabase
+        .from('answers')
+        .select('*, questions(*)')
+        .in('session_id', sessionIds);
 
       if (answersError) throw answersError;
 
-      // Convert answers array to map
-      const answersMap: Record<string, string> = {};
-      answersData?.forEach(answer => {
-        answersMap[answer.question_id] = answer.selected_answer;
+      // Calculate results
+      const totalQuestions = answers?.length || 0;
+      const correctAnswers = answers?.filter(
+        a => a.selected_answer === a.questions?.jawaban_benar
+      ).length || 0;
+      const unanswered = answers?.filter(a => !a.selected_answer).length || 0;
+      const incorrect = totalQuestions - correctAnswers - unanswered;
+
+      const score = totalQuestions > 0 
+        ? Math.round((correctAnswers / totalQuestions) * 100) 
+        : 0;
+
+      const passingGrade = 65;
+      const isPassed = score >= passingGrade;
+
+      // Build question results array
+      const questionResults: QuestionResult[] = (answers || [])
+        .sort((a, b) => (a.questions?.urutan || 0) - (b.questions?.urutan || 0))
+        .map((answer, index) => ({
+          number: index + 1,
+          isCorrect: answer.selected_answer === answer.questions?.jawaban_benar,
+          userAnswer: answer.selected_answer || null,
+          correctAnswer: answer.questions?.jawaban_benar || ''
+        }));
+
+      // Group by kategori for radar chart
+      const kategoriMap = new Map();
+      answers?.forEach(answer => {
+        const kategoriId = answer.questions?.kategori_id;
+        if (!kategoriId) return;
+
+        if (!kategoriMap.has(kategoriId)) {
+          kategoriMap.set(kategoriId, {
+            correct: 0,
+            total: 0,
+            kategori_id: kategoriId
+          });
+        }
+
+        const kategoriStat = kategoriMap.get(kategoriId);
+        kategoriStat.total++;
+        if (answer.selected_answer === answer.questions?.jawaban_benar) {
+          kategoriStat.correct++;
+        }
       });
 
-      console.log('✅ Answers loaded:', Object.keys(answersMap).length);
+      // Get kategori names
+      const kategoriIds = Array.from(kategoriMap.keys());
+      const { data: kategoris } = await supabase
+        .from('kategoris')
+        .select('*')
+        .in('kategori_id', kategoriIds);
 
-      // ✅ 5. Process questions with answers
-      const processedQuestions: QuestionResult[] = (questionsData || []).map((q, index) => ({
-        id: q.id,
-        questionNumber: index + 1,
-        userAnswer: answersMap[q.id] || null,
-        correctAnswer: q.jawaban_benar,
-        isCorrect: answersMap[q.id] === q.jawaban_benar,
-        topic: q.kategori_id || 'General',
-        soal_text: q.soal_text
-      }));
+      const kategoriResults: KategoriResult[] = Array.from(kategoriMap.values()).map(stat => {
+        const kategori = kategoris?.find(k => k.kategori_id === stat.kategori_id);
+        const kategoriScore = stat.total > 0 
+          ? Math.round((stat.correct / stat.total) * 100) 
+          : 0;
 
-      setQuestions(processedQuestions);
+        return {
+          kategori_name: kategori?.nama_kategori || 'Unknown',
+          correct: stat.correct,
+          total: stat.total,
+          score: kategoriScore
+        };
+      });
 
-      // ✅ 6. Calculate statistics
-      const calculatedStats = calculateStats(processedQuestions, tryout);
-      setStats(calculatedStats);
+      // Calculate total time
+      const totalTime = sessions.reduce((sum, s) => {
+        const timeUsed = (tryoutData.durasi_menit * 60) - (s.time_remaining || 0);
+        return sum + timeUsed;
+      }, 0);
 
-      // ✅ 7. Calculate per-topic analysis
-      const topicAnalysis = calculateTopicStats(processedQuestions);
-      setTopicStats(topicAnalysis);
+      const resultData: ResultData = {
+        tryout_name: tryoutData.nama_tryout,
+        total_questions: totalQuestions,
+        correct: correctAnswers,
+        incorrect,
+        unanswered,
+        score,
+        passingGrade,
+        isPassed,
+        completion_time: Math.round(totalTime / 60),
+        questionResults,
+        kategoriResults
+      };
 
+      setResult(resultData);
     } catch (error: any) {
-      console.error('❌ Error fetching result:', error);
+      console.error('Error loading result:', error);
       toast.error(error.message || 'Gagal memuat hasil tryout');
-      setTimeout(() => navigate('/tryout'), 2000);
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Calculate overall statistics
-  const calculateStats = (questions: QuestionResult[], tryout: any): ResultStats => {
-    let correct = 0;
-    let wrong = 0;
-    let unanswered = 0;
-
-    questions.forEach(q => {
-      if (!q.userAnswer) {
-        unanswered++;
-      } else if (q.isCorrect) {
-        correct++;
-      } else {
-        wrong++;
-      }
-    });
-
-    const totalQuestions = questions.length;
-    const score = totalQuestions > 0 
-      ? Math.round((correct / totalQuestions) * 100) 
-      : 0;
-
-    const passingGrade = 65; // Default passing grade
-    const isPassed = score >= passingGrade;
-
-    // Calculate time spent (from session data)
-    const durasiTotal = (tryout?.durasi_menit || 0) * 60; // in seconds
-    const timeRemaining = sessionData?.time_remaining || 0;
-    const timeSpent = durasiTotal - timeRemaining;
-
-    return {
-      score,
-      totalQuestions,
-      correct,
-      wrong,
-      unanswered,
-      timeSpent: Math.max(0, timeSpent),
-      isPassed,
-      passingGrade
-    };
-  };
-
-  // Calculate per-topic statistics
-  const calculateTopicStats = (questions: QuestionResult[]): TopicStats[] => {
-    const topicMap: Record<string, TopicStats> = {};
-
-    // Topic name mapping
-    const topicNameMap: Record<string, string> = {
-      'biologi': 'Biologi',
-      'kimia': 'Kimia',
-      'fisika': 'Fisika',
-      'matematika': 'Matematika',
-      'penmat': 'Matematika',
-      'pm': 'Matematika',
-      'kpu': 'Penalaran Umum',
-      'ppu': 'Penalaran Umum',
-      'kmbm': 'Literasi',
-      'pbm': 'Literasi',
-      'pk': 'Kuantitatif',
-      'pbi': 'Umum'
-    };
-
-    questions.forEach(q => {
-      const topicKey = q.topic.toLowerCase();
-      const topicName = topicNameMap[topicKey] || q.topic;
-
-      if (!topicMap[topicName]) {
-        topicMap[topicName] = {
-          topic: topicName,
-          correct: 0,
-          wrong: 0,
-          unanswered: 0,
-          totalQuestions: 0,
-          percentage: 0
-        };
-      }
-
-      topicMap[topicName].totalQuestions++;
-
-      if (!q.userAnswer) {
-        topicMap[topicName].unanswered++;
-      } else if (q.isCorrect) {
-        topicMap[topicName].correct++;
-      } else {
-        topicMap[topicName].wrong++;
-      }
-    });
-
-    // Calculate percentages
-    const statsArray = Object.values(topicMap);
-    statsArray.forEach(stat => {
-      stat.percentage = stat.totalQuestions > 0
-        ? Math.round((stat.correct / stat.totalQuestions) * 100)
-        : 0;
-    });
-
-    return statsArray.sort((a, b) => b.percentage - a.percentage);
-  };
-
-  // Format time display (MM:SS)
-  const formatTime = (seconds: number): string => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins} menit ${secs} detik`;
-  };
-
-  // Handle retry tryout
-  const handleRetry = () => {
-    navigate(`/tryout/${tryoutId}/start`);
-  };
-
-  // Loading state
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#e6f3ff] via-[#f8fbff] to-white flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#295782] mx-auto mb-4"></div>
-          <p className="text-[#62748e] font-medium text-lg">Menghitung hasil...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#89b0c7] mx-auto mb-4"></div>
+          <p className="text-[#62748e] font-medium">Memuat hasil...</p>
         </div>
       </div>
     );
   }
 
-  // No data state
-  if (!stats || !tryoutData) {
+  if (!result) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#e6f3ff] via-[#f8fbff] to-white flex items-center justify-center">
         <div className="text-center max-w-md mx-auto px-6">
           <div className="bg-white rounded-2xl shadow-lg p-8">
-            <p className="text-lg text-[#1d293d] font-semibold mb-4">
-              Data hasil tidak ditemukan
-            </p>
+            <p className="text-lg text-[#1d293d] font-semibold mb-4">Data hasil tidak ditemukan</p>
             <button
               onClick={() => navigate('/tryout')}
-              className="px-6 py-3 bg-[#295782] text-white rounded-xl font-semibold hover:bg-[#1e3f5f] transition-colors"
+              className="px-6 py-3 bg-gradient-to-r from-[#295782] to-[#89b0c7] text-white rounded-xl font-semibold hover:shadow-lg transition-all"
             >
-              Kembali ke Daftar Tryout
+              Kembali
             </button>
           </div>
         </div>
@@ -337,104 +260,174 @@ export default function TryoutResult() {
 
   // Prepare chart data
   const distributionData = [
-    { name: 'Benar', value: stats.correct, fill: '#3b82f6' },
-    { name: 'Salah', value: stats.wrong, fill: '#3b82f6' },
-    { name: 'Tidak Dijawab', value: stats.unanswered, fill: '#3b82f6' }
+    { name: 'Benar', value: result.correct, fill: '#22c55e' },
+    { name: 'Salah', value: result.incorrect, fill: '#ef4444' },
+    { name: 'Tidak Dijawab', value: result.unanswered, fill: '#9ca3af' }
   ];
 
-  const radarData = topicStats.map(stat => ({
-    topic: stat.topic,
-    percentage: stat.percentage
+  const radarData = result.kategoriResults.map(k => ({
+    subject: k.kategori_name,
+    score: k.score
   }));
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#e6f3ff] via-[#f8fbff] to-white">
-      <Header
+      <Header 
         userName={currentUser?.username || currentUser?.nama_lengkap || 'User'}
         userPhoto={currentUser?.photo_profile}
       />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Back Button */}
-        <button
-          onClick={() => navigate('/tryout')}
-          className="flex items-center gap-2 text-[#62748e] hover:text-[#295782] mb-6 transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          <span className="text-sm font-medium">Kembali ke Daftar Tryout</span>
-        </button>
-
-        {/* =============== TOP SUMMARY CARDS =============== */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          {/* Score Card */}
-          <div className="bg-white rounded-2xl shadow-sm p-6 text-center">
-            <div className="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-              <Trophy className="w-7 h-7 text-blue-600" />
-            </div>
-            <div className="text-5xl font-bold text-[#1d293d] mb-2">
-              {stats.score}/100
-            </div>
-            <p className="text-[#62748e]">Skor Anda</p>
-          </div>
-
-          {/* Grade Badge */}
-          <div className="bg-white rounded-2xl shadow-sm p-6 text-center">
-            <div className={`w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-3 ${
-              stats.isPassed ? 'bg-green-100' : 'bg-red-100'
-            }`}>
-              <Target className={`w-7 h-7 ${stats.isPassed ? 'text-green-600' : 'text-red-600'}`} />
-            </div>
-            <div className={`inline-block px-6 py-2 rounded-full font-bold text-xl mb-2 ${
-              stats.isPassed ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
-            }`}>
-              {stats.isPassed ? 'LULUS' : 'TIDAK LULUS'}
-            </div>
-            <p className="text-[#62748e] text-sm mt-2">
-              Passing Grade: {stats.passingGrade}
-            </p>
-          </div>
-
-          {/* Time Card */}
-          <div className="bg-white rounded-2xl shadow-sm p-6 text-center">
-            <div className="w-14 h-14 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
-              <Clock className="w-7 h-7 text-purple-600" />
-            </div>
-            <div className="text-2xl font-bold text-[#1d293d] mb-2">
-              {formatTime(stats.timeSpent)}
-            </div>
-            <p className="text-[#62748e] text-sm">
-              Dari total {stats.totalQuestions} soal
-            </p>
+      <div className="max-w-6xl mx-auto px-6 py-8">
+        {/* Header Section */}
+        <div className="flex items-center justify-between mb-6">
+          <button
+            onClick={() => navigate('/tryout')}
+            className="flex items-center gap-2 text-[#62748e] hover:text-[#295782] transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span className="text-sm font-medium">Kembali ke Daftar Tryout</span>
+          </button>
+          
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => navigate('/dashboard')}
+              className="flex items-center gap-2 px-4 py-2 bg-white border-2 border-gray-200 rounded-lg hover:border-[#295782] transition-colors"
+            >
+              <Home className="w-4 h-4" />
+              <span className="text-sm font-medium">Kembali ke Dashboard</span>
+            </button>
+            <button
+              onClick={() => {
+                localStorage.removeItem(`tryout_${tryoutId}_submitted`);
+                navigate(`/tryout/${tryoutId}/start`);
+              }}
+              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#295782] to-[#89b0c7] text-white rounded-lg hover:shadow-lg transition-all"
+            >
+              <RotateCcw className="w-4 h-4" />
+              <span className="text-sm font-medium">Ulangi Tryout</span>
+            </button>
           </div>
         </div>
 
-        {/* =============== DETAIL HASIL UJIAN =============== */}
-        <div className="bg-white rounded-2xl shadow-sm p-6 mb-6">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-            <h2 className="text-xl font-bold text-[#1d293d]">
-              Detail Hasil Ujian
-            </h2>
+        {/* Title */}
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-[#1d293d] mb-1">{result.tryout_name}</h1>
+          <p className="text-[#62748e]">Detail Hasil Ujian</p>
+        </div>
 
-            {/* Toggle View */}
+        {/* Score Card */}
+        <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
+          <div className="grid grid-cols-5 gap-4">
+            <div className="text-center">
+              <div className={`text-5xl font-bold mb-2 ${
+                result.isPassed ? 'text-green-600' : 'text-red-600'
+              }`}>
+                {result.score}/100
+              </div>
+              <p className="text-sm text-[#62748e]">Skor Anda</p>
+            </div>
+
+            <div className="flex items-center justify-center">
+              <div>
+                <div className={`px-4 py-2 rounded-full text-sm font-bold mb-1 ${
+                  result.isPassed 
+                    ? 'bg-green-100 text-green-700' 
+                    : 'bg-red-100 text-red-700'
+                }`}>
+                  {result.isPassed ? 'LULUS' : 'TIDAK LULUS'}
+                </div>
+                <div className="text-xs text-center text-[#62748e]">
+                  Passing Grade: {result.passingGrade}
+                </div>
+              </div>
+            </div>
+
+            <div className="text-center bg-green-50 rounded-xl p-3">
+              <div className="text-2xl font-bold text-green-600">{result.correct}</div>
+              <p className="text-xs text-[#62748e]">Benar</p>
+            </div>
+
+            <div className="text-center bg-red-50 rounded-xl p-3">
+              <div className="text-2xl font-bold text-red-600">{result.incorrect}</div>
+              <p className="text-xs text-[#62748e]">Salah</p>
+            </div>
+
+            <div className="text-center bg-gray-50 rounded-xl p-3">
+              <div className="text-2xl font-bold text-gray-600">{result.completion_time} menit</div>
+              <p className="text-xs text-[#62748e]">Dari total {result.total_questions} soal</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Analisis & Statistik WITH REAL CHARTS */}
+        <div className="bg-white rounded-2xl shadow-sm p-6 mb-6">
+          <h2 className="text-lg font-bold text-[#1d293d] mb-4">Analisis & Statistik</h2>
+          
+          <div className="grid grid-cols-2 gap-6">
+            {/* Bar Chart */}
+            <div>
+              <h3 className="text-sm font-semibold text-[#62748e] mb-3">Distribusi Jawaban</h3>
+              <ResponsiveContainer width="100%" height={250}>
+                <BarChart data={distributionData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                  <XAxis dataKey="name" stroke="#6b7280" fontSize={12} />
+                  <YAxis stroke="#6b7280" fontSize={12} />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: '#fff', border: '1px solid #e5e7eb', borderRadius: '8px' }}
+                    cursor={{ fill: 'rgba(0, 0, 0, 0.05)' }}
+                  />
+                  <Bar dataKey="value" radius={[8, 8, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+
+            {/* Radar Chart */}
+            <div>
+              <h3 className="text-sm font-semibold text-[#62748e] mb-3">Analisis Per Topik</h3>
+              <ResponsiveContainer width="100%" height={250}>
+                <RadarChart data={radarData}>
+                  <PolarGrid stroke="#e5e7eb" />
+                  <PolarAngleAxis dataKey="subject" stroke="#6b7280" fontSize={11} />
+                  <PolarRadiusAxis angle={90} domain={[0, 100]} stroke="#6b7280" fontSize={10} />
+                  <Radar 
+                    name="Score" 
+                    dataKey="score" 
+                    stroke="#3b82f6" 
+                    fill="#3b82f6" 
+                    fillOpacity={0.5} 
+                  />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: '#fff', border: '1px solid #e5e7eb', borderRadius: '8px' }}
+                  />
+                </RadarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </div>
+
+        {/* Detail Hasil Ujian */}
+        <div className="bg-white rounded-2xl shadow-sm p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-bold text-[#1d293d]">Detail Hasil Ujian</h2>
             <div className="flex items-center gap-2">
               <span className="text-sm text-[#62748e]">Tampilan:</span>
               <div className="flex bg-gray-100 rounded-lg p-1">
                 <button
                   onClick={() => setViewMode('table')}
-                  className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                    viewMode === 'table'
-                      ? 'bg-[#295782] text-white shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900'
+                  className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                    viewMode === 'table' 
+                      ? 'bg-white text-[#295782] shadow-sm' 
+                      : 'text-[#62748e]'
                   }`}
                 >
                   Tabel
                 </button>
                 <button
                   onClick={() => setViewMode('grid')}
-                  className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                    viewMode === 'grid'
-                      ? 'bg-[#295782] text-white shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900'
+                  className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                    viewMode === 'grid' 
+                      ? 'bg-white text-[#295782] shadow-sm' 
+                      : 'text-[#62748e]'
                   }`}
                 >
                   Grid
@@ -443,67 +436,62 @@ export default function TryoutResult() {
             </div>
           </div>
 
-          {/* Grid View (10 columns per row) */}
+          {/* Grid View */}
           {viewMode === 'grid' && (
-            <div className="grid grid-cols-5 sm:grid-cols-10 gap-2">
-              {questions.map((q) => {
-                const isAnswered = q.userAnswer !== null;
-                const bgColor = !isAnswered
-                  ? 'bg-gray-400'
-                  : q.isCorrect
-                  ? 'bg-green-500'
-                  : 'bg-red-500';
-
-                return (
-                  <div
-                    key={q.id}
-                    className={`aspect-square rounded-lg flex items-center justify-center font-bold text-sm text-white ${bgColor} hover:opacity-80 transition-opacity cursor-pointer`}
-                    title={`Soal ${q.questionNumber}: ${!isAnswered ? 'Tidak dijawab' : q.isCorrect ? 'Benar' : 'Salah'}`}
-                  >
-                    {q.questionNumber}
-                  </div>
-                );
-              })}
+            <div className="grid grid-cols-10 gap-2">
+              {result.questionResults.map((q) => (
+                <div
+                  key={q.number}
+                  className={`w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold ${
+                    q.isCorrect 
+                      ? 'bg-green-500 text-white' 
+                      : q.userAnswer 
+                        ? 'bg-red-500 text-white' 
+                        : 'bg-gray-300 text-gray-600'
+                  }`}
+                  title={`Soal ${q.number}: ${q.isCorrect ? 'Benar' : q.userAnswer ? 'Salah' : 'Kosong'}`}
+                >
+                  {q.number}
+                </div>
+              ))}
             </div>
           )}
 
           {/* Table View */}
           {viewMode === 'table' && (
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="w-full">
                 <thead>
-                  <tr className="border-b">
-                    <th className="text-left p-3 font-semibold">No</th>
-                    <th className="text-left p-3 font-semibold">Soal</th>
-                    <th className="text-left p-3 font-semibold">Jawaban Anda</th>
-                    <th className="text-left p-3 font-semibold">Jawaban Benar</th>
-                    <th className="text-left p-3 font-semibold">Status</th>
+                  <tr className="border-b-2 border-gray-200">
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-[#62748e]">No</th>
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-[#62748e]">Jawaban Anda</th>
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-[#62748e]">Jawaban Benar</th>
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-[#62748e]">Status</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {questions.map((q) => (
-                    <tr key={q.id} className="border-b hover:bg-gray-50">
-                      <td className="p-3">{q.questionNumber}</td>
-                      <td className="p-3 max-w-md truncate" dangerouslySetInnerHTML={{ __html: q.soal_text.substring(0, 100) + '...' }} />
-                      <td className="p-3">
-                        <span className={`px-2 py-1 rounded ${
-                          !q.userAnswer ? 'bg-gray-200 text-gray-600' : 'bg-blue-100 text-blue-700'
-                        }`}>
-                          {q.userAnswer || '-'}
-                        </span>
-                      </td>
-                      <td className="p-3">
-                        <span className="px-2 py-1 rounded bg-green-100 text-green-700">
-                          {q.correctAnswer}
-                        </span>
-                      </td>
-                      <td className="p-3">
-                        {!q.userAnswer ? (
-                          <span className="text-gray-500">Tidak dijawab</span>
-                        ) : q.isCorrect ? (
-                          <span className="text-green-600 font-semibold">✓ Benar</span>
+                  {result.questionResults.map((q) => (
+                    <tr key={q.number} className="border-b border-gray-100 hover:bg-gray-50">
+                      <td className="py-3 px-4 text-sm font-medium">{q.number}</td>
+                      <td className="py-3 px-4 text-sm">
+                        {q.userAnswer ? (
+                          <span className={q.isCorrect ? 'text-green-600 font-bold' : 'text-red-600 font-bold'}>
+                            {q.userAnswer}
+                          </span>
                         ) : (
-                          <span className="text-red-600 font-semibold">✗ Salah</span>
+                          <span className="text-gray-400 italic">Tidak dijawab</span>
+                        )}
+                      </td>
+                      <td className="py-3 px-4 text-sm font-bold text-green-600">{q.correctAnswer}</td>
+                      <td className="py-3 px-4">
+                        {q.isCorrect ? (
+                          <span className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">
+                            Benar
+                          </span>
+                        ) : (
+                          <span className="px-2 py-1 bg-red-100 text-red-700 rounded-full text-xs font-semibold">
+                            {q.userAnswer ? 'Salah' : 'Kosong'}
+                          </span>
                         )}
                       </td>
                     </tr>
@@ -512,126 +500,6 @@ export default function TryoutResult() {
               </table>
             </div>
           )}
-        </div>
-
-        {/* =============== ANALISIS & STATISTIK =============== */}
-        <div className="bg-white rounded-2xl shadow-sm p-6 mb-6">
-          <h2 className="text-xl font-bold text-[#1d293d] mb-6">
-            Analisis & Statistik
-          </h2>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Bar Chart - Distribusi Jawaban */}
-            <div>
-              <h3 className="font-semibold text-gray-700 mb-4">
-                Distribusi Jawaban
-              </h3>
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={distributionData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Bar dataKey="value" fill="#3b82f6" radius={[8, 8, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-
-            {/* Radar Chart - Analisis Per Topik */}
-            <div>
-              <h3 className="font-semibold text-gray-700 mb-4">
-                Analisis Per Topik
-              </h3>
-              {radarData.length > 0 ? (
-                <ResponsiveContainer width="100%" height={300}>
-                  <RadarChart data={radarData}>
-                    <PolarGrid />
-                    <PolarAngleAxis dataKey="topic" />
-                    <PolarRadiusAxis angle={90} domain={[0, 100]} />
-                    <Radar
-                      name="Persentase"
-                      dataKey="percentage"
-                      stroke="#3b82f6"
-                      fill="#3b82f6"
-                      fillOpacity={0.6}
-                    />
-                    <Tooltip />
-                  </RadarChart>
-                </ResponsiveContainer>
-              ) : (
-                <div className="h-[300px] flex items-center justify-center text-gray-500">
-                  Tidak ada data topik
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Topic Stats Table */}
-          {topicStats.length > 0 && (
-            <div className="mt-8">
-              <h3 className="font-semibold text-gray-700 mb-4">
-                Detail Per Topik
-              </h3>
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="text-left p-3 font-semibold">Topik</th>
-                      <th className="text-center p-3 font-semibold">Benar</th>
-                      <th className="text-center p-3 font-semibold">Salah</th>
-                      <th className="text-center p-3 font-semibold">Tidak Dijawab</th>
-                      <th className="text-center p-3 font-semibold">Persentase</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {topicStats.map((stat) => (
-                      <tr key={stat.topic} className="border-b hover:bg-gray-50">
-                        <td className="p-3">{stat.topic || 'General'}</td>
-                        <td className="p-3 text-center text-green-600 font-semibold">
-                          {stat.correct}
-                        </td>
-                        <td className="p-3 text-center text-red-600 font-semibold">
-                          {stat.wrong}
-                        </td>
-                        <td className="p-3 text-center text-gray-500">
-                          {stat.unanswered}
-                        </td>
-                        <td className="p-3 text-center">
-                          <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                            stat.percentage >= 70
-                              ? 'bg-green-100 text-green-700'
-                              : stat.percentage >= 50
-                              ? 'bg-yellow-100 text-yellow-700'
-                              : 'bg-red-100 text-red-700'
-                          }`}>
-                            {stat.percentage}%
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* =============== ACTION BUTTONS =============== */}
-        <div className="flex flex-col sm:flex-row gap-4">
-          <button
-            onClick={handleRetry}
-            className="flex-1 flex items-center justify-center gap-2 px-6 py-3 border-2 border-[#295782] text-[#295782] rounded-xl font-semibold hover:bg-blue-50 transition-colors"
-          >
-            <RefreshCw className="w-5 h-5" />
-            Ulangi Tryout
-          </button>
-          <button
-            onClick={() => navigate('/dashboard')}
-            className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-[#295782] text-white rounded-xl font-semibold hover:bg-[#1e3f5f] transition-colors shadow-md hover:shadow-lg"
-          >
-            <Home className="w-5 h-5" />
-            Kembali ke Dashboard
-          </button>
         </div>
       </div>
     </div>

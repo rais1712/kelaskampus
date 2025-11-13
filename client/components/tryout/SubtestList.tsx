@@ -1,10 +1,13 @@
-import { Play, Check, Lock } from 'lucide-react';
+// components/tryout/SubtestList.tsx
+
+import { Play, CheckCircle, Clock, Lock } from 'lucide-react';
 
 interface Kategori {
-  id: string;
+  kategori_id: string;
+  kode_kategori: string;
   nama_kategori: string;
-  kelompok: string;
-  urutan: number;
+  jumlah_soal?: number;
+  durasi_menit?: number;
 }
 
 interface ProgressData {
@@ -21,6 +24,8 @@ interface SubtestListProps {
   onStartSubtest: (kategoriId: string) => void;
   canStart: boolean;
   isStarting: boolean;
+  completedKategoris?: Set<string>;
+  isSubmitted?: boolean;  // ✅ NEW PROP
 }
 
 export default function SubtestList({
@@ -28,151 +33,142 @@ export default function SubtestList({
   progressData,
   onStartSubtest,
   canStart,
-  isStarting
+  isStarting,
+  completedKategoris,
+  isSubmitted = false  // ✅ DEFAULT FALSE
 }: SubtestListProps) {
-  const kelompokOrder = ['TPS', 'Literasi', 'Matematika', 'Sains', 'Sosial'];
+  
+  const getStatusBadge = (kategori: Kategori) => {
+    const progress = progressData[kategori.kategori_id];
+    const isCompleted = completedKategoris?.has(kategori.kategori_id);
 
-  const getStatusIcon = (status: string) => {
-    if (status === 'completed') {
-      return <Check className="w-5 h-5 text-green-600" />;
-    }
-    if (status === 'in_progress') {
-      return <Play className="w-5 h-5 text-blue-600" />;
-    }
-    return <Lock className="w-5 h-5 text-gray-400" />;
-  };
-
-  const getStatusBadge = (status: string) => {
-    if (status === 'completed') {
+    if (isCompleted || progress?.status === 'completed') {
       return (
-        <span className="text-xs font-medium text-green-600 bg-green-50 px-3 py-1 rounded-full">
+        <div className="flex items-center gap-1.5 px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">
+          <CheckCircle className="w-3.5 h-3.5" />
           Selesai
-        </span>
+        </div>
       );
     }
-    if (status === 'in_progress') {
+
+    if (progress?.status === 'in_progress') {
       return (
-        <span className="text-xs font-medium text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
-          Berlangsung
-        </span>
+        <div className="flex items-center gap-1.5 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold">
+          <Clock className="w-3.5 h-3.5" />
+          Sedang Dikerjakan
+        </div>
       );
     }
+
     return (
-      <span className="text-xs font-medium text-gray-500 bg-gray-50 px-3 py-1 rounded-full">
-        Belum Mulai
-      </span>
+      <div className="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-semibold">
+        Belum Dimulai
+      </div>
     );
   };
 
-  const getButtonText = (status: string) => {
-    if (status === 'completed') return 'Review';
-    if (status === 'in_progress') return 'Lanjutkan';
-    return 'Mulai';
+  const getButtonState = (kategori: Kategori) => {
+    const progress = progressData[kategori.kategori_id];
+    const isCompleted = completedKategoris?.has(kategori.kategori_id);
+
+    // ✅ If tryout submitted, all buttons disabled
+    if (isSubmitted) {
+      return {
+        text: 'Terkunci',
+        icon: Lock,
+        disabled: true,
+        className: 'bg-gray-300 text-gray-500 cursor-not-allowed'
+      };
+    }
+
+    if (isCompleted || progress?.status === 'completed') {
+      return {
+        text: 'Lihat Jawaban',
+        icon: CheckCircle,
+        disabled: false,
+        className: 'bg-gradient-to-r from-green-600 to-emerald-600 text-white hover:shadow-lg'
+      };
+    }
+
+    if (progress?.status === 'in_progress') {
+      return {
+        text: 'Lanjutkan',
+        icon: Play,
+        disabled: !canStart,
+        className: 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:shadow-lg'
+      };
+    }
+
+    return {
+      text: 'Mulai',
+      icon: Play,
+      disabled: !canStart,
+      className: 'bg-gradient-to-r from-[#295782] to-[#89b0c7] text-white hover:shadow-lg'
+    };
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm p-6">
-      <h2 className="text-xl font-bold text-[#1d293d] mb-6">Daftar Subtest</h2>
+    <div className="space-y-6">
+      {Object.entries(groupedKategoris).map(([groupName, kategoris]) => (
+        <div key={groupName} className="bg-white rounded-2xl shadow-sm p-6">
+          <h2 className="text-lg font-bold text-[#1d293d] mb-4">{groupName}</h2>
+          
+          <div className="space-y-3">
+            {kategoris.map((kategori) => {
+              const progress = progressData[kategori.kategori_id];
+              const buttonState = getButtonState(kategori);
+              const ButtonIcon = buttonState.icon;
 
-      <div className="space-y-6">
-        {kelompokOrder.map((kelompok) => {
-          const kategoris = groupedKategoris[kelompok];
-          if (!kategoris || kategoris.length === 0) return null;
-
-          return (
-            <div key={kelompok} className="space-y-3">
-              <h3 className="text-sm font-bold text-[#295782] uppercase tracking-wide">
-                {kelompok}
-              </h3>
-
-              <div className="space-y-3">
-                {kategoris
-                  .sort((a, b) => a.urutan - b.urutan)
-                  .map((kategori) => {
-                    const progress = progressData[kategori.id] || {
-                      answered: 0,
-                      total: 0,
-                      status: 'not_started'
-                    };
-
-                    return (
-                      <div
-                        key={kategori.id}
-                        className="flex items-center justify-between p-4 bg-gradient-to-r from-[#f8fbff] to-white rounded-xl border border-gray-100 hover:border-[#89b0c7] transition-all"
-                      >
-                        <div className="flex items-center gap-4 flex-1">
-                          <div className="flex-shrink-0">
-                            {getStatusIcon(progress.status)}
-                          </div>
-
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-3 mb-1">
-                              <h4 className="text-sm font-semibold text-[#1d293d] truncate">
-                                {kategori.nama_kategori}
-                              </h4>
-                              {getStatusBadge(progress.status)}
-                            </div>
-
-                            <div className="flex items-center gap-4 text-xs text-[#62748e]">
-                              <span>
-                                {progress.total} Soal
-                              </span>
-                              {progress.status === 'in_progress' && (
-                                <>
-                                  <span>•</span>
-                                  <span>
-                                    {progress.answered}/{progress.total} Dijawab
-                                  </span>
-                                </>
-                              )}
-                            </div>
-
-                            {progress.status === 'in_progress' && (
-                              <div className="mt-2">
-                                <div className="w-full bg-gray-200 rounded-full h-1.5">
-                                  <div
-                                    className="bg-[#89b0c7] h-1.5 rounded-full transition-all"
-                                    style={{
-                                      width: `${(progress.answered / progress.total) * 100}%`
-                                    }}
-                                  />
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-
-                        <button
-                          onClick={() => onStartSubtest(kategori.id)}
-                          disabled={!canStart || isStarting}
-                          className={`ml-4 px-6 py-2 rounded-lg text-sm font-semibold transition-all flex-shrink-0 ${
-                            canStart && !isStarting
-                              ? progress.status === 'completed'
-                                ? 'bg-green-50 text-green-600 hover:bg-green-100'
-                                : progress.status === 'in_progress'
-                                ? 'bg-blue-50 text-blue-600 hover:bg-blue-100'
-                                : 'bg-gradient-to-r from-[#295782] to-[#1e4060] text-white hover:shadow-md'
-                              : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                          }`}
-                        >
-                          {isStarting ? 'Memuat...' : getButtonText(progress.status)}
-                        </button>
+              return (
+                <div
+                  key={kategori.kategori_id}
+                  className={`border-2 rounded-xl p-4 transition-all ${
+                    isSubmitted 
+                      ? 'border-gray-200 bg-gray-50' 
+                      : 'border-gray-200 hover:border-[#295782]'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <h3 className={`font-semibold ${isSubmitted ? 'text-gray-500' : 'text-[#1d293d]'}`}>
+                          {kategori.nama_kategori}
+                        </h3>
+                        {getStatusBadge(kategori)}
                       </div>
-                    );
-                  })}
-              </div>
-            </div>
-          );
-        })}
-      </div>
+                      
+                      <div className="flex items-center gap-4 text-sm text-[#62748e]">
+                        <span>{kategori.jumlah_soal || 0} soal</span>
+                        <span>•</span>
+                        <span>{kategori.durasi_menit || 0} menit</span>
+                        {progress && progress.answered > 0 && (
+                          <>
+                            <span>•</span>
+                            <span className="text-blue-600 font-medium">
+                              {progress.answered}/{progress.total} terjawab
+                            </span>
+                          </>
+                        )}
+                      </div>
+                    </div>
 
-      {!canStart && (
-        <div className="mt-6 p-4 bg-orange-50 border border-orange-200 rounded-xl">
-          <p className="text-sm text-orange-600 text-center font-medium">
-            ⚠️ Pilih kampus dan program studi terlebih dahulu untuk memulai tryout
-          </p>
+                    <button
+                      onClick={() => !buttonState.disabled && onStartSubtest(kategori.kode_kategori)}
+                      disabled={buttonState.disabled || isStarting}
+                      className={`px-6 py-2.5 rounded-xl font-semibold transition-all flex items-center gap-2 ${buttonState.className} ${
+                        buttonState.disabled || isStarting ? 'opacity-50 cursor-not-allowed' : ''
+                      }`}
+                    >
+                      <ButtonIcon className="w-4 h-4" />
+                      {isStarting ? 'Memuat...' : buttonState.text}
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
-      )}
+      ))}
     </div>
   );
 }

@@ -1,6 +1,3 @@
-// pages/TryoutExam.tsx
-// ✅ FINAL VERSION - Handler sudah sesuai dengan QuestionDisplay props
-
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Flag } from 'lucide-react';
@@ -34,7 +31,6 @@ export default function TryoutExam() {
     isLoading,
     timeRemaining,
     tryoutId: examTryoutId,
-    isSaving,
     bookmarkedQuestions,
     saveBookmarks
   } = useExamSession(sessionId || '', kategoriId || undefined);
@@ -79,7 +75,8 @@ export default function TryoutExam() {
     toast.error('Waktu habis! Tryout akan disubmit otomatis.');
     try {
       await submitExam();
-      navigate(`/tryout/${tryoutId}/result?session=${sessionId}`);
+      // ✅ CHANGED: Navigate to TryoutStart instead of Result
+      navigate(`/tryout/${tryoutId}/start`);
     } catch (err) {
       console.error('Auto submit error:', err);
     }
@@ -89,34 +86,16 @@ export default function TryoutExam() {
     try {
       await submitExam();
       toast.success('Tryout berhasil disubmit!');
-      navigate(`/tryout/${tryoutId}/result?session=${sessionId}`);
+      // ✅ CHANGED: Navigate to TryoutStart instead of Result
+      navigate(`/tryout/${tryoutId}/start`);
     } catch (err) {
       toast.error('Gagal submit tryout');
     }
   };
 
-  // ✅ CRITICAL FIX: Handler yang sesuai dengan QuestionDisplay props
-  // QuestionDisplay expects: onAnswerSelect: (answer: string) => void
-  // Hanya terima 1 parameter (answer key), bukan questionId
-  const handleAnswerSelect = (answer: string) => {
-    if (!currentQuestion) {
-      console.error('❌ No current question');
-      return;
-    }
-
-    console.log('✅ Answer selected:', answer, 'for question ID:', currentQuestion.id);
-    
-    // ✅ Call saveAnswer dari hook dengan question.id
-    saveAnswer(currentQuestion.id, answer);
-  };
-
-  // Get current question
-  const currentQuestion = questions[currentIndex];
-
-  // ✅ Exit handler
+  // ✅ KEEP: Save bookmarks before exit
   const handleExit = async () => {
     console.log('🚪 Exit button clicked');
-
     try {
       if (bookmarkedQuestions.length > 0) {
         console.log('💾 Saving bookmarks before exit:', bookmarkedQuestions);
@@ -140,10 +119,9 @@ export default function TryoutExam() {
     navigate(`/tryout/${tryoutId}/start`);
   };
 
-  // ✅ Toggle bookmark
+  // ✅ KEEP: Toggle bookmark
   const handleToggleBookmark = async () => {
     let updated: number[];
-
     if (bookmarkedQuestions.includes(currentIndex)) {
       updated = bookmarkedQuestions.filter(q => q !== currentIndex);
       toast.success('Tanda soal dihapus');
@@ -151,7 +129,6 @@ export default function TryoutExam() {
       updated = [...bookmarkedQuestions, currentIndex];
       toast.success('Soal ditandai');
     }
-
     await saveBookmarks(updated);
   };
 
@@ -167,6 +144,22 @@ export default function TryoutExam() {
     }
   };
 
+  const currentQuestion = questions[currentIndex];
+
+  const handleAnswerChange = (answer: string) => {
+  console.log('═══════════════════════════════════');
+  console.log('🎯 handleAnswerChange CALLED');
+  console.log('  - answer:', answer);
+  console.log('  - currentQuestion:', currentQuestion);
+  console.log('  - currentQuestion.id:', currentQuestion?.id);
+  console.log('═══════════════════════════════════');
+  
+  if (currentQuestion) {
+    saveAnswer(currentQuestion.id, answer);
+  }
+};
+
+
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
@@ -176,7 +169,6 @@ export default function TryoutExam() {
         setCurrentIndex(currentIndex + 1);
       }
     };
-
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, [currentIndex, questions.length, setCurrentIndex]);
@@ -187,19 +179,16 @@ export default function TryoutExam() {
       e.preventDefault();
       e.returnValue = '';
     };
-
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, []);
 
-  // Format time display
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // Guard: Return null while redirecting
   if (!sessionId) {
     return null;
   }
@@ -208,8 +197,8 @@ export default function TryoutExam() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#295782] mx-auto"></div>
-          <p className="mt-4 text-gray-600">Memuat soal...</p>
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-500 border-t-transparent mb-4 mx-auto"></div>
+          <p className="text-gray-600 font-medium">Memuat soal...</p>
         </div>
       </div>
     );
@@ -218,138 +207,97 @@ export default function TryoutExam() {
   if (!currentQuestion) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-gray-600">Soal tidak ditemukan</p>
-        </div>
+        <p className="text-gray-600">Soal tidak ditemukan</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-blue-50/30 to-white">
-      {/* Header Component */}
-      <Header
+    <div className="min-h-screen bg-gray-50">
+      <Header 
         userName={currentUser?.username || currentUser?.nama_lengkap || 'User'}
         userPhoto={currentUser?.photo_profile}
       />
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-12 py-6">
+      <div className="max-w-[1920px] mx-auto px-4 md:px-6 lg:px-8 py-4">
         {/* Title and Timer Section with Exit Button */}
-        <div className="flex items-start justify-between mb-6">
-          <div className="flex items-center gap-4">
+        <div className="mb-4">
+          <div className="flex items-center justify-between mb-2">
             {/* Tombol Keluar */}
             <button
               onClick={handleExit}
-              className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+              className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
             >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 19l-7-7 7-7"
-                />
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
               </svg>
               <span className="font-medium">Keluar</span>
             </button>
 
-            <div>
-              <h1 className="text-2xl font-medium text-gray-800 mb-2">
-                Ujian/Tes
-              </h1>
-              <p className="text-lg font-medium text-[#4A90E2]">
-                Soal {currentIndex + 1} dari {questions.length}
+            <h1 className="hidden md:block text-xl font-bold text-gray-800">Ujian/Tes</h1>
+
+            <div className="hidden md:block text-right">
+              <p className="text-sm text-gray-500 mb-1">Waktu Tersisa:</p>
+              <p className={`text-2xl font-bold ${timeRemaining < 300 ? 'text-red-600' : 'text-gray-800'}`}>
+                {formatTime(timeRemaining)}
               </p>
             </div>
           </div>
 
-          <div className="hidden sm:flex items-center gap-2 text-lg text-gray-700">
-            <span className="font-medium">Waktu Tersisa:</span>
-            <span className="font-mono text-xl font-bold">
-              {formatTime(timeRemaining)}
-            </span>
+          {/* Mobile info row */}
+          <div className="md:hidden flex items-center justify-between">
+            <p className="text-sm text-gray-600">
+              Soal <span className="font-semibold">{currentIndex + 1}</span> dari <span className="font-semibold">{questions.length}</span>
+            </p>
+            <div className="text-right">
+              <p className="text-xs text-gray-500">Waktu Tersisa:</p>
+              <p className={`text-lg font-bold ${timeRemaining < 300 ? 'text-red-600' : 'text-gray-800'}`}>
+                {formatTime(timeRemaining)}
+              </p>
+            </div>
           </div>
         </div>
 
-        {/* Mobile Timer */}
-        <div className="sm:hidden mb-4 flex items-center gap-2 text-base text-gray-700">
-          <span className="font-medium">Waktu Tersisa:</span>
-          <span className="font-mono text-lg font-bold">
-            {formatTime(timeRemaining)}
-          </span>
-        </div>
-
         {/* Question Card and Sidebar Layout */}
-        <div className="flex flex-col lg:flex-row gap-5">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6">
           {/* Main Question Area */}
-          <div className="flex-1">
-            {/* ✅ CRITICAL FIX: Passing props yang PERSIS sesuai dengan QuestionDisplay interface */}
+          <div className="lg:col-span-8 xl:col-span-9">
             <QuestionDisplay
               question={currentQuestion}
-              selectedAnswer={answers[currentQuestion.id]}
-              onAnswerSelect={handleAnswerSelect}
-              isSaving={isSaving}
+              currentAnswer={answers[currentQuestion.id]}
+              onAnswerChange={handleAnswerChange}
+              questionNumber={currentIndex + 1}
+              totalQuestions={questions.length}
             />
 
             {/* Navigation Buttons */}
-            <div className="mt-8 pt-6 border-t border-gray-200 flex flex-col sm:flex-row justify-between gap-4">
+            <div className="mt-4 flex items-center justify-between gap-4">
               {/* Tombol Sebelumnya */}
               {currentIndex > 0 && (
                 <button
                   onClick={handlePrevious}
-                  className="rounded-xl border-2 border-[#4A90E2] text-[#4A90E2] hover:bg-blue-50 px-6 py-2.5 font-medium transition-colors flex items-center justify-center gap-2"
+                  className="rounded-xl border-2 border-gray-300 hover:border-gray-400 bg-white px-8 py-2.5 font-medium text-gray-700 shadow-sm transition-colors"
                 >
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 19l-7-7 7-7"
-                    />
-                  </svg>
-                  <span>Sebelumnya</span>
+                  Sebelumnya
                 </button>
               )}
 
               {/* Spacer */}
-              {currentIndex === 0 && <div></div>}
+              {currentIndex === 0 && <div className="flex-1" />}
 
               {/* Tombol Selanjutnya atau Selesai */}
               {currentIndex < questions.length - 1 ? (
                 <button
                   onClick={handleNext}
-                  className="rounded-xl bg-[#295782] hover:bg-[#1e3f5f] text-white px-8 py-2.5 font-medium transition-colors flex items-center justify-center gap-2"
+                  className="rounded-xl bg-[#295782] hover:bg-[#1e4060] text-white px-10 py-2.5 font-medium shadow-md transition-colors ml-auto"
                 >
-                  <span>Selanjutnya</span>
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
+                  Selanjutnya
                 </button>
               ) : (
                 <button
                   onClick={() => setShowSubmitConfirm(true)}
-                  className="rounded-xl bg-[#00A63E] hover:bg-[#009038] text-white px-10 py-2.5 font-medium shadow-md transition-colors"
+                  className="rounded-xl bg-[#00A63E] hover:bg-[#009038] text-white px-10 py-2.5 font-medium shadow-md transition-colors ml-auto"
                 >
                   Selesai
                 </button>
@@ -358,32 +306,22 @@ export default function TryoutExam() {
           </div>
 
           {/* Right Sidebar - Question Navigator */}
-          <div className="lg:w-64">
-            <div className="bg-white rounded-xl shadow-lg p-6 sticky top-6">
+          <div className="hidden lg:block lg:col-span-4 xl:col-span-3">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 sticky top-4">
               {/* Bookmark Button */}
               <button
                 onClick={handleToggleBookmark}
-                className={`w-full mb-6 px-4 py-2.5 rounded-xl transition-colors flex items-center justify-center gap-2 font-medium ${
+                className={`w-full mb-4 px-4 py-2.5 rounded-lg font-medium transition-colors ${
                   bookmarkedQuestions.includes(currentIndex)
-                    ? 'bg-red-600 hover:bg-red-700 text-white'
-                    : 'bg-gray-700 hover:bg-gray-800 text-white'
+                    ? 'bg-gray-600 hover:bg-gray-700 text-white'
+                    : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
                 }`}
               >
-                <Flag
-                  size={18}
-                  className={
-                    bookmarkedQuestions.includes(currentIndex)
-                      ? 'fill-current'
-                      : ''
-                  }
-                />
-                {bookmarkedQuestions.includes(currentIndex)
-                  ? 'Batal Tandai Soal'
-                  : 'Tandai Soal'}
+                {bookmarkedQuestions.includes(currentIndex) ? 'Batal Tandai Soal' : 'Tandai Soal'}
               </button>
 
               {/* Question Grid */}
-              <div className="grid grid-cols-5 gap-2 mb-6">
+              <div className="grid grid-cols-5 gap-2 mb-4">
                 {questions.map((question, index) => {
                   const isAnswered = !!answers[question.id];
                   const isCurrent = index === currentIndex;
@@ -410,14 +348,14 @@ export default function TryoutExam() {
               </div>
 
               {/* Legend */}
-              <div className="space-y-2.5 text-xs">
-                <p className="font-semibold text-gray-700 mb-3">Keterangan:</p>
+              <div className="space-y-2 text-xs">
+                <p className="font-semibold text-gray-700">Keterangan:</p>
                 <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 rounded bg-[#295782]"></div>
+                  <div className="w-6 h-6 rounded bg-[#295782]"></div>
                   <span className="text-gray-600">Sudah dijawab</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 rounded bg-gray-500"></div>
+                  <div className="w-6 h-6 rounded bg-gray-500"></div>
                   <span className="text-gray-600">Soal ditandai</span>
                 </div>
               </div>
@@ -429,21 +367,19 @@ export default function TryoutExam() {
       {/* Submit Confirmation Modal */}
       {showSubmitConfirm && (
         <>
-          <div
+          <div 
             className="fixed inset-0 bg-black bg-opacity-50 z-40"
             onClick={() => setShowSubmitConfirm(false)}
           />
-          <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
-              <h3 className="text-xl font-bold mb-4">Konfirmasi Selesai</h3>
-              <p className="text-gray-600 mb-2">
-                Apakah kamu yakin ingin mengakhiri tryout? Pastikan semua jawaban
-                sudah benar.
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
+              <h3 className="text-xl font-bold text-gray-800 mb-3">Konfirmasi Selesai</h3>
+              <p className="text-gray-600 mb-4">
+                Apakah kamu yakin ingin mengakhiri tryout? Pastikan semua jawaban sudah benar.
               </p>
-              <p className="text-sm text-gray-500 mb-6">
+              <p className="text-sm text-amber-600 font-medium mb-6">
                 ⚠️ Soal terjawab: {Object.keys(answers).length}/{questions.length}
               </p>
-
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowSubmitConfirm(false)}
@@ -453,7 +389,7 @@ export default function TryoutExam() {
                 </button>
                 <button
                   onClick={handleManualSubmit}
-                  className="flex-1 px-4 py-2.5 bg-[#00A63E] text-white rounded-xl hover:bg-[#009038] font-medium transition-colors"
+                  className="flex-1 px-4 py-2.5 bg-[#00A63E] hover:bg-[#009038] text-white rounded-xl font-medium transition-colors"
                 >
                   Ya, Selesai
                 </button>
@@ -464,15 +400,16 @@ export default function TryoutExam() {
       )}
 
       {/* Question Sidebar Modal (Mobile) */}
-      <QuestionSidebar
-        show={showSidebar}
-        questions={questions}
-        answers={answers}
-        currentIndex={currentIndex}
-        bookmarkedQuestions={bookmarkedQuestions}
-        onQuestionSelect={setCurrentIndex}
-        onClose={() => setShowSidebar(false)}
-      />
+      {showSidebar && (
+        <QuestionSidebar
+          questions={questions}
+          currentIndex={currentIndex}
+          answers={answers}
+          bookmarkedQuestions={bookmarkedQuestions}
+          onSelectQuestion={setCurrentIndex}
+          onClose={() => setShowSidebar(false)}
+        />
+      )}
     </div>
   );
 }

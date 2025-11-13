@@ -1,9 +1,8 @@
 // pages/TryoutStart.tsx
 
-
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Clock, FileText, Calendar } from 'lucide-react';
+import { ArrowLeft, Clock, FileText, Calendar, CheckCircle, Eye } from 'lucide-react';
 import { format } from 'date-fns';
 import { id as idLocale } from 'date-fns/locale';
 import toast from 'react-hot-toast';
@@ -12,6 +11,7 @@ import SubtestList from '@/components/tryout/SubtestList';
 import TargetSelectionModal from '@/components/tryout/TargetSelectionModal';
 import { api } from '@/lib/api';
 import { useTryoutData } from '@/hooks/useTryoutData';
+import { supabase } from '@/lib/supabase';
 
 export default function TryoutStart() {
   const { tryoutId } = useParams<{ tryoutId: string }>();
@@ -19,6 +19,9 @@ export default function TryoutStart() {
   
   const [showTargetModal, setShowTargetModal] = useState(false);
   const [isStarting, setIsStarting] = useState(false);
+  const [completedKategoris, setCompletedKategoris] = useState<Set<string>>(new Set());
+  const [showSubmitAllModal, setShowSubmitAllModal] = useState(false);
+  const [isTryoutSubmitted, setIsTryoutSubmitted] = useState(false); // ✅ NEW: Track submit status
   
   const {
     tryout,
@@ -30,12 +33,63 @@ export default function TryoutStart() {
     refreshData
   } = useTryoutData(tryoutId!);
 
-  // Auto-open modal if no target selected
+  // ✅ Check if tryout already submitted
   useEffect(() => {
-    if (!isLoading && !targetInfo) {
+    const submitStatus = localStorage.getItem(`tryout_${tryoutId}_submitted`);
+    if (submitStatus === 'true') {
+      setIsTryoutSubmitted(true);
+    }
+  }, [tryoutId]);
+
+  useEffect(() => {
+    if (tryoutId && currentUser) {
+      fetchCompletedSessions();
+    }
+  }, [tryoutId, currentUser]);
+
+  const fetchCompletedSessions = async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      let userId = null;
+
+      if (session) {
+        const { data: userData } = await supabase
+          .from('users')
+          .select('user_id')
+          .eq('auth_id', session.user.id)
+          .single();
+        userId = userData?.user_id;
+      } else {
+        const token = localStorage.getItem('auth_token');
+        if (token) {
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          userId = payload.user_id;
+        }
+      }
+
+      if (!userId) return;
+
+      const { data: sessions, error } = await supabase
+        .from('tryout_sessions')
+        .select('kategori_id')
+        .eq('tryout_id', tryoutId)
+        .eq('user_id', userId)
+        .eq('status', 'completed');
+
+      if (error || !sessions) return;
+
+      const completed = new Set(sessions.map(s => s.kategori_id).filter(Boolean));
+      setCompletedKategoris(completed);
+    } catch (error) {
+      console.error('Error fetching completed sessions:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (!isLoading && !targetInfo && !isTryoutSubmitted) {
       setShowTargetModal(true);
     }
-  }, [isLoading, targetInfo]);
+  }, [isLoading, targetInfo, isTryoutSubmitted]);
 
   useEffect(() => {
     if (!isLoading && tryout) {
@@ -43,12 +97,12 @@ export default function TryoutStart() {
     }
   }, []);
 
-  // ✅ FIXED: handleStartTryout
   const handleStartTryout = async (kategoriKode?: string) => {
-    console.log('╔════════════════════════════════════╗');
-    console.log('║   START TRYOUT - DEBUG INFO       ║');
-    console.log('╚════════════════════════════════════╝');
-    console.log('📋 kategoriKode received:', kategoriKode);
+    // ✅ Block if already submitted
+    if (isTryoutSubmitted) {
+      toast.error('Tryout sudah di-submit! Lihat hasil untuk review.');
+      return;
+    }
 
     if (!targetInfo) {
       toast.error('Pilih kampus dan jurusan terlebih dahulu!');
@@ -59,12 +113,6 @@ export default function TryoutStart() {
     try {
       setIsStarting(true);
 
-      console.log('👤 Target Info:', targetInfo);
-      console.log('✅ kategoriKode to use:', kategoriKode || 'NULL (all categories)');
-
-      // ✅ Call API to create session
-      console.log('🚀 Calling API to create session...');
-      
       const sessionResponse = await api.createSession({
         tryout_id: tryoutId!,
         kategori_id: kategoriKode,
@@ -72,36 +120,43 @@ export default function TryoutStart() {
         target_jurusan: targetInfo.prodiName,
       });
 
-      console.log('✅ Session API Response:', sessionResponse);
-
       if (!sessionResponse?.session_id) {
-        throw new Error('Failed to create session - no session_id returned');
+        throw new Error('Failed to create session');
       }
 
-      const sessionId = sessionResponse.session_id;
-      console.log('✅ Session ID from API:', sessionId);
-
-      // Navigate to exam page
       const params = new URLSearchParams();
-      params.set('session', sessionId);
+      params.set('session', sessionResponse.session_id);
       if (kategoriKode) params.set('kategori', kategoriKode);
 
-      console.log('🚀 Navigating to exam with params:', params.toString());
-      console.log('╔════════════════════════════════════╗');
-      console.log('║   END START TRYOUT - DEBUG        ║');
-      console.log('╚════════════════════════════════════╝\n');
-
       navigate(`/tryout/${tryoutId}/exam?${params.toString()}`);
-
     } catch (err: any) {
-      console.error('❌ Error in handleStartTryout:', err);
+      console.error('Error:', err);
       toast.error(err.message || 'Gagal memulai tryout');
     } finally {
       setIsStarting(false);
     }
   };
 
-  // Loading state
+  const handleSubmitAll = () => {
+    if (completedKategoris.size === 0) {
+      toast.error('Belum ada subtest yang dikerjakan!');
+      return;
+    }
+    setShowSubmitAllModal(true);
+  };
+
+  const confirmSubmitAll = () => {
+    localStorage.setItem(`tryout_${tryoutId}_submitted`, 'true');
+    setIsTryoutSubmitted(true);
+    toast.success('Tryout berhasil di-submit!');
+    setShowSubmitAllModal(false);
+  };
+
+  // ✅ Navigate to result page
+  const handleViewResult = () => {
+    navigate(`/tryout/${tryoutId}/result`);
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#e6f3ff] via-[#f8fbff] to-white flex items-center justify-center">
@@ -113,7 +168,6 @@ export default function TryoutStart() {
     );
   }
 
-  // Not found state
   if (!tryout) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#e6f3ff] via-[#f8fbff] to-white flex items-center justify-center">
@@ -132,7 +186,6 @@ export default function TryoutStart() {
     );
   }
 
-  // Main render
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#e6f3ff] via-[#f8fbff] to-white">
       <Header 
@@ -141,7 +194,6 @@ export default function TryoutStart() {
       />
 
       <div className="max-w-6xl mx-auto px-6 py-8">
-        {/* Back Button */}
         <button
           onClick={() => navigate('/tryout')}
           className="flex items-center gap-2 text-[#62748e] hover:text-[#295782] mb-6 transition-colors"
@@ -150,7 +202,6 @@ export default function TryoutStart() {
           <span className="text-sm font-medium">Kembali ke Daftar Tryout</span>
         </button>
 
-        {/* Title Section */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-[#1d293d] mb-2">{tryout.nama_tryout}</h1>
           <div className="flex items-center gap-4 text-sm text-[#62748e]">
@@ -169,30 +220,69 @@ export default function TryoutStart() {
           </div>
         </div>
 
+        {/* ✅ UPDATED: Submit All Banner OR View Result Button */}
+        {isTryoutSubmitted ? (
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4 mb-6 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <CheckCircle className="w-5 h-5 text-blue-600" />
+                <p className="text-sm font-semibold text-blue-800">
+                  Tryout sudah selesai dan di-submit
+                </p>
+              </div>
+              <button
+                onClick={handleViewResult}
+                className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:shadow-lg font-semibold transition-all text-sm"
+              >
+                <Eye className="w-4 h-4" />
+                Lihat Hasil
+              </button>
+            </div>
+          </div>
+        ) : completedKategoris.size > 0 && (
+          <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl p-4 mb-6 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <CheckCircle className="w-5 h-5 text-green-600" />
+                <p className="text-sm font-semibold text-green-800">
+                  {completedKategoris.size} subtest sudah dikerjakan
+                </p>
+              </div>
+              <button
+                onClick={handleSubmitAll}
+                className="px-5 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg hover:shadow-lg font-semibold transition-all text-sm"
+              >
+                Submit All Tryout
+              </button>
+            </div>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Column - Subtest List */}
           <div className="lg:col-span-2">
             <SubtestList
               groupedKategoris={groupedKategoris}
               progressData={progressData}
               onStartSubtest={handleStartTryout}
-              canStart={!!targetInfo}
+              canStart={!!targetInfo && !isTryoutSubmitted}  // ✅ Disable if submitted
               isStarting={isStarting}
+              completedKategoris={completedKategoris}
+              isSubmitted={isTryoutSubmitted}  // ✅ Pass submit status
             />
           </div>
 
-          {/* Right Column - Info & Actions */}
           <div className="space-y-6">
-            {/* Target Info Card */}
             <div className="bg-white rounded-2xl shadow-sm p-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-base font-bold text-[#1d293d]">Target Kampus & Jurusan</h2>
-                <button
-                  onClick={() => setShowTargetModal(true)}
-                  className="text-xs text-[#295782] hover:underline font-medium"
-                >
-                  {targetInfo ? 'Ubah' : 'Pilih'}
-                </button>
+                {!isTryoutSubmitted && (
+                  <button
+                    onClick={() => setShowTargetModal(true)}
+                    className="text-xs text-[#295782] hover:underline font-medium"
+                  >
+                    {targetInfo ? 'Ubah' : 'Pilih'}
+                  </button>
+                )}
               </div>
               
               {targetInfo ? (
@@ -208,20 +298,19 @@ export default function TryoutStart() {
                 </div>
               ) : (
                 <div className="bg-orange-50 border border-orange-200 rounded-xl p-4 text-center">
-                  <p className="text-sm text-orange-600 font-medium mb-2">
-                    ⚠️ Belum memilih target
-                  </p>
-                  <button
-                    onClick={() => setShowTargetModal(true)}
-                    className="text-xs text-orange-600 hover:underline font-medium"
-                  >
-                    Klik untuk memilih →
-                  </button>
+                  <p className="text-sm text-orange-600 font-medium mb-2">⚠️ Belum memilih target</p>
+                  {!isTryoutSubmitted && (
+                    <button
+                      onClick={() => setShowTargetModal(true)}
+                      className="text-xs text-orange-600 hover:underline font-medium"
+                    >
+                      Klik untuk memilih →
+                    </button>
+                  )}
                 </div>
               )}
             </div>
 
-            {/* Info Card */}
             <div className="bg-gradient-to-br from-[#295782] to-[#89b0c7] rounded-2xl shadow-lg p-6 text-white">
               <h3 className="text-lg font-bold mb-3">Informasi Penting</h3>
               <ul className="space-y-2 text-sm">
@@ -247,24 +336,60 @@ export default function TryoutStart() {
         </div>
       </div>
 
-      {/* ✅ CRITICAL FIX: Props yang benar untuk TargetSelectionModal */}
-      <TargetSelectionModal
-        show={showTargetModal}
-        onClose={() => {
-          // ✅ Cek apakah user sudah pilih target
-          if (!targetInfo) {
-            toast.error('Anda harus memilih target terlebih dahulu');
-          } else {
+      {/* Target Selection Modal */}
+      {!isTryoutSubmitted && (
+        <TargetSelectionModal
+          show={showTargetModal}
+          onClose={() => {
+            if (!targetInfo) {
+              toast.error('Anda harus memilih target terlebih dahulu');
+            } else {
+              setShowTargetModal(false);
+            }
+          }}
+          tryoutId={tryoutId!}
+          onSuccess={() => {
             setShowTargetModal(false);
-          }
-        }}
-        tryoutId={tryoutId!}
-        onSuccess={() => {
-          setShowTargetModal(false);
-          refreshData();
-          toast.success('Target berhasil disimpan!');
-        }}
-      />
+            refreshData();
+            toast.success('Target berhasil disimpan!');
+          }}
+        />
+      )}
+
+      {/* Submit All Modal */}
+      {showSubmitAllModal && (
+        <>
+          <div 
+            className="fixed inset-0 bg-black bg-opacity-50 z-40"
+            onClick={() => setShowSubmitAllModal(false)}
+          />
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
+              <h3 className="text-xl font-bold text-[#1d293d] mb-3">Konfirmasi Submit All</h3>
+              <p className="text-[#62748e] mb-2">
+                Kamu sudah menyelesaikan <span className="font-bold text-[#1d293d]">{completedKategoris.size}</span> subtest.
+              </p>
+              <p className="text-[#62748e] mb-6">
+                Yakin ingin submit seluruh tryout? Setelah submit, semua subtest akan terkunci dan kamu bisa melihat hasil lengkap.
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowSubmitAllModal(false)}
+                  className="flex-1 px-4 py-2.5 border-2 border-gray-300 rounded-xl hover:bg-gray-50 font-medium transition-colors"
+                >
+                  Batal
+                </button>
+                <button
+                  onClick={confirmSubmitAll}
+                  className="flex-1 px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-semibold transition-all shadow-sm hover:shadow-lg"
+                >
+                  Ya, Submit
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }

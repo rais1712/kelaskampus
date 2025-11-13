@@ -65,6 +65,7 @@ export function useTryoutData(tryoutId: string) {
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [targetInfo, setTargetInfo] = useState<TargetInfo | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [completedKategoris, setCompletedKategoris] = useState<Set<string>>(new Set());
 
   const fetchData = async () => {
     try {
@@ -148,6 +149,7 @@ export function useTryoutData(tryoutId: string) {
 
         // Get progress
         const progress: ProgressData = {};
+        const completedSet = new Set<string>();
 
         for (const kategori of kategorisData) {
         const { count: totalQuestions } = await supabase
@@ -181,6 +183,11 @@ export function useTryoutData(tryoutId: string) {
 
             answeredCount = count || 0;
             status = activeSession.status as 'in_progress' | 'completed';
+            
+            // ✅ ADD: Track completed kategoris
+            if (status === 'completed') {
+                completedSet.add(kategori.id);
+            }
             }
         }
 
@@ -192,7 +199,9 @@ export function useTryoutData(tryoutId: string) {
         }
 
         console.log('📊 Progress:', progress);
+        console.log('✅ Completed kategoris:', completedSet);
         setProgressData(progress);
+        setCompletedKategoris(completedSet);
 
     } catch (error) {
         console.error('❌ Error fetching tryout data:', error);
@@ -219,6 +228,7 @@ export function useTryoutData(tryoutId: string) {
     currentUser,
     targetInfo,
     isLoading,
-    refreshData
+    refreshData,
+    completedKategoris
   };
 }
